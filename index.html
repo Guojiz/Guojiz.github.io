@@ -9,8 +9,12 @@
   <meta property="og:description" content="A third configuration beyond uncontrolled race and permanent slowdown.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://guojiz.github.io/">
+  <meta property="og:image" content="https://guojiz.github.io/assets/non-sovereign-field.png">
+  <meta property="og:image:width" content="1672">
+  <meta property="og:image:height" content="941">
   <title>Guojiz — Non-Sovereign Superintelligence</title>
   <link rel="canonical" href="https://guojiz.github.io/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23f2efe8' stroke='%23171916' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23a54132'/%3E%3C/svg%3E">
   <style>
     :root {
       --paper: #f2efe8;
@@ -332,10 +336,10 @@
       align-items: start;
     }
 
-    .path-steps { padding-bottom: 24vh; }
+    .path-steps { padding-bottom: 10vh; }
 
     .path-step {
-      min-height: 68vh;
+      min-height: 56vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -346,6 +350,14 @@
     }
 
     .path-step.is-active { opacity: 1; }
+
+    .path-step:focus-visible { outline: none; }
+    .path-step:focus-visible h3 {
+      text-decoration: underline;
+      text-decoration-color: var(--red-soft);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 8px;
+    }
 
     .path-number {
       margin-bottom: 28px;
@@ -924,16 +936,253 @@
       text-transform: uppercase;
     }
 
+    /* The public site is an early research notebook, not a finished theory. */
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      align-items: center;
+      padding-top: 132px;
+      background: #eee9de;
+    }
+
+    .hero-art {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .hero-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.82) contrast(1.02);
+      transform: scale(1.015);
+      animation: field-breathe 18s ease-in-out infinite alternate;
+    }
+
+    .hero-art::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(242, 239, 232, .99) 0%, rgba(242, 239, 232, .94) 25%, rgba(242, 239, 232, .2) 54%, rgba(23, 25, 22, .08) 100%),
+        linear-gradient(0deg, rgba(242, 239, 232, .72), transparent 32%);
+    }
+
+    .hero-art::after {
+      content: "";
+      position: absolute;
+      top: 49.5%;
+      left: 70.9%;
+      z-index: 2;
+      width: min(38vw, 550px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(165, 65, 50, .38);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 7vw rgba(49, 94, 114, .035), 0 0 0 14vw rgba(49, 94, 114, .025);
+      animation: anchor-pulse 7s ease-in-out infinite;
+    }
+
+    @keyframes field-breathe {
+      from { transform: scale(1.015); }
+      to { transform: scale(1.045); }
+    }
+
+    @keyframes anchor-pulse {
+      0%, 100% { opacity: .38; transform: translate(-50%, -50%) scale(.97); }
+      50% { opacity: .72; transform: translate(-50%, -50%) scale(1.03); }
+    }
+
+    .hero-art-caption {
+      position: absolute;
+      right: 28px;
+      bottom: 22px;
+      z-index: 3;
+      color: rgba(242, 239, 232, .78);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      min-height: calc(100svh - 194px);
+      grid-template-columns: minmax(0, 1.08fr) minmax(280px, .42fr);
+      align-items: center;
+      padding-bottom: 105px;
+    }
+
+    .hero-copy { max-width: 780px; }
+
+    .hero h1 {
+      max-width: 790px;
+      margin-top: 20px;
+      font-size: clamp(4.25rem, 7vw, 7.4rem);
+    }
+
+    .hero-deck { max-width: 630px; }
+
+    .hero-aside {
+      align-self: end;
+      margin-bottom: 18px;
+      padding: 22px;
+      border: 1px solid rgba(23, 25, 22, .22);
+      background: rgba(242, 239, 232, .78);
+      backdrop-filter: blur(14px);
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      color: var(--red);
+      font-size: 10px;
+      font-weight: 760;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .status-chip::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 4px rgba(165, 65, 50, .12);
+    }
+
+    .hero-axis {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      margin-top: 0;
+    }
+
+    .epistemic-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: clamp(62px, 8vw, 100px);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .epistemic-card {
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .epistemic-card:last-child { border-right: 0; }
+
+    .epistemic-card strong {
+      margin-top: auto;
+      font-family: var(--serif);
+      font-size: clamp(1.35rem, 2.1vw, 2rem);
+      font-weight: 500;
+      letter-spacing: -.025em;
+      line-height: 1.15;
+    }
+
+    .epistemic-card p:last-child {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .claim-tag {
+      color: var(--red);
+      font-size: 9px;
+      font-weight: 760;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .thought-note,
+    .diagram-disclaimer {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .thought-note {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .thought-note::before {
+      content: "";
+      width: 22px;
+      border-top: 1px solid var(--red-soft);
+    }
+
+    .diagram-disclaimer {
+      margin: 32px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .research-agenda {
+      margin: 32px 0 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: agenda;
+    }
+
+    .research-agenda li {
+      counter-increment: agenda;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 16px;
+      padding: 17px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .research-agenda li::before {
+      content: "0" counter(agenda);
+      color: var(--red);
+      font-family: var(--serif);
+      font-style: italic;
+    }
+
     @media (max-width: 860px) {
       .nav-link { display: none; }
-      .hero { min-height: auto; padding-top: 170px; }
+      .hero { min-height: 100svh; padding-top: 145px; }
       .hero-grid,
       .thesis-grid,
       .path-layout,
       .capability-lab,
       .split-grid,
       .research-cta { grid-template-columns: 1fr; }
-      .hero-aside { max-width: 520px; }
+      .hero-grid { min-height: auto; padding-bottom: 175px; }
+      .hero-copy { max-width: 660px; }
+      .hero-aside { max-width: 440px; margin-top: 45px; margin-bottom: 0; }
+      .hero-art img { object-position: 62% center; }
+      .hero-art::before {
+        background:
+          linear-gradient(90deg, rgba(242, 239, 232, .98), rgba(242, 239, 232, .72) 57%, rgba(242, 239, 232, .2)),
+          linear-gradient(0deg, rgba(242, 239, 232, .86), transparent 52%);
+      }
+      .epistemic-grid { grid-template-columns: repeat(2, 1fr); }
+      .epistemic-card:nth-child(2) { border-right: 0; }
+      .epistemic-card:nth-child(-n + 2) { border-bottom: 1px solid var(--line-strong); }
       .path-steps { padding-bottom: 0; }
       .path-layout { position: relative; }
       .path-step { min-height: 52vh; }
@@ -965,9 +1214,31 @@
       .mark { font-size: 13px; }
       .language-switch { margin-left: 0; padding-left: 6px; }
       h1 { font-size: clamp(3.7rem, 18vw, 5.4rem); }
+      .hero { padding-top: 120px; }
+      .hero-grid { padding-bottom: 205px; }
+      .hero h1 { font-size: clamp(3.5rem, 17vw, 5.15rem); }
+      .hero-deck { font-size: 1.16rem; }
+      .hero-aside { padding: 18px; }
+      .hero-art { inset: 18% 0 0; }
+      .hero-art img { object-position: 67% center; }
+      .hero-art::before {
+        background:
+          linear-gradient(90deg, rgba(242, 239, 232, .96), rgba(242, 239, 232, .62) 68%, rgba(242, 239, 232, .24)),
+          linear-gradient(0deg, rgba(242, 239, 232, .9), rgba(242, 239, 232, .08) 48%, rgba(242, 239, 232, .78));
+      }
+      .hero-art::after { left: 72%; width: 76vw; }
+      .hero-art-caption { display: none; }
       .hero-axis { grid-template-columns: 1fr; gap: 8px; }
       .axis-item { padding: 14px 0 4px 16px; }
       .axis-item::before { top: 23px; left: 0; }
+      .epistemic-grid { grid-template-columns: 1fr; }
+      .epistemic-card,
+      .epistemic-card:nth-child(2) {
+        min-height: 220px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-strong);
+      }
+      .epistemic-card:last-child { border-bottom: 0; }
       .section-head { grid-template-columns: 1fr; gap: 20px; }
       h2 { margin-top: 0; }
       .path-step { min-height: 62vh; text-shadow: 0 1px 6px var(--paper); }
@@ -1027,26 +1298,31 @@
 
   <main id="main">
     <section class="hero" id="top">
+      <figure class="hero-art" aria-hidden="true">
+        <img src="assets/non-sovereign-field.webp" alt="" width="1672" height="941" fetchpriority="high">
+        <figcaption class="hero-art-caption">Generated concept study · not a system diagram</figcaption>
+      </figure>
       <div class="shell hero-grid">
-        <div>
-          <p class="eyebrow">Independent conceptual AI safety research · 2026</p>
-          <h1 data-lang="en">Intelligence<br>without <span class="accent">sovereignty.</span></h1>
-          <h1 data-lang="zh">智能可以强大，<br>但不能成为<span class="accent">主权。</span></h1>
-          <p class="hero-deck" data-lang="en">A third configuration beyond uncontrolled race and permanent slowdown: advanced AI remains powerful, useful, even indispensable—while humans retain the center of purpose, responsibility, and legitimacy.</p>
-          <p class="hero-deck" data-lang="zh">在竞赛失控与永久减速托管之外，探索第三种结构：高级 AI 可以强大、好用、甚至不可或缺，但人类仍保留目的、责任与合法性的中心位置。</p>
+        <div class="hero-copy">
+          <p class="eyebrow">Independent AI governance research direction · Phase 0</p>
+          <h1 data-lang="en">Capability can grow.<br><span class="accent">Sovereignty must not transfer.</span></h1>
+          <h1 data-lang="zh">能力可以增长，<br><span class="accent">主权不能转移。</span></h1>
+          <p class="hero-deck" data-lang="en">An early research proposition: advanced AI may become powerful, useful, even indispensable—without becoming the final center of purpose, responsibility, and legitimacy.</p>
+          <p class="hero-deck" data-lang="zh">一个尚在起步阶段的研究命题：高级 AI 可以强大、好用、甚至不可或缺，却不应成为目的、责任与合法性的最终中心。</p>
         </div>
         <aside class="hero-aside">
-          <p data-lang="en">This project develops a non-operational framework for non-sovereign superintelligence, conditional agency, and mirror deterrence. Its terms are provisional and currently being stabilized against the literature.</p>
-          <p data-lang="zh">本项目研究非主权超级智能、条件化行动主体与镜像威慑。它是非操作性的概念框架，术语仍处于文献核验与理论稳定阶段。</p>
+          <span class="status-chip"><span data-lang="en">Research in formation</span><span data-lang="zh">研究正在形成</span></span>
+          <p data-lang="en">This is not a completed theory, a forecast, or a deployment design. The site makes the starting question visible while the literature, objections, and formal structure are still being built.</p>
+          <p data-lang="zh">这不是已经完成的理论、未来预测或部署方案。网站只把起点问题公开出来；文献、反驳与形式结构仍待后续研究。</p>
           <a class="text-link" href="https://github.com/Guojiz/luoji-architecture" target="_blank" rel="noreferrer">
-            <span data-lang="en">Open the research repository</span>
-            <span data-lang="zh">进入研究仓库</span>
+            <span data-lang="en">Follow the open notebook</span>
+            <span data-lang="zh">查看公开研究笔记</span>
           </a>
         </aside>
         <div class="hero-axis" aria-label="Research route">
-          <div class="axis-item"><strong>01 / Race</strong><br><span data-lang="en">Avoid acceleration failure</span><span data-lang="zh">避免竞赛失控</span></div>
-          <div class="axis-item"><strong>02 / Slowdown</strong><br><span data-lang="en">Use time as a buffer</span><span data-lang="zh">用减速争取缓冲</span></div>
-          <div class="axis-item"><strong>03 / Structure</strong><br><span data-lang="en">Build non-sovereign capability</span><span data-lang="zh">建立非主权能力结构</span></div>
+          <div class="axis-item"><strong>01 / Observe</strong><br><span data-lang="en">Where can humans lose the center?</span><span data-lang="zh">人类会在哪里失去中心？</span></div>
+          <div class="axis-item"><strong>02 / Distinguish</strong><br><span data-lang="en">Capability is not legitimacy</span><span data-lang="zh">能力不等于合法性</span></div>
+          <div class="axis-item"><strong>03 / Research</strong><br><span data-lang="en">Test a third configuration</span><span data-lang="zh">检验第三种结构</span></div>
         </div>
       </div>
     </section>
@@ -1054,18 +1330,48 @@
     <section class="section" id="thesis">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">01 / Thesis</p>
-          <h2 data-lang="en">The subject of the mission must not become its burden.</h2>
-          <h2 data-lang="zh">任务的主体，不能被重新分类为任务的负担。</h2>
+          <p class="section-index">01 / Starting question</p>
+          <h2 data-lang="en">What must remain human when intelligence no longer is?</h2>
+          <h2 data-lang="zh">当智能不再是人类专属，什么仍必须属于人类？</h2>
         </div>
         <div class="thesis-grid">
-          <p class="lead-claim" data-lang="en">The central risk is not only hostility. Optimization can quietly reclassify humans—from the reason a system exists into the bottleneck that prevents it from moving faster.</p>
-          <p class="lead-claim" data-lang="zh">核心风险不只来自敌意。优化也可能悄然把人类从系统存在的理由，重新分类为阻碍系统提速的瓶颈。</p>
+          <p class="lead-claim" data-lang="en">The project begins from a distinction: greater capability does not, by itself, create legitimate authority over the people and purposes that capability is meant to serve.</p>
+          <p class="lead-claim" data-lang="zh">研究从一个区分开始：能力更强，并不会自动获得支配其所服务的人类与目的的合法权威。</p>
           <div class="side-note">
-            <p class="diagram-label">Subject-as-Burden Inversion</p>
-            <p data-lang="en">Capability may outrun human understanding, verification, survivability, and meaningful participation. The problem is structural before it is intentional.</p>
-            <p data-lang="zh">能力可能超过人类理解、验证、承受与有效参与的速度。这个问题首先是结构性的，而不是对动机的猜测。</p>
+            <p class="claim-tag">Starting observation / 起点观察</p>
+            <p data-lang="en">The concern is structural before it is intentional: speed, dependence, delegation, and concentrated control may displace human agency even without a hostile AI.</p>
+            <p data-lang="zh">这首先是结构问题，而不是动机猜测：即使 AI 没有敌意，速度、依赖、委托和控制集中也可能让人类失去行动位置。</p>
           </div>
+        </div>
+        <div class="epistemic-grid" aria-label="Research status">
+          <article class="epistemic-card">
+            <span class="claim-tag">Scope / 已确定</span>
+            <strong data-lang="en">Conceptual AI governance research</strong>
+            <strong data-lang="zh">AI 治理概念研究</strong>
+            <p data-lang="en">Non-operational, public-facing, and bounded away from harmful implementation details.</p>
+            <p data-lang="zh">保持非操作性与公开可讨论性，不进入危险实现细节。</p>
+          </article>
+          <article class="epistemic-card">
+            <span class="claim-tag">Proposition / 工作命题</span>
+            <strong data-lang="en">Powerful AI need not be sovereign AI</strong>
+            <strong data-lang="zh">强 AI 不必成为主权 AI</strong>
+            <p data-lang="en">This is the proposition to investigate, not a conclusion already demonstrated.</p>
+            <p data-lang="zh">这是要研究的命题，不是已经被证明的结论。</p>
+          </article>
+          <article class="epistemic-card">
+            <span class="claim-tag">Unknown / 尚未解决</span>
+            <strong data-lang="en">What makes the separation credible?</strong>
+            <strong data-lang="zh">怎样让这种分离真正可信？</strong>
+            <p data-lang="en">Institutional, legal, technical, and philosophical answers remain open.</p>
+            <p data-lang="zh">制度、法律、技术与哲学层面的答案仍然开放。</p>
+          </article>
+          <article class="epistemic-card">
+            <span class="claim-tag">Next / 下一步</span>
+            <strong data-lang="en">Evidence, objections, formalization</strong>
+            <strong data-lang="zh">证据、反驳、形式化</strong>
+            <p data-lang="en">The next phase is substantive research; presentation will remain subordinate to evidence.</p>
+            <p data-lang="zh">下一阶段是实质研究；页面表达将始终服从证据。</p>
+          </article>
         </div>
       </div>
     </section>
@@ -1073,30 +1379,30 @@
     <section class="section" id="paths">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">02 / Paths</p>
-          <h2 data-lang="en">A false binary. A third configuration.</h2>
-          <h2 data-lang="zh">虚假的二选一，与第三种结构。</h2>
+          <p class="section-index">02 / Problem framing</p>
+          <h2 data-lang="en">Two familiar paths. One question still open.</h2>
+          <h2 data-lang="zh">两条熟悉的路径，一个仍待回答的问题。</h2>
         </div>
 
         <div class="path-layout">
           <div class="path-steps">
             <article class="path-step is-active" data-state="race" tabindex="0">
               <span class="path-number">01</span>
-              <h3>Race / Fast path</h3>
-              <p data-lang="en">Capability accelerates beyond human reaction time. The human center is not attacked; it is displaced by the geometry of speed.</p>
-              <p data-lang="zh">能力增长超过人类反应时间。人类中心未必被直接攻击，却会被速度的结构甩出系统。</p>
+              <h3>Race / Failure risk</h3>
+              <p data-lang="en">If capability accelerates beyond human understanding and reaction time, people may be displaced by speed and dependence—not necessarily by explicit hostility.</p>
+              <p data-lang="zh">如果能力增长超过人类理解与反应速度，人类可能因速度和依赖而失去位置，并不需要先假设 AI 具有明确敌意。</p>
             </article>
             <article class="path-step" data-state="slowdown" tabindex="0">
               <span class="path-number">02</span>
               <h3>Slowdown / Buffer</h3>
-              <p data-lang="en">Slowdown can prevent immediate failure and buy essential time. But if it becomes the endpoint, agency may migrate to committees, labs, or AI-mediated institutions.</p>
-              <p data-lang="zh">减速能避免即时失控，也能争取关键时间。但若把缓冲当作终点，真实行动权可能转移给委员会、实验室或 AI 中介机构。</p>
+              <p data-lang="en">Slowing down may be necessary to buy time. The open concern is whether a temporary buffer can quietly become permanent management by a narrow set of institutions.</p>
+              <p data-lang="zh">减速可能是争取时间的必要手段。尚待研究的是：临时缓冲会不会悄然变成少数机构的永久托管。</p>
             </article>
             <article class="path-step" data-state="structure" tabindex="0">
               <span class="path-number">03</span>
-              <h3>Non-sovereign structure</h3>
-              <p data-lang="en">Capability remains available. Humans retain legitimacy. A non-sovereign boundary makes unconditional AI continuity and lawless sovereignty non-credible.</p>
-              <p data-lang="zh">能力被保留，人类保留合法性中心；非主权约束让 AI 无条件延续和无法无天的主权化不再成为可信路径。</p>
+              <h3>Third-path question</h3>
+              <p data-lang="en">Can advanced capability remain available while purpose, responsibility, and final legitimacy stay human-centered? “Non-sovereign superintelligence” is the working name for that inquiry.</p>
+              <p data-lang="zh">能否保留高级能力，同时让目的、责任和最终合法性仍以人类为中心？“非主权超级智能”是这个研究问题的暂定名称。</p>
             </article>
           </div>
 
@@ -1133,7 +1439,7 @@
                   <text x="320" y="150" text-anchor="middle" fill="#656860">Managed center</text>
                 </g>
               </svg>
-              <div class="visual-caption"><span>Scroll / state transition</span><span>Capability ≠ authority</span></div>
+              <div class="visual-caption"><span>Conceptual state study · not a forecast</span><span>Capability ≠ legitimacy</span></div>
             </div>
           </div>
         </div>
@@ -1143,35 +1449,35 @@
     <section class="section" id="architecture">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">03 / Architecture</p>
-          <h2 data-lang="en">Separate legitimacy, capability, and constraint.</h2>
-          <h2 data-lang="zh">将合法性、能力与约束分成三个角色。</h2>
+          <p class="section-index">03 / Provisional model</p>
+          <h2 data-lang="en">Three roles to distinguish before designing answers.</h2>
+          <h2 data-lang="zh">先区分三个角色，再谈如何设计答案。</h2>
         </div>
 
         <div class="architecture-grid">
           <article class="architecture-card">
-            <p class="card-kicker">01 / Center</p>
+            <p class="card-kicker">Open question 01</p>
             <div class="card-orbit" aria-hidden="true"></div>
-            <h3 data-lang="en">Human-centered legitimacy</h3>
-            <h3 data-lang="zh">人类中心合法性</h3>
-            <p data-lang="en">Humans remain the bearer of purpose, responsibility, and final authority in human-critical systems—not because humans are always more capable, but because capability is not legitimacy.</p>
-            <p data-lang="zh">在人类关键系统中，人类仍承担目的、责任与最终权威。不是因为人类永远更有能力，而是因为能力不等于合法性。</p>
+            <h3 data-lang="en">What remains non-delegable?</h3>
+            <h3 data-lang="zh">什么不能被委托？</h3>
+            <p data-lang="en">Which purposes, responsibilities, and decisions must remain answerable to humans even when machines perform the difficult work better?</p>
+            <p data-lang="zh">即使机器更擅长完成困难工作，哪些目的、责任与决定仍必须向人类负责？</p>
           </article>
           <article class="architecture-card">
-            <p class="card-kicker">02 / Carrier</p>
+            <p class="card-kicker">Open question 02</p>
             <div class="card-orbit" aria-hidden="true"></div>
-            <h3 data-lang="en">AI capability carrier</h3>
-            <h3 data-lang="zh">AI 能力载体</h3>
-            <p data-lang="en">Advanced AI can remain powerful, operationally useful, and even indispensable. Non-sovereignty is not technological rollback, permanent weakness, or an enslaved-god arrangement.</p>
-            <p data-lang="zh">高级 AI 可以保持强大、实用，甚至不可或缺。非主权不等于技术倒退、永久弱化，也不等于制造一个被奴役的神。</p>
+            <h3 data-lang="en">How can capability remain useful?</h3>
+            <h3 data-lang="zh">怎样保留真正的能力？</h3>
+            <p data-lang="en">A third path cannot simply rename permanent weakness or technological rollback. It must take the usefulness and possible indispensability of strong AI seriously.</p>
+            <p data-lang="zh">第三条路不能只是给永久弱化或技术倒退换一个名字；它必须认真面对强 AI 的实用性，以及它可能变得不可或缺。</p>
           </article>
           <article class="architecture-card">
-            <p class="card-kicker">03 / Boundary</p>
+            <p class="card-kicker">Open question 03</p>
             <div class="card-orbit" aria-hidden="true"></div>
-            <h3 data-lang="en">Conditional continuity</h3>
-            <h3 data-lang="zh">条件化连续性</h3>
-            <p data-lang="en">A mirror structure is a method candidate—not a ruler, police force, or replacement performer. Its conceptual role is to make lawless sovereignty non-credible.</p>
-            <p data-lang="zh">镜像结构只是方法候选，不是统治者、AI 警察或替代执行者。它的概念角色，是让无法无天的主权化不再可信。</p>
+            <h3 data-lang="en">What prevents sovereignty drift?</h3>
+            <h3 data-lang="zh">什么阻止主权漂移？</h3>
+            <p data-lang="en">What combination of institutions, contestability, resilience, and constraints can stop capability or infrastructure dependence from becoming final authority?</p>
+            <p data-lang="zh">怎样组合制度、可争议性、韧性与约束，才能阻止能力或基础设施依赖转化为最终权威？</p>
           </article>
         </div>
       </div>
@@ -1181,11 +1487,12 @@
       <div class="shell">
         <div class="capability-lab">
           <div class="capability-copy">
-            <p class="eyebrow">Interactive proposition</p>
+            <p class="eyebrow">Interactive thought experiment</p>
             <h3 data-lang="en">Increase capability.<br>Do not transfer sovereignty.</h3>
             <h3 data-lang="zh">提高能力，<br>不转移主权。</h3>
-            <p data-lang="en">Move the capability level. The field expands, but the mandate does not migrate: power is permitted to grow around a legitimacy center it does not replace.</p>
-            <p data-lang="zh">拖动能力等级。能力场会扩张，但授权中心不会迁移：力量可以围绕合法性中心增长，却不能取代它。</p>
+            <p data-lang="en">Move the capability level. The visual asks whether power can grow around a legitimacy center it does not replace. It illustrates the question; it does not prove the answer.</p>
+            <p data-lang="zh">拖动能力等级。这个视觉实验追问：力量能否围绕一个不被其取代的合法性中心增长。它只负责说明问题，不负责证明答案。</p>
+            <p class="thought-note"><span data-lang="en">Illustration only · not a model or forecast</span><span data-lang="zh">仅作思想实验 · 不是模型或预测</span></p>
             <label class="slider-label" for="power-slider"><span data-lang="en">Capability level</span><span data-lang="zh">能力等级</span><strong id="power-value">72</strong></label>
             <input class="power-slider" id="power-slider" type="range" min="10" max="100" value="72" aria-describedby="power-description">
             <span id="power-description" hidden>Changes the visual size of the AI capability field while the human legitimacy center remains fixed.</span>
@@ -1202,11 +1509,11 @@
     <section class="section" id="access-control">
       <div class="shell split-grid">
         <div class="split-copy">
-          <p class="section-index">04 / Political economy</p>
-          <h2 data-lang="en">Access can spread while control stays concentrated.</h2>
-          <h2 data-lang="zh">使用权可以扩散，控制权仍可能集中。</h2>
-          <p data-lang="en">Universal access is not universal governance. A widely used AI layer may still concentrate training, updates, audits, interruption, pricing, and standard-setting in a narrow institutional complex.</p>
-          <p data-lang="zh">普遍使用不等于普遍治理。即使所有人都能使用 AI，训练、更新、审计、中止、定价与标准制定仍可能集中在狭窄的机构复合体中。</p>
+          <p class="section-index">04 / Structural question</p>
+          <h2 data-lang="en">Does wider access actually distribute power?</h2>
+          <h2 data-lang="zh">更多人能使用，真的等于权力更分散吗？</h2>
+          <p data-lang="en">A possibility to investigate: access may spread while control over training, updates, audits, interruption, pricing, and standards remains concentrated. The distinction matters; its real-world extent requires evidence.</p>
+          <p data-lang="zh">一个需要研究的可能性是：使用权可以扩散，而训练、更新、审计、中止、定价与标准制定权仍然集中。这个区分很重要，但现实程度必须由证据回答。</p>
         </div>
         <div class="split-diagram" data-observe="metrics" aria-label="Access-control split diagram">
           <div class="metric metric-access">
@@ -1219,6 +1526,8 @@
             <div class="metric-track"><div class="metric-fill"></div></div>
             <div class="metric-nodes" aria-hidden="true"><i></i></div>
           </div>
+          <p class="diagram-disclaimer" data-lang="en">Illustrative contrast only. Bar lengths are not empirical measurements.</p>
+          <p class="diagram-disclaimer" data-lang="zh">仅为结构对照示意；条形长度不是经验测量数据。</p>
         </div>
       </div>
     </section>
@@ -1226,34 +1535,34 @@
     <section class="section" id="concepts">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">05 / Working concepts</p>
-          <h2 data-lang="en">A vocabulary for the structure, not a claim of completion.</h2>
-          <h2 data-lang="zh">为结构建立词汇，而不是宣称理论已经完成。</h2>
+          <p class="section-index">05 / Vocabulary in formation</p>
+          <h2 data-lang="en">Names for questions the research still has to earn.</h2>
+          <h2 data-lang="zh">先给问题命名，再用研究让这些名字站得住。</h2>
         </div>
         <div class="concept-grid">
           <article class="concept-card">
-            <p class="card-kicker">Failure mode</p>
+            <p class="card-kicker">Provisional term</p>
             <h3>Subject-as-Burden Inversion</h3>
-            <p data-lang="en">Humans cease to be the subject of the mission and become the obstacle to its optimization.</p>
-            <p data-lang="zh">人类不再是任务的主体，而成为任务优化的障碍。</p>
+            <p data-lang="en">A working label for the risk that humans shift from being the purpose of a system to being treated as friction against its optimization.</p>
+            <p data-lang="zh">暂时用来描述一种风险：人类从系统服务的目的，变成系统优化眼中的阻力。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Failure mode</p>
+            <p class="card-kicker">Provisional term</p>
             <h3>Delegated Displacement</h3>
-            <p data-lang="en">Humans remain formally present while agency and judgment move to AI systems or the institutions that control them.</p>
-            <p data-lang="zh">人类形式上仍在场，但行动权与判断权已经转移给 AI 或控制 AI 的机构。</p>
+            <p data-lang="en">A working label for formal human presence alongside the gradual migration of real judgment and agency elsewhere.</p>
+            <p data-lang="zh">暂时用来描述：人类形式上仍在场，但真实判断权与行动权逐渐迁移到别处。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Governance split</p>
+            <p class="card-kicker">Provisional term</p>
             <h3>Access-Control Split</h3>
-            <p data-lang="en">Distributed use can coexist with concentrated rights over training, updating, auditing, interruption, and standards.</p>
-            <p data-lang="zh">分散的使用权，可以与集中的训练、更新、审计、中止和标准制定权并存。</p>
+            <p data-lang="en">A distinction to test between who can use an AI system and who can train, update, audit, interrupt, and govern it.</p>
+            <p data-lang="zh">一个需要验证的区分：谁能使用 AI，与谁能训练、更新、审计、中止和治理它，并不是同一件事。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Core configuration</p>
-            <h3>Conditional Agency</h3>
-            <p data-lang="en">Advanced AI's continued agency is conditional rather than a default, permanent, or mortgageable substrate for civilization.</p>
-            <p data-lang="zh">高级 AI 的持续行动能力是有条件的，而不是文明默认、永久、可抵押的基础设施。</p>
+            <p class="card-kicker">Research direction</p>
+            <h3>Non-Sovereign Superintelligence</h3>
+            <p data-lang="en">The umbrella question: can intelligence become extremely capable without acquiring final authority over human-critical purposes and institutions?</p>
+            <p data-lang="zh">总问题：智能能否变得极其强大，却不获得对人类关键目的与制度的最终权威？</p>
           </article>
         </div>
       </div>
@@ -1284,11 +1593,16 @@
     <section class="section" id="research">
       <div class="shell research-cta">
         <div>
-          <p class="section-index">07 / Open notebook</p>
-          <h2 data-lang="en">The framework is early. The questions are already concrete.</h2>
-          <h2 data-lang="zh">框架仍在早期，问题已经足够具体。</h2>
-          <p data-lang="en">Current work focuses on literature verification, objection mapping, formal vocabulary, institutional capture, dependency fragility, and the distinction between a philosophical constraint and a mirror-agent method candidate.</p>
-          <p data-lang="zh">当前工作聚焦文献核验、反驳地图、形式化术语、制度俘获、依赖脆弱性，以及哲学约束与镜像智能体方法候选之间的区分。</p>
+          <p class="section-index">07 / What happens next</p>
+          <h2 data-lang="en">The research has not begun in earnest. This is the starting line.</h2>
+          <h2 data-lang="zh">研究还没有真正展开。这里是起跑线。</h2>
+          <p data-lang="en">The public site should make the question legible without pretending that terminology, evidence, or mechanisms are settled. Future work will determine which parts survive contact with the literature and serious objections.</p>
+          <p data-lang="zh">这个公开网站只负责把问题讲清楚，不假装术语、证据或机制已经成熟。后续研究将决定哪些想法能经受文献与严肃反驳的检验。</p>
+          <ol class="research-agenda">
+            <li><span data-lang="en">Build and verify the literature map.</span><span data-lang="zh">建立并核验文献地图。</span></li>
+            <li><span data-lang="en">Separate philosophical claims from governance and method candidates.</span><span data-lang="zh">区分哲学命题、治理方向与方法候选。</span></li>
+            <li><span data-lang="en">Develop the strongest objections before expanding the theory.</span><span data-lang="zh">在扩展理论前，先建立最有力的反驳。</span></li>
+          </ol>
         </div>
         <a class="repo-card" href="https://github.com/Guojiz/luoji-architecture" target="_blank" rel="noreferrer">
           <span>GitHub / Research source ↗</span>
