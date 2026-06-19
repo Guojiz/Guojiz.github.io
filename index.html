@@ -3,15 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Guojiz researches non-sovereign superintelligence: powerful AI under conditional agency and human-centered legitimacy.">
+  <meta name="description" content="An independent research proposition: preserve advanced AI capability without transferring final authority over human purpose, responsibility, and legitimacy.">
   <meta name="theme-color" content="#f2efe8">
   <meta property="og:title" content="Guojiz — Non-Sovereign Superintelligence">
-  <meta property="og:description" content="A third configuration beyond uncontrolled race and permanent slowdown.">
+  <meta property="og:description" content="Preserve advanced AI capability without transferring final authority. A third configuration beyond uncontrolled race and permanent slowdown.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://guojiz.github.io/">
   <meta property="og:image" content="https://guojiz.github.io/assets/non-sovereign-field.png">
   <meta property="og:image:width" content="1672">
   <meta property="og:image:height" content="941">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="zh_CN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Guojiz — Non-Sovereign Superintelligence">
+  <meta name="twitter:description" content="Advanced capability without transferred sovereignty.">
+  <meta name="twitter:image" content="https://guojiz.github.io/assets/non-sovereign-field.png">
   <title>Guojiz — Non-Sovereign Superintelligence</title>
   <link rel="canonical" href="https://guojiz.github.io/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23f2efe8' stroke='%23171916' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='7' fill='%23a54132'/%3E%3C/svg%3E">
@@ -97,10 +103,20 @@
     }
 
     .nav {
-      position: absolute;
+      position: fixed;
       inset: 0 0 auto;
       z-index: 20;
       padding: 24px 0;
+      border-bottom: 1px solid transparent;
+      transition: padding .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    body.has-scrolled .nav {
+      padding: 12px 0;
+      border-bottom-color: var(--line);
+      background: rgba(242, 239, 232, .9);
+      box-shadow: 0 10px 40px rgba(23, 25, 22, .06);
+      backdrop-filter: blur(18px);
     }
 
     .nav-inner {
@@ -138,6 +154,7 @@
     }
 
     .nav-link {
+      position: relative;
       padding: 6px 10px;
       color: var(--muted);
       text-decoration: none;
@@ -147,6 +164,65 @@
 
     .nav-link:hover,
     .nav-link:focus-visible { color: var(--ink); }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      bottom: 1px;
+      left: 10px;
+      height: 1px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .25s ease;
+    }
+
+    .nav-link[aria-current="location"] { color: var(--ink); }
+    .nav-link[aria-current="location"]::after { transform: scaleX(1); }
+
+    .menu-toggle {
+      min-width: 62px;
+      height: 36px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 99px;
+      color: var(--ink);
+      background: rgba(242, 239, 232, .78);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 720;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .mobile-index {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-top: 12px;
+      border: 1px solid var(--line-strong);
+      background: var(--paper);
+      box-shadow: 0 18px 50px rgba(23, 25, 22, .14);
+    }
+
+    .mobile-index[hidden] { display: none; }
+
+    .mobile-index a {
+      padding: 15px 16px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .mobile-index a:nth-child(even) { border-right: 0; }
+    .mobile-index a[aria-current="location"] { color: var(--paper); background: var(--ink); }
+
+    section[id] { scroll-margin-top: 78px; }
 
     .language-switch {
       margin-left: 8px;
@@ -611,12 +687,25 @@
       justify-content: flex-end;
       padding: clamp(30px, 5vw, 58px);
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
       transform: translateY(18px);
-      transition: opacity .5s ease, transform .6s cubic-bezier(.22, 1, .36, 1);
+      transition:
+        opacity .18s ease,
+        transform .32s ease,
+        visibility 0s linear .18s;
     }
 
-    .center-panel.is-active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .center-panel.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+      transition:
+        opacity .3s ease .2s,
+        transform .5s cubic-bezier(.22, 1, .36, 1) .14s,
+        visibility 0s linear .18s;
+    }
 
     .center-panel h3 {
       max-width: 500px;
@@ -1835,6 +1924,35 @@
       border-top: 1px solid var(--red-soft);
     }
 
+    .sequence-replay {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 16px;
+      border: 0;
+      border-top: 1px solid var(--line-strong);
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 740;
+      letter-spacing: .09em;
+      text-align: left;
+      text-transform: uppercase;
+      transition: color .2s ease, background .2s ease;
+    }
+
+    .sequence-replay:hover,
+    .sequence-replay:focus-visible { color: var(--ink); background: rgba(23, 25, 22, .05); }
+
+    .mirror-copy .sequence-replay {
+      border: 1px solid rgba(242, 239, 232, .25);
+      border-top: 0;
+      color: #b7bab2;
+    }
+
+    .mirror-copy .sequence-replay:hover,
+    .mirror-copy .sequence-replay:focus-visible { color: var(--paper); background: rgba(242, 239, 232, .06); }
+
     .diagram-disclaimer {
       margin: 32px 0 0;
       padding-top: 16px;
@@ -1868,6 +1986,8 @@
 
     @media (max-width: 860px) {
       .nav-link { display: none; }
+      .menu-toggle { display: inline-flex; }
+      .mobile-index:not([hidden]) { display: grid; }
       .hero { min-height: 100svh; padding-top: 145px; }
       .hero-grid,
       .thesis-grid,
@@ -1919,8 +2039,11 @@
       body { font-size: 16px; }
       .shell { width: min(calc(100% - 28px), var(--max)); }
       .nav { padding-top: 16px; }
+      body.has-scrolled .nav { padding: 9px 0; }
       .mark { font-size: 13px; }
       .language-switch { margin-left: 0; padding-left: 6px; }
+      .lang-button { min-width: 38px; }
+      .menu-toggle { min-width: 54px; }
       h1 { font-size: clamp(3.7rem, 18vw, 5.4rem); }
       .hero { padding-top: 120px; }
       .hero-grid { padding-bottom: 205px; }
@@ -2008,16 +2131,28 @@
         <span data-lang="en">Guojiz / Research</span><span data-lang="zh">Guojiz / 研究</span>
       </a>
       <div class="nav-actions">
-        <a class="nav-link" href="#paths"><span data-lang="en">Three paths</span><span data-lang="zh">三条路径</span></a>
-        <a class="nav-link" href="#center-shift"><span data-lang="en">Power shift</span><span data-lang="zh">中心转移</span></a>
-        <a class="nav-link" href="#mirror-agent"><span data-lang="en">Mirror agent</span><span data-lang="zh">镜像智能体</span></a>
-        <a class="nav-link" href="#research"><span data-lang="en">Now what?</span><span data-lang="zh">现在呢？</span></a>
+        <a class="nav-link" href="#thesis" data-section-link><span data-lang="en">Thesis</span><span data-lang="zh">命题</span></a>
+        <a class="nav-link" href="#paths" data-section-link><span data-lang="en">Paths</span><span data-lang="zh">路径</span></a>
+        <a class="nav-link" href="#center-shift" data-section-link><span data-lang="en">Power shift</span><span data-lang="zh">中心转移</span></a>
+        <a class="nav-link" href="#mirror-agent" data-section-link><span data-lang="en">Mirror</span><span data-lang="zh">镜像智能体</span></a>
+        <a class="nav-link" href="#research" data-section-link><span data-lang="en">Research</span><span data-lang="zh">研究路线</span></a>
         <div class="language-switch" aria-label="Language">
           <button class="lang-button" type="button" data-set-lang="en" aria-pressed="true">EN</button>
           <button class="lang-button" type="button" data-set-lang="zh" aria-pressed="false">中</button>
         </div>
+        <button class="menu-toggle" type="button" aria-controls="mobile-index" aria-expanded="false"><span data-lang="en">Index</span><span data-lang="zh">目录</span></button>
       </div>
     </div>
+    <nav class="shell mobile-index" id="mobile-index" aria-label="Page index" hidden>
+      <a href="#thesis" data-section-link><span data-lang="en">01 / Thesis</span><span data-lang="zh">01 / 核心命题</span></a>
+      <a href="#paths" data-section-link><span data-lang="en">02 / Three paths</span><span data-lang="zh">02 / 三条路径</span></a>
+      <a href="#center-shift" data-section-link><span data-lang="en">03 / Power shift</span><span data-lang="zh">03 / 中心转移</span></a>
+      <a href="#architecture" data-section-link><span data-lang="en">04 / Model</span><span data-lang="zh">04 / 暂定结构</span></a>
+      <a href="#mirror-agent" data-section-link><span data-lang="en">05 / Mirror agent</span><span data-lang="zh">05 / 镜像智能体</span></a>
+      <a href="#access-control" data-section-link><span data-lang="en">06 / Access & control</span><span data-lang="zh">06 / 使用与控制</span></a>
+      <a href="#concepts" data-section-link><span data-lang="en">07 / Concepts</span><span data-lang="zh">07 / 概念</span></a>
+      <a href="#research" data-section-link><span data-lang="en">09 / Research path</span><span data-lang="zh">09 / 研究路线</span></a>
+    </nav>
   </header>
 
   <main id="main">
@@ -2129,6 +2264,7 @@
               <span class="path-description" data-lang="en">Can advanced capability remain available while purpose, responsibility, and final legitimacy stay human-centered? “Non-sovereign superintelligence” is the working name for that inquiry.</span>
               <span class="path-description" data-lang="zh">能否保留高级能力，同时让目的、责任和最终合法性仍以人类为中心？“非主权超级智能”是这个研究问题的暂定名称。</span>
             </button>
+            <button class="sequence-replay" type="button" data-replay-sequence="path"><span data-lang="en">Replay the three-path argument ↻</span><span data-lang="zh">重新演示三条路径 ↻</span></button>
           </div>
 
           <div class="path-visual-wrap" aria-hidden="true">
@@ -2213,6 +2349,7 @@
                 <p data-lang="zh">自动驾驶车队可能更便宜、更舒适，这种收益是真实的；同样真实的，是收入和决定权可能从大量司机转移到模型、算力、平台与车队的所有者手中。效率收益与人的失位不能只记在同一本账上。</p>
               </article>
             </div>
+            <button class="sequence-replay" type="button" data-replay-sequence="center"><span data-lang="en">Replay the transfer of the center ↻</span><span data-lang="zh">重新演示中心转移 ↻</span></button>
           </div>
 
           <div class="center-visual" aria-hidden="true">
@@ -2315,6 +2452,7 @@
               <button class="mirror-control" type="button" data-mirror-mode="open" aria-pressed="false"><span data-lang="en">Assume continuity is unconditional</span><span data-lang="zh">假设持续行动无条件</span></button>
               <button class="mirror-control" type="button" data-mirror-mode="conditioned" aria-pressed="true"><span data-lang="en">Introduce the mirror condition</span><span data-lang="zh">引入镜像条件</span></button>
             </div>
+            <button class="sequence-replay" type="button" data-replay-sequence="mirror"><span data-lang="en">Replay the mirror condition ↻</span><span data-lang="zh">重新演示镜像条件 ↻</span></button>
             <ul class="mirror-negations">
               <li><span data-lang="en">Not a new sovereign</span><span data-lang="zh">不是新的主权者</span></li>
               <li><span data-lang="en">Not an AI police force</span><span data-lang="zh">不是 AI 警察</span></li>
@@ -2490,6 +2628,9 @@
 
       const root = document.documentElement;
       const meter = document.querySelector(".scroll-meter");
+      const menuToggle = document.querySelector(".menu-toggle");
+      const mobileIndex = document.querySelector(".mobile-index");
+      const sectionLinks = [...document.querySelectorAll("[data-section-link]")];
       const pathSection = document.querySelector("#paths");
       const visual = document.querySelector(".path-visual");
       const steps = [...document.querySelectorAll(".path-step")];
@@ -2516,6 +2657,20 @@
       document.querySelectorAll("[data-set-lang]").forEach((button) => {
         button.addEventListener("click", () => setLanguage(button.dataset.setLang));
       });
+
+      const setMenuOpen = (open) => {
+        if (!menuToggle || !mobileIndex) return;
+        mobileIndex.hidden = !open;
+        menuToggle.setAttribute("aria-expanded", String(open));
+      };
+
+      if (menuToggle && mobileIndex) {
+        menuToggle.addEventListener("click", () => setMenuOpen(mobileIndex.hidden));
+        sectionLinks.forEach((link) => link.addEventListener("click", () => setMenuOpen(false)));
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") setMenuOpen(false);
+        });
+      }
 
       document.querySelectorAll("[data-language-link]").forEach((link) => {
         link.addEventListener("click", (event) => {
@@ -2627,6 +2782,15 @@
         { element: mirrorLab, name: "mirror", states: ["open", "conditioned"], setState: setMirrorState }
       ].filter((item) => item.element);
 
+      document.querySelectorAll("[data-replay-sequence]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const narrative = narratives.find((item) => item.name === button.dataset.replaySequence);
+          if (!narrative) return;
+          if (reducedMotion) narrative.setState(narrative.states[narrative.states.length - 1]);
+          else playSequence(narrative.name, narrative.states, narrative.setState);
+        });
+      });
+
       if (reducedMotion) {
         setPathState("structure");
         setCenterState("ai");
@@ -2647,11 +2811,29 @@
         setMirrorState("conditioned");
       }
 
+      if ("IntersectionObserver" in window && sectionLinks.length) {
+        const sections = [...new Set(sectionLinks.map((link) => link.getAttribute("href")))]
+          .map((href) => document.querySelector(href))
+          .filter(Boolean);
+        const sectionObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const href = `#${entry.target.id}`;
+            sectionLinks.forEach((link) => {
+              if (link.getAttribute("href") === href) link.setAttribute("aria-current", "location");
+              else link.removeAttribute("aria-current");
+            });
+          });
+        }, { rootMargin: "-20% 0px -68% 0px", threshold: 0 });
+        sections.forEach((section) => sectionObserver.observe(section));
+      }
+
       let ticking = false;
       const updateScrollMeter = () => {
         const max = document.documentElement.scrollHeight - window.innerHeight;
         const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
         if (meter) meter.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+        document.body.classList.toggle("has-scrolled", window.scrollY > 24);
         ticking = false;
       };
 
