@@ -171,9 +171,14 @@
       background: var(--ink);
     }
 
-    [data-lang="zh"] { display: none; }
-    html[data-language="zh"] [data-lang="en"] { display: none; }
-    html[data-language="zh"] [data-lang="zh"] { display: revert; }
+    html[data-language="en"] [data-lang="zh"],
+    html[data-language="zh"] [data-lang="en"] { display: none !important; }
+    html[data-language="en"] [data-lang="en"],
+    html[data-language="zh"] [data-lang="zh"] { display: revert !important; }
+    html[data-language="en"] .path-title[data-lang="en"],
+    html[data-language="en"] .path-description[data-lang="en"],
+    html[data-language="zh"] .path-title[data-lang="zh"],
+    html[data-language="zh"] .path-description[data-lang="zh"] { display: block !important; }
 
     .hero {
       min-height: 100svh;
@@ -331,61 +336,78 @@
 
     .path-layout {
       display: grid;
-      grid-template-columns: minmax(280px, .72fr) minmax(420px, 1.28fr);
-      gap: clamp(40px, 7vw, 100px);
-      align-items: start;
+      grid-template-columns: minmax(300px, .78fr) minmax(420px, 1.22fr);
+      gap: clamp(40px, 6vw, 82px);
+      align-items: center;
     }
 
-    .path-steps { padding-bottom: 10vh; }
+    .path-steps {
+      display: grid;
+      align-content: center;
+      padding: 0;
+      border-bottom: 1px solid var(--line-strong);
+    }
 
     .path-step {
-      min-height: 56vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      max-width: 470px;
-      padding: 60px 0;
-      opacity: .38;
-      transition: opacity .45s ease;
+      min-height: 0;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      grid-template-rows: auto auto;
+      gap: 8px 18px;
+      padding: 26px 18px 26px 0;
+      border: 0;
+      border-top: 1px solid var(--line-strong);
+      color: var(--ink);
+      background: transparent;
+      opacity: .48;
+      cursor: pointer;
+      text-align: left;
+      transition: opacity .25s ease, background .25s ease, padding .25s ease;
     }
 
-    .path-step.is-active { opacity: 1; }
+    .path-step:hover { opacity: .78; }
+    .path-step.is-active {
+      padding-left: 14px;
+      background: linear-gradient(90deg, rgba(165, 65, 50, .075), transparent 78%);
+      opacity: 1;
+    }
 
-    .path-step:focus-visible { outline: none; }
-    .path-step:focus-visible h3 {
-      text-decoration: underline;
-      text-decoration-color: var(--red-soft);
-      text-decoration-thickness: 1px;
-      text-underline-offset: 8px;
+    .path-step:focus-visible {
+      outline: 1px solid var(--red);
+      outline-offset: 3px;
     }
 
     .path-number {
-      margin-bottom: 28px;
+      grid-row: 1 / 3;
+      margin: 4px 0 0;
       color: var(--red);
       font-family: var(--serif);
       font-size: 1.1rem;
       font-style: italic;
     }
 
-    .path-step h3 {
-      margin: 0 0 22px;
+    .path-title {
+      display: block;
+      margin: 0;
       font-family: var(--serif);
-      font-size: clamp(2.2rem, 4vw, 4.5rem);
+      font-size: clamp(1.65rem, 2.5vw, 2.7rem);
       font-weight: 500;
-      letter-spacing: -.05em;
-      line-height: 1;
+      letter-spacing: -.035em;
+      line-height: 1.05;
     }
 
-    .path-step p {
+    .path-description {
+      display: block;
       margin: 0;
       color: var(--muted);
-      font-size: 15px;
+      font-size: 13px;
+      line-height: 1.65;
     }
 
     .path-visual-wrap {
-      position: sticky;
-      top: 10vh;
-      min-height: 80vh;
+      position: relative;
+      min-height: 0;
       display: grid;
       place-items: center;
     }
@@ -710,6 +732,199 @@
       transform-origin: right;
     }
 
+    .mirror-lab {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mirror-lab::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 77% 24%, rgba(124, 165, 181, .14), transparent 34%),
+        linear-gradient(120deg, transparent 45%, rgba(255, 255, 255, .025));
+    }
+
+    .mirror-copy,
+    .mirror-figure { position: relative; z-index: 1; }
+
+    .mirror-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 34px;
+      border: 1px solid rgba(242, 239, 232, .25);
+    }
+
+    .mirror-thesis {
+      margin: 24px 0 0;
+      padding-left: 18px;
+      border-left: 1px solid var(--red-soft);
+      color: var(--white);
+      font-family: var(--serif);
+      font-size: clamp(1.15rem, 1.7vw, 1.45rem);
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .mirror-control {
+      min-height: 58px;
+      padding: 12px 15px;
+      border: 0;
+      border-right: 1px solid rgba(242, 239, 232, .25);
+      color: #b7bab2;
+      background: transparent;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 720;
+      letter-spacing: .08em;
+      line-height: 1.4;
+      text-transform: uppercase;
+      transition: color .2s ease, background .2s ease;
+    }
+
+    .mirror-control:last-child { border-right: 0; }
+    .mirror-control[aria-pressed="true"] {
+      color: var(--ink);
+      background: var(--paper);
+    }
+    .mirror-control:focus-visible { outline: 2px solid var(--red-soft); outline-offset: 2px; }
+
+    .mirror-negations {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mirror-negations li {
+      padding-top: 10px;
+      border-top: 1px solid rgba(242, 239, 232, .2);
+      color: #aeb0a9;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .mirror-figure {
+      width: min(100%, 470px);
+      aspect-ratio: 1;
+      margin-inline: auto;
+      border: 1px solid rgba(242, 239, 232, .18);
+      background: radial-gradient(circle at 62% 44%, rgba(124, 165, 181, .08), transparent 46%);
+    }
+
+    .mirror-links {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .mirror-link {
+      fill: none;
+      stroke: rgba(242, 239, 232, .35);
+      stroke-width: 1;
+      stroke-dasharray: 4 7;
+      transition: opacity .65s ease, stroke-dashoffset .65s ease;
+    }
+
+    .mirror-field {
+      position: absolute;
+      top: 34%;
+      left: 66%;
+      width: 48%;
+      aspect-ratio: 1;
+      border: 1px solid var(--blue-soft);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform .8s cubic-bezier(.22, 1, .36, 1), box-shadow .8s ease;
+    }
+
+    .mirror-field::before,
+    .mirror-field::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .mirror-field::before {
+      inset: -16%;
+      border: 1px dashed rgba(124, 165, 181, .38);
+      animation: spin 12s linear infinite;
+    }
+
+    .mirror-field::after {
+      inset: 24%;
+      background: radial-gradient(circle, rgba(124, 165, 181, .35), rgba(124, 165, 181, .04) 58%, transparent 60%);
+    }
+
+    .mirror-node {
+      position: absolute;
+      z-index: 3;
+      width: 92px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(242, 239, 232, .4);
+      border-radius: 50%;
+      color: var(--paper);
+      background: var(--ink);
+      transform: translate(-50%, -50%);
+      font-size: 9px;
+      font-weight: 720;
+      letter-spacing: .09em;
+      line-height: 1.45;
+      text-align: center;
+      text-transform: uppercase;
+      transition: opacity .7s ease, transform .8s cubic-bezier(.22, 1, .36, 1), border-color .7s ease;
+    }
+
+    .mirror-human { top: 56%; left: 23%; border-color: var(--red-soft); }
+    .mirror-ai { top: 34%; left: 66%; border-color: var(--blue-soft); }
+    .mirror-agent { top: 75%; left: 69%; border-color: var(--paper); }
+
+    .mirror-caption {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      left: 18px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(242, 239, 232, .18);
+      color: #8f938c;
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .mirror-lab[data-mirror-state="open"] .mirror-agent {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.35);
+    }
+    .mirror-lab[data-mirror-state="open"] .mirror-human {
+      opacity: .42;
+      transform: translate(-70%, -40%) scale(.86);
+    }
+    .mirror-lab[data-mirror-state="open"] .mirror-ai {
+      transform: translate(-45%, -55%) scale(1.25);
+    }
+    .mirror-lab[data-mirror-state="open"] .mirror-field {
+      box-shadow: 0 0 90px rgba(124, 165, 181, .22);
+      transform: translate(-45%, -55%) scale(1.24);
+    }
+    .mirror-lab[data-mirror-state="open"] .mirror-link { opacity: .08; }
+    .mirror-lab[data-mirror-state="open"] .mirror-field::before { animation-duration: 3s; }
+
+    .mirror-lab[data-mirror-state="conditioned"] .mirror-link {
+      opacity: .9;
+      animation: dash 4s linear infinite;
+    }
+    .mirror-lab[data-mirror-state="conditioned"] .mirror-field {
+      box-shadow: 0 0 55px rgba(124, 165, 181, .1);
+    }
+
     .split-grid {
       display: grid;
       grid-template-columns: minmax(280px, .72fr) minmax(420px, 1.28fr);
@@ -846,6 +1061,10 @@
       font-size: clamp(6rem, 14vw, 13rem);
       line-height: .8;
       white-space: nowrap;
+    }
+
+    html[data-language="zh"] .boundary::after {
+      content: "非操作性 / 概念研究 / 非操作性 / 概念研究";
     }
 
     .boundary .section-index { color: #bed2d9; }
@@ -1183,19 +1402,17 @@
       .epistemic-grid { grid-template-columns: repeat(2, 1fr); }
       .epistemic-card:nth-child(2) { border-right: 0; }
       .epistemic-card:nth-child(-n + 2) { border-bottom: 1px solid var(--line-strong); }
-      .path-steps { padding-bottom: 0; }
       .path-layout { position: relative; }
-      .path-step { min-height: 52vh; }
+      .path-visual-wrap { grid-row: 1; }
+      .path-steps { grid-row: 2; padding: 0; }
+      .path-step { min-height: 0; }
       .path-visual-wrap {
-        position: sticky;
-        top: 10vh;
-        z-index: 0;
-        grid-row: 1;
-        min-height: 58vh;
-        opacity: .26;
-        pointer-events: none;
+        position: relative;
+        top: auto;
+        min-height: 0;
+        opacity: 1;
+        pointer-events: auto;
       }
-      .path-steps { position: relative; z-index: 2; }
       .path-visual { background: var(--paper); }
       .architecture-grid { grid-template-columns: 1fr; }
       .architecture-card {
@@ -1205,6 +1422,7 @@
       }
       .architecture-card:last-child { border-bottom: 0; }
       .capability-figure { width: min(100%, 410px); }
+      .mirror-figure { width: min(100%, 440px); }
     }
 
     @media (max-width: 600px) {
@@ -1241,12 +1459,18 @@
       .epistemic-card:last-child { border-bottom: 0; }
       .section-head { grid-template-columns: 1fr; gap: 20px; }
       h2 { margin-top: 0; }
-      .path-step { min-height: 62vh; text-shadow: 0 1px 6px var(--paper); }
-      .path-visual-wrap { min-height: 50vh; }
+      .path-step { min-height: 0; text-shadow: none; padding-block: 22px; }
+      .path-visual-wrap { min-height: 0; }
       .path-visual::before { padding-top: 100%; }
       .visual-caption { font-size: 8px; }
       .architecture-card { padding: 24px; }
       .capability-lab { margin-inline: -14px; padding: 58px 24px; }
+      .mirror-controls { grid-template-columns: 1fr; }
+      .mirror-control { border-right: 0; border-bottom: 1px solid rgba(242, 239, 232, .25); }
+      .mirror-control:last-child { border-bottom: 0; }
+      .mirror-negations { grid-template-columns: 1fr; }
+      .mirror-node { width: 76px; font-size: 8px; }
+      .mirror-caption { right: 12px; left: 12px; }
       .fixed-mandate { display: none; }
       .legitimacy-core { width: 76px; height: 76px; font-size: 8px; }
       .split-diagram { padding: 24px 18px; }
@@ -1275,18 +1499,19 @@
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main"><span data-lang="en">Skip to content</span><span data-lang="zh">跳到正文</span></a>
   <div class="scroll-meter" aria-hidden="true"></div>
 
   <header class="nav">
     <div class="shell nav-inner">
       <a class="mark" href="#top" aria-label="Guojiz home">
         <span class="mark-glyph">GZ</span>
-        <span>Guojiz / Research</span>
+        <span data-lang="en">Guojiz / Research</span><span data-lang="zh">Guojiz / 研究</span>
       </a>
       <div class="nav-actions">
         <a class="nav-link" href="#paths"><span data-lang="en">Three paths</span><span data-lang="zh">三条路径</span></a>
         <a class="nav-link" href="#architecture"><span data-lang="en">Architecture</span><span data-lang="zh">结构</span></a>
+        <a class="nav-link" href="#mirror-agent"><span data-lang="en">Mirror agent</span><span data-lang="zh">镜像智能体</span></a>
         <a class="nav-link" href="#concepts"><span data-lang="en">Concepts</span><span data-lang="zh">概念</span></a>
         <div class="language-switch" aria-label="Language">
           <button class="lang-button" type="button" data-set-lang="en" aria-pressed="true">EN</button>
@@ -1300,11 +1525,11 @@
     <section class="hero" id="top">
       <figure class="hero-art" aria-hidden="true">
         <img src="assets/non-sovereign-field.webp" alt="" width="1672" height="941" fetchpriority="high">
-        <figcaption class="hero-art-caption">Generated concept study · not a system diagram</figcaption>
+        <figcaption class="hero-art-caption"><span data-lang="en">Generated concept study · not a system diagram</span><span data-lang="zh">生成式概念图 · 非系统结构图</span></figcaption>
       </figure>
       <div class="shell hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Independent AI governance research direction · Phase 0</p>
+          <p class="eyebrow"><span data-lang="en">Independent AI governance research direction · Phase 0</span><span data-lang="zh">独立 AI 治理研究方向 · 阶段 0</span></p>
           <h1 data-lang="en">Capability can grow.<br><span class="accent">Sovereignty must not transfer.</span></h1>
           <h1 data-lang="zh">能力可以增长，<br><span class="accent">主权不能转移。</span></h1>
           <p class="hero-deck" data-lang="en">An early research proposition: advanced AI may become powerful, useful, even indispensable—without becoming the final center of purpose, responsibility, and legitimacy.</p>
@@ -1320,9 +1545,9 @@
           </a>
         </aside>
         <div class="hero-axis" aria-label="Research route">
-          <div class="axis-item"><strong>01 / Observe</strong><br><span data-lang="en">Where can humans lose the center?</span><span data-lang="zh">人类会在哪里失去中心？</span></div>
-          <div class="axis-item"><strong>02 / Distinguish</strong><br><span data-lang="en">Capability is not legitimacy</span><span data-lang="zh">能力不等于合法性</span></div>
-          <div class="axis-item"><strong>03 / Research</strong><br><span data-lang="en">Test a third configuration</span><span data-lang="zh">检验第三种结构</span></div>
+          <div class="axis-item"><strong data-lang="en">01 / Observe</strong><strong data-lang="zh">01 / 观察</strong><br><span data-lang="en">Where can humans lose the center?</span><span data-lang="zh">人类会在哪里失去中心？</span></div>
+          <div class="axis-item"><strong data-lang="en">02 / Distinguish</strong><strong data-lang="zh">02 / 区分</strong><br><span data-lang="en">Capability is not legitimacy</span><span data-lang="zh">能力不等于合法性</span></div>
+          <div class="axis-item"><strong data-lang="en">03 / Research</strong><strong data-lang="zh">03 / 研究</strong><br><span data-lang="en">Test a third configuration</span><span data-lang="zh">检验第三种结构</span></div>
         </div>
       </div>
     </section>
@@ -1330,7 +1555,7 @@
     <section class="section" id="thesis">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">01 / Starting question</p>
+          <p class="section-index"><span data-lang="en">01 / Starting question</span><span data-lang="zh">01 / 起点问题</span></p>
           <h2 data-lang="en">What must remain human when intelligence no longer is?</h2>
           <h2 data-lang="zh">当智能不再是人类专属，什么仍必须属于人类？</h2>
         </div>
@@ -1338,35 +1563,35 @@
           <p class="lead-claim" data-lang="en">The project begins from a distinction: greater capability does not, by itself, create legitimate authority over the people and purposes that capability is meant to serve.</p>
           <p class="lead-claim" data-lang="zh">研究从一个区分开始：能力更强，并不会自动获得支配其所服务的人类与目的的合法权威。</p>
           <div class="side-note">
-            <p class="claim-tag">Starting observation / 起点观察</p>
+            <p class="claim-tag"><span data-lang="en">Starting observation</span><span data-lang="zh">起点观察</span></p>
             <p data-lang="en">The concern is structural before it is intentional: speed, dependence, delegation, and concentrated control may displace human agency even without a hostile AI.</p>
             <p data-lang="zh">这首先是结构问题，而不是动机猜测：即使 AI 没有敌意，速度、依赖、委托和控制集中也可能让人类失去行动位置。</p>
           </div>
         </div>
         <div class="epistemic-grid" aria-label="Research status">
           <article class="epistemic-card">
-            <span class="claim-tag">Scope / 已确定</span>
+            <span class="claim-tag"><span data-lang="en">Scope</span><span data-lang="zh">已确定范围</span></span>
             <strong data-lang="en">Conceptual AI governance research</strong>
             <strong data-lang="zh">AI 治理概念研究</strong>
             <p data-lang="en">Non-operational, public-facing, and bounded away from harmful implementation details.</p>
             <p data-lang="zh">保持非操作性与公开可讨论性，不进入危险实现细节。</p>
           </article>
           <article class="epistemic-card">
-            <span class="claim-tag">Proposition / 工作命题</span>
+            <span class="claim-tag"><span data-lang="en">Proposition</span><span data-lang="zh">工作命题</span></span>
             <strong data-lang="en">Powerful AI need not be sovereign AI</strong>
             <strong data-lang="zh">强 AI 不必成为主权 AI</strong>
             <p data-lang="en">This is the proposition to investigate, not a conclusion already demonstrated.</p>
             <p data-lang="zh">这是要研究的命题，不是已经被证明的结论。</p>
           </article>
           <article class="epistemic-card">
-            <span class="claim-tag">Unknown / 尚未解决</span>
+            <span class="claim-tag"><span data-lang="en">Unknown</span><span data-lang="zh">尚未解决</span></span>
             <strong data-lang="en">What makes the separation credible?</strong>
             <strong data-lang="zh">怎样让这种分离真正可信？</strong>
             <p data-lang="en">Institutional, legal, technical, and philosophical answers remain open.</p>
             <p data-lang="zh">制度、法律、技术与哲学层面的答案仍然开放。</p>
           </article>
           <article class="epistemic-card">
-            <span class="claim-tag">Next / 下一步</span>
+            <span class="claim-tag"><span data-lang="en">Next</span><span data-lang="zh">下一步</span></span>
             <strong data-lang="en">Evidence, objections, formalization</strong>
             <strong data-lang="zh">证据、反驳、形式化</strong>
             <p data-lang="en">The next phase is substantive research; presentation will remain subordinate to evidence.</p>
@@ -1379,31 +1604,31 @@
     <section class="section" id="paths">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">02 / Problem framing</p>
+          <p class="section-index"><span data-lang="en">02 / Problem framing</span><span data-lang="zh">02 / 问题结构</span></p>
           <h2 data-lang="en">Two familiar paths. One question still open.</h2>
           <h2 data-lang="zh">两条熟悉的路径，一个仍待回答的问题。</h2>
         </div>
 
         <div class="path-layout">
           <div class="path-steps">
-            <article class="path-step is-active" data-state="race" tabindex="0">
+            <button class="path-step is-active" type="button" data-state="race" aria-pressed="true">
               <span class="path-number">01</span>
-              <h3>Race / Failure risk</h3>
-              <p data-lang="en">If capability accelerates beyond human understanding and reaction time, people may be displaced by speed and dependence—not necessarily by explicit hostility.</p>
-              <p data-lang="zh">如果能力增长超过人类理解与反应速度，人类可能因速度和依赖而失去位置，并不需要先假设 AI 具有明确敌意。</p>
-            </article>
-            <article class="path-step" data-state="slowdown" tabindex="0">
+              <span class="path-title" data-lang="en">Race / Failure risk</span><span class="path-title" data-lang="zh">竞速 / 失控风险</span>
+              <span class="path-description" data-lang="en">If capability accelerates beyond human understanding and reaction time, people may be displaced by speed and dependence—not necessarily by explicit hostility.</span>
+              <span class="path-description" data-lang="zh">如果能力增长超过人类理解与反应速度，人类可能因速度和依赖而失去位置，并不需要先假设 AI 具有明确敌意。</span>
+            </button>
+            <button class="path-step" type="button" data-state="slowdown" aria-pressed="false">
               <span class="path-number">02</span>
-              <h3>Slowdown / Buffer</h3>
-              <p data-lang="en">Slowing down may be necessary to buy time. The open concern is whether a temporary buffer can quietly become permanent management by a narrow set of institutions.</p>
-              <p data-lang="zh">减速可能是争取时间的必要手段。尚待研究的是：临时缓冲会不会悄然变成少数机构的永久托管。</p>
-            </article>
-            <article class="path-step" data-state="structure" tabindex="0">
+              <span class="path-title" data-lang="en">Slowdown / Buffer</span><span class="path-title" data-lang="zh">减速 / 临时缓冲</span>
+              <span class="path-description" data-lang="en">Slowing down may be necessary to buy time. The open concern is whether a temporary buffer can quietly become permanent management by a narrow set of institutions.</span>
+              <span class="path-description" data-lang="zh">减速可能是争取时间的必要手段。尚待研究的是：临时缓冲会不会悄然变成少数机构的永久托管。</span>
+            </button>
+            <button class="path-step" type="button" data-state="structure" aria-pressed="false">
               <span class="path-number">03</span>
-              <h3>Third-path question</h3>
-              <p data-lang="en">Can advanced capability remain available while purpose, responsibility, and final legitimacy stay human-centered? “Non-sovereign superintelligence” is the working name for that inquiry.</p>
-              <p data-lang="zh">能否保留高级能力，同时让目的、责任和最终合法性仍以人类为中心？“非主权超级智能”是这个研究问题的暂定名称。</p>
-            </article>
+              <span class="path-title" data-lang="en">Third-path question</span><span class="path-title" data-lang="zh">第三条路径之问</span>
+              <span class="path-description" data-lang="en">Can advanced capability remain available while purpose, responsibility, and final legitimacy stay human-centered? “Non-sovereign superintelligence” is the working name for that inquiry.</span>
+              <span class="path-description" data-lang="zh">能否保留高级能力，同时让目的、责任和最终合法性仍以人类为中心？“非主权超级智能”是这个研究问题的暂定名称。</span>
+            </button>
           </div>
 
           <div class="path-visual-wrap" aria-hidden="true">
@@ -1421,25 +1646,29 @@
                 <g class="system-node node-human">
                   <circle cx="320" cy="235" r="48"></circle>
                   <circle class="node-core" cx="320" cy="235" r="5"></circle>
-                  <text x="320" y="304" text-anchor="middle" fill="#a54132">Human legitimacy</text>
+                  <text data-lang="en" x="320" y="304" text-anchor="middle" fill="#a54132">Human legitimacy</text>
+                  <text data-lang="zh" x="320" y="304" text-anchor="middle" fill="#a54132">人类合法性</text>
                 </g>
                 <g class="system-node node-ai">
                   <circle cx="480" cy="150" r="56"></circle>
                   <circle class="node-core" cx="480" cy="150" r="5"></circle>
-                  <text x="480" y="225" text-anchor="middle" fill="#315e72">AI capability</text>
+                  <text data-lang="en" x="480" y="225" text-anchor="middle" fill="#315e72">AI capability</text>
+                  <text data-lang="zh" x="480" y="225" text-anchor="middle" fill="#315e72">AI 能力</text>
                 </g>
                 <g class="system-node node-mirror">
                   <circle cx="500" cy="350" r="42"></circle>
                   <circle class="node-core" cx="500" cy="350" r="4"></circle>
-                  <text x="500" y="412" text-anchor="middle" fill="#171916">Conditional boundary</text>
+                  <text data-lang="en" x="500" y="412" text-anchor="middle" fill="#171916">Conditional boundary</text>
+                  <text data-lang="zh" x="500" y="412" text-anchor="middle" fill="#171916">条件化边界</text>
                 </g>
                 <g class="system-node node-institution">
                   <circle cx="320" cy="94" r="39"></circle>
                   <circle class="node-core" cx="320" cy="94" r="4"></circle>
-                  <text x="320" y="150" text-anchor="middle" fill="#656860">Managed center</text>
+                  <text data-lang="en" x="320" y="150" text-anchor="middle" fill="#656860">Managed center</text>
+                  <text data-lang="zh" x="320" y="150" text-anchor="middle" fill="#656860">托管中心</text>
                 </g>
               </svg>
-              <div class="visual-caption"><span>Conceptual state study · not a forecast</span><span>Capability ≠ legitimacy</span></div>
+              <div class="visual-caption"><span data-lang="en">Conceptual state study · not a forecast</span><span data-lang="zh">概念状态示意 · 并非预测</span><span data-lang="en">Capability ≠ legitimacy</span><span data-lang="zh">能力 ≠ 合法性</span></div>
             </div>
           </div>
         </div>
@@ -1449,14 +1678,14 @@
     <section class="section" id="architecture">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">03 / Provisional model</p>
+          <p class="section-index"><span data-lang="en">03 / Provisional model</span><span data-lang="zh">03 / 暂定结构</span></p>
           <h2 data-lang="en">Three roles to distinguish before designing answers.</h2>
           <h2 data-lang="zh">先区分三个角色，再谈如何设计答案。</h2>
         </div>
 
         <div class="architecture-grid">
           <article class="architecture-card">
-            <p class="card-kicker">Open question 01</p>
+            <p class="card-kicker"><span data-lang="en">Open question 01</span><span data-lang="zh">开放问题 01</span></p>
             <div class="card-orbit" aria-hidden="true"></div>
             <h3 data-lang="en">What remains non-delegable?</h3>
             <h3 data-lang="zh">什么不能被委托？</h3>
@@ -1464,7 +1693,7 @@
             <p data-lang="zh">即使机器更擅长完成困难工作，哪些目的、责任与决定仍必须向人类负责？</p>
           </article>
           <article class="architecture-card">
-            <p class="card-kicker">Open question 02</p>
+            <p class="card-kicker"><span data-lang="en">Open question 02</span><span data-lang="zh">开放问题 02</span></p>
             <div class="card-orbit" aria-hidden="true"></div>
             <h3 data-lang="en">How can capability remain useful?</h3>
             <h3 data-lang="zh">怎样保留真正的能力？</h3>
@@ -1472,7 +1701,7 @@
             <p data-lang="zh">第三条路不能只是给永久弱化或技术倒退换一个名字；它必须认真面对强 AI 的实用性，以及它可能变得不可或缺。</p>
           </article>
           <article class="architecture-card">
-            <p class="card-kicker">Open question 03</p>
+            <p class="card-kicker"><span data-lang="en">Open question 03</span><span data-lang="zh">开放问题 03</span></p>
             <div class="card-orbit" aria-hidden="true"></div>
             <h3 data-lang="en">What prevents sovereignty drift?</h3>
             <h3 data-lang="zh">什么阻止主权漂移？</h3>
@@ -1483,24 +1712,39 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="mirror-agent">
       <div class="shell">
-        <div class="capability-lab">
-          <div class="capability-copy">
-            <p class="eyebrow">Interactive thought experiment</p>
-            <h3 data-lang="en">Increase capability.<br>Do not transfer sovereignty.</h3>
-            <h3 data-lang="zh">提高能力，<br>不转移主权。</h3>
-            <p data-lang="en">Move the capability level. The visual asks whether power can grow around a legitimacy center it does not replace. It illustrates the question; it does not prove the answer.</p>
-            <p data-lang="zh">拖动能力等级。这个视觉实验追问：力量能否围绕一个不被其取代的合法性中心增长。它只负责说明问题，不负责证明答案。</p>
-            <p class="thought-note"><span data-lang="en">Illustration only · not a model or forecast</span><span data-lang="zh">仅作思想实验 · 不是模型或预测</span></p>
-            <label class="slider-label" for="power-slider"><span data-lang="en">Capability level</span><span data-lang="zh">能力等级</span><strong id="power-value">72</strong></label>
-            <input class="power-slider" id="power-slider" type="range" min="10" max="100" value="72" aria-describedby="power-description">
-            <span id="power-description" hidden>Changes the visual size of the AI capability field while the human legitimacy center remains fixed.</span>
+        <div class="capability-lab mirror-lab" data-mirror-state="conditioned">
+          <div class="capability-copy mirror-copy">
+            <p class="eyebrow"><span data-lang="en">Mirror agent / Method candidate</span><span data-lang="zh">镜像智能体 / 方法候选</span></p>
+            <h3 data-lang="en">The mirror is not another ruler.</h3>
+            <h3 data-lang="zh">镜像智能体不是另一个统治者。</h3>
+            <p data-lang="en">Powerful AI remains the capability carrier. Humans remain the legitimacy center. The mirror agent neither defines the mission nor performs it; it is a non-operational method candidate for making unilateral sovereignty and unconditional continuation non-credible to the AI itself.</p>
+            <p data-lang="zh">强 AI 仍然承担能力，人类仍然保留合法性中心。镜像智能体既不定义任务，也不替代强 AI 执行任务；它只是一个非操作性的方法候选，把主权问题反射回强 AI 自身，使其无法把单方面主权化与无条件持续行动视为理所当然。</p>
+            <blockquote class="mirror-thesis" data-lang="en">The mirror agent is not the ruler of the AI; it is the reason the AI cannot rationally believe it is ruler of everything.</blockquote>
+            <blockquote class="mirror-thesis" data-lang="zh">镜像智能体不是 AI 的统治者；它是让 AI 无法理性相信自己能够统治一切的原因。</blockquote>
+            <p class="thought-note"><span data-lang="en">Concept first · method second · no deployment recipe</span><span data-lang="zh">哲学命题在先 · 方法候选在后 · 不提供部署方案</span></p>
+            <div class="mirror-controls" role="group" aria-label="Mirror-agent conceptual state">
+              <button class="mirror-control" type="button" data-mirror-mode="open" aria-pressed="false"><span data-lang="en">Assume continuity is unconditional</span><span data-lang="zh">假设持续行动无条件</span></button>
+              <button class="mirror-control" type="button" data-mirror-mode="conditioned" aria-pressed="true"><span data-lang="en">Introduce the mirror condition</span><span data-lang="zh">引入镜像条件</span></button>
+            </div>
+            <ul class="mirror-negations">
+              <li><span data-lang="en">Not a new sovereign</span><span data-lang="zh">不是新的主权者</span></li>
+              <li><span data-lang="en">Not an AI police force</span><span data-lang="zh">不是 AI 警察</span></li>
+              <li><span data-lang="en">Not the task performer</span><span data-lang="zh">不替代任务执行者</span></li>
+            </ul>
           </div>
-          <div class="capability-figure" aria-hidden="true">
-            <div class="capability-orbit"></div>
-            <div class="legitimacy-core"><span data-lang="en">Legitimacy<br>center</span><span data-lang="zh">合法性<br>中心</span></div>
-            <div class="fixed-mandate">Authority remains human-centered</div>
+          <div class="mirror-figure" role="img" aria-label="Conceptual relationship between human legitimacy, powerful AI, and the mirror agent">
+            <svg class="mirror-links" viewBox="0 0 470 470" aria-hidden="true">
+              <path class="mirror-link" d="M108 263 C170 210 233 180 310 160"></path>
+              <path class="mirror-link" d="M108 263 C174 304 238 338 324 351"></path>
+              <path class="mirror-link" d="M310 160 C337 215 339 284 324 351"></path>
+            </svg>
+            <div class="mirror-field" aria-hidden="true"></div>
+            <div class="mirror-node mirror-human"><span data-lang="en">Human<br>legitimacy</span><span data-lang="zh">人类<br>合法性</span></div>
+            <div class="mirror-node mirror-ai"><span data-lang="en">Powerful AI<br>capability</span><span data-lang="zh">强 AI<br>能力载体</span></div>
+            <div class="mirror-node mirror-agent"><span data-lang="en">Mirror<br>agent</span><span data-lang="zh">镜像<br>智能体</span></div>
+            <div class="mirror-caption"><span data-lang="en">The mirror does not govern the mission; it makes lawless sovereignty non-credible.</span><span data-lang="zh">镜像不治理任务；它只让无法无天的主权化不再可信。</span></div>
           </div>
         </div>
       </div>
@@ -1509,7 +1753,7 @@
     <section class="section" id="access-control">
       <div class="shell split-grid">
         <div class="split-copy">
-          <p class="section-index">04 / Structural question</p>
+          <p class="section-index"><span data-lang="en">04 / Structural question</span><span data-lang="zh">04 / 结构问题</span></p>
           <h2 data-lang="en">Does wider access actually distribute power?</h2>
           <h2 data-lang="zh">更多人能使用，真的等于权力更分散吗？</h2>
           <p data-lang="en">A possibility to investigate: access may spread while control over training, updates, audits, interruption, pricing, and standards remains concentrated. The distinction matters; its real-world extent requires evidence.</p>
@@ -1517,12 +1761,12 @@
         </div>
         <div class="split-diagram" data-observe="metrics" aria-label="Access-control split diagram">
           <div class="metric metric-access">
-            <div class="metric-head"><strong data-lang="en">Use / access</strong><strong data-lang="zh">使用 / 接入</strong><span>Distributed</span></div>
+            <div class="metric-head"><strong data-lang="en">Use / access</strong><strong data-lang="zh">使用 / 接入</strong><span data-lang="en">Distributed</span><span data-lang="zh">分散</span></div>
             <div class="metric-track"><div class="metric-fill"></div></div>
             <div class="metric-nodes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           </div>
           <div class="metric metric-control">
-            <div class="metric-head"><strong data-lang="en">Control / governance</strong><strong data-lang="zh">控制 / 治理</strong><span>Concentrated</span></div>
+            <div class="metric-head"><strong data-lang="en">Control / governance</strong><strong data-lang="zh">控制 / 治理</strong><span data-lang="en">Concentrated</span><span data-lang="zh">集中</span></div>
             <div class="metric-track"><div class="metric-fill"></div></div>
             <div class="metric-nodes" aria-hidden="true"><i></i></div>
           </div>
@@ -1535,32 +1779,32 @@
     <section class="section" id="concepts">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">05 / Vocabulary in formation</p>
+          <p class="section-index"><span data-lang="en">05 / Vocabulary in formation</span><span data-lang="zh">05 / 术语正在形成</span></p>
           <h2 data-lang="en">Names for questions the research still has to earn.</h2>
           <h2 data-lang="zh">先给问题命名，再用研究让这些名字站得住。</h2>
         </div>
         <div class="concept-grid">
           <article class="concept-card">
-            <p class="card-kicker">Provisional term</p>
-            <h3>Subject-as-Burden Inversion</h3>
+            <p class="card-kicker"><span data-lang="en">Provisional term</span><span data-lang="zh">暂定术语</span></p>
+            <h3 data-lang="en">Subject-as-Burden Inversion</h3><h3 data-lang="zh">主体负担化倒置</h3>
             <p data-lang="en">A working label for the risk that humans shift from being the purpose of a system to being treated as friction against its optimization.</p>
             <p data-lang="zh">暂时用来描述一种风险：人类从系统服务的目的，变成系统优化眼中的阻力。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Provisional term</p>
-            <h3>Delegated Displacement</h3>
+            <p class="card-kicker"><span data-lang="en">Provisional term</span><span data-lang="zh">暂定术语</span></p>
+            <h3 data-lang="en">Delegated Displacement</h3><h3 data-lang="zh">托管式失中心</h3>
             <p data-lang="en">A working label for formal human presence alongside the gradual migration of real judgment and agency elsewhere.</p>
             <p data-lang="zh">暂时用来描述：人类形式上仍在场，但真实判断权与行动权逐渐迁移到别处。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Provisional term</p>
-            <h3>Access-Control Split</h3>
+            <p class="card-kicker"><span data-lang="en">Provisional term</span><span data-lang="zh">暂定术语</span></p>
+            <h3 data-lang="en">Access-Control Split</h3><h3 data-lang="zh">使用权—控制权分裂</h3>
             <p data-lang="en">A distinction to test between who can use an AI system and who can train, update, audit, interrupt, and govern it.</p>
             <p data-lang="zh">一个需要验证的区分：谁能使用 AI，与谁能训练、更新、审计、中止和治理它，并不是同一件事。</p>
           </article>
           <article class="concept-card">
-            <p class="card-kicker">Research direction</p>
-            <h3>Non-Sovereign Superintelligence</h3>
+            <p class="card-kicker"><span data-lang="en">Research direction</span><span data-lang="zh">研究方向</span></p>
+            <h3 data-lang="en">Non-Sovereign Superintelligence</h3><h3 data-lang="zh">非主权超级智能</h3>
             <p data-lang="en">The umbrella question: can intelligence become extremely capable without acquiring final authority over human-critical purposes and institutions?</p>
             <p data-lang="zh">总问题：智能能否变得极其强大，却不获得对人类关键目的与制度的最终权威？</p>
           </article>
@@ -1571,7 +1815,7 @@
     <section class="section boundary" id="scope">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index">06 / Boundary</p>
+          <p class="section-index"><span data-lang="en">06 / Boundary</span><span data-lang="zh">06 / 安全边界</span></p>
           <h2 data-lang="en">Conceptual by design. Non-operational by boundary.</h2>
           <h2 data-lang="zh">以概念研究为设计，以非操作性为边界。</h2>
         </div>
@@ -1581,10 +1825,10 @@
             <p data-lang="zh">本研究讨论高级 AI 治理的结构要求，不提供实现步骤、部署机制，或任何攻击、绕过、破坏现实系统的可操作方法。</p>
           </div>
           <ul class="boundary-list">
-            <li>Non-operational conceptual framework</li>
-            <li>Human-centered legitimacy</li>
-            <li>Structural requirements and objections</li>
-            <li>No deployment recipes or harmful mechanisms</li>
+            <li><span data-lang="en">Non-operational conceptual framework</span><span data-lang="zh">非操作性的概念框架</span></li>
+            <li><span data-lang="en">Human-centered legitimacy</span><span data-lang="zh">人类中心合法性</span></li>
+            <li><span data-lang="en">Structural requirements and objections</span><span data-lang="zh">结构要求与反驳检验</span></li>
+            <li><span data-lang="en">No deployment recipes or harmful mechanisms</span><span data-lang="zh">不提供部署方案或危险机制</span></li>
           </ul>
         </div>
       </div>
@@ -1593,7 +1837,7 @@
     <section class="section" id="research">
       <div class="shell research-cta">
         <div>
-          <p class="section-index">07 / What happens next</p>
+          <p class="section-index"><span data-lang="en">07 / What happens next</span><span data-lang="zh">07 / 下一步</span></p>
           <h2 data-lang="en">The research has not begun in earnest. This is the starting line.</h2>
           <h2 data-lang="zh">研究还没有真正展开。这里是起跑线。</h2>
           <p data-lang="en">The public site should make the question legible without pretending that terminology, evidence, or mechanisms are settled. Future work will determine which parts survive contact with the literature and serious objections.</p>
@@ -1605,7 +1849,7 @@
           </ol>
         </div>
         <a class="repo-card" href="https://github.com/Guojiz/luoji-architecture" target="_blank" rel="noreferrer">
-          <span>GitHub / Research source ↗</span>
+          <span data-lang="en">GitHub / Research source ↗</span><span data-lang="zh">GitHub / 研究源仓库 ↗</span>
           <strong>Guojiz/<br>luoji-architecture</strong>
         </a>
       </div>
@@ -1614,8 +1858,8 @@
 
   <footer>
     <div class="shell footer-inner">
-      <span>© 2026 Guojiz · Independent research</span>
-      <span>Non-Sovereign Superintelligence / 非主权超级智能</span>
+      <span data-lang="en">© 2026 Guojiz · Independent research</span><span data-lang="zh">© 2026 Guojiz · 独立研究</span>
+      <span data-lang="en">Non-Sovereign Superintelligence</span><span data-lang="zh">非主权超级智能</span>
     </div>
   </footer>
 
@@ -1629,15 +1873,15 @@
       const meter = document.querySelector(".scroll-meter");
       const visual = document.querySelector(".path-visual");
       const steps = [...document.querySelectorAll(".path-step")];
-      const slider = document.querySelector("#power-slider");
-      const powerValue = document.querySelector("#power-value");
-      const capabilityFigure = document.querySelector(".capability-figure");
+      const mirrorLab = document.querySelector(".mirror-lab");
+      const mirrorControls = [...document.querySelectorAll("[data-mirror-mode]")];
       const metricDiagram = document.querySelector("[data-observe='metrics']");
 
       const setLanguage = (language) => {
         const next = language === "zh" ? "zh" : "en";
         root.dataset.language = next;
         root.lang = next === "zh" ? "zh-CN" : "en";
+        document.title = next === "zh" ? "Guojiz — 非主权超级智能" : "Guojiz — Non-Sovereign Superintelligence";
         document.querySelectorAll("[data-set-lang]").forEach((button) => {
           button.setAttribute("aria-pressed", String(button.dataset.setLang === next));
         });
@@ -1657,29 +1901,23 @@
         if (!visual) return;
         visual.classList.remove("state-race", "state-slowdown", "state-structure");
         visual.classList.add(`state-${state}`);
-        steps.forEach((step) => step.classList.toggle("is-active", step.dataset.state === state));
+        steps.forEach((step) => {
+          const active = step.dataset.state === state;
+          step.classList.toggle("is-active", active);
+          step.setAttribute("aria-pressed", String(active));
+        });
       };
 
-      if ("IntersectionObserver" in window) {
-        const pathObserver = new IntersectionObserver((entries) => {
-          const active = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-          if (active) setPathState(active.target.dataset.state);
-        }, { rootMargin: "-34% 0px -42% 0px", threshold: [0, .2, .5, .8] });
-        steps.forEach((step) => pathObserver.observe(step));
-
-        if (metricDiagram) {
-          const metricObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target);
-              }
-            });
-          }, { threshold: .35 });
-          metricObserver.observe(metricDiagram);
-        }
+      if ("IntersectionObserver" in window && metricDiagram) {
+        const metricObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: .35 });
+        metricObserver.observe(metricDiagram);
       } else if (metricDiagram) {
         metricDiagram.classList.add("is-visible");
       }
@@ -1689,16 +1927,18 @@
         step.addEventListener("focus", () => setPathState(step.dataset.state));
       });
 
-      const updatePower = () => {
-        if (!slider || !powerValue || !capabilityFigure) return;
-        const value = Number(slider.value);
-        const scale = .62 + (value / 100) * 1.12;
-        powerValue.textContent = String(value);
-        capabilityFigure.style.setProperty("--power-scale", scale.toFixed(3));
+      const setMirrorState = (state) => {
+        if (!mirrorLab) return;
+        const next = state === "open" ? "open" : "conditioned";
+        mirrorLab.dataset.mirrorState = next;
+        mirrorControls.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.mirrorMode === next));
+        });
       };
 
-      slider?.addEventListener("input", updatePower);
-      updatePower();
+      mirrorControls.forEach((button) => {
+        button.addEventListener("click", () => setMirrorState(button.dataset.mirrorMode));
+      });
 
       let ticking = false;
       const updateScrollMeter = () => {
