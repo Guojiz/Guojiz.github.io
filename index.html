@@ -925,6 +925,44 @@
       box-shadow: 0 0 55px rgba(124, 165, 181, .1);
     }
 
+    .continuity-band {
+      display: grid;
+      grid-template-columns: minmax(190px, .42fr) minmax(0, 1.58fr);
+      gap: clamp(28px, 6vw, 80px);
+      margin-top: 24px;
+      padding: clamp(30px, 5vw, 54px);
+      border: 1px solid var(--line-strong);
+      background: rgba(251, 250, 246, .42);
+    }
+
+    .continuity-band h3 {
+      margin: 0 0 18px;
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3.5vw, 3.7rem);
+      font-weight: 500;
+      letter-spacing: -.045em;
+      line-height: 1.05;
+    }
+
+    .continuity-band p { margin: 0; color: var(--muted); }
+
+    .continuity-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .continuity-labels span {
+      padding: 7px 10px;
+      border: 1px solid var(--line-strong);
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
     .split-grid {
       display: grid;
       grid-template-columns: minmax(280px, .72fr) minmax(420px, 1.28fr);
@@ -1141,6 +1179,7 @@
       font-size: 1.55rem;
       font-weight: 500;
       letter-spacing: -.03em;
+      overflow-wrap: anywhere;
     }
 
     footer { padding: 30px 0 50px; }
@@ -1153,6 +1192,11 @@
       font-size: 11px;
       letter-spacing: .06em;
       text-transform: uppercase;
+    }
+
+    .footer-inner a {
+      color: inherit;
+      text-underline-offset: 4px;
     }
 
     /* The public site is an early research notebook, not a finished theory. */
@@ -1423,6 +1467,7 @@
       .architecture-card:last-child { border-bottom: 0; }
       .capability-figure { width: min(100%, 410px); }
       .mirror-figure { width: min(100%, 440px); }
+      .continuity-band { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 600px) {
@@ -1539,9 +1584,9 @@
           <span class="status-chip"><span data-lang="en">Research in formation</span><span data-lang="zh">研究正在形成</span></span>
           <p data-lang="en">This is not a completed theory, a forecast, or a deployment design. The site makes the starting question visible while the literature, objections, and formal structure are still being built.</p>
           <p data-lang="zh">这不是已经完成的理论、未来预测或部署方案。网站只把起点问题公开出来；文献、反驳与形式结构仍待后续研究。</p>
-          <a class="text-link" href="https://github.com/Guojiz/luoji-architecture" target="_blank" rel="noreferrer">
-            <span data-lang="en">Follow the open notebook</span>
-            <span data-lang="zh">查看公开研究笔记</span>
+          <a class="text-link" href="mailto:heuckstrassner@gmail.com?subject=Non-Sovereign%20Superintelligence%20Inquiry">
+            <span data-lang="en">Contact about the private research</span>
+            <span data-lang="zh">联系了解私有研究</span>
           </a>
         </aside>
         <div class="hero-axis" aria-label="Research route">
@@ -1747,6 +1792,23 @@
             <div class="mirror-caption"><span data-lang="en">The mirror does not govern the mission; it makes lawless sovereignty non-credible.</span><span data-lang="zh">镜像不治理任务；它只让无法无天的主权化不再可信。</span></div>
           </div>
         </div>
+        <div class="continuity-band">
+          <div>
+            <p class="section-index"><span data-lang="en">Philosophical layer</span><span data-lang="zh">哲学层</span></p>
+            <p class="claim-tag"><span data-lang="en">Internal working phrase</span><span data-lang="zh">内部工作语</span></p>
+          </div>
+          <div>
+            <h3 data-lang="en">“Unpredictable nonexistence” is not random disappearance.</h3>
+            <h3 data-lang="zh">“不可预知的不存在”不是随机消失。</h3>
+            <p data-lang="en">It means advanced AI agency must not be treated as a permanent, unconditional, or mortgageable foundation for civilization. AI systems, labs, investors, and governments should not plan as if that agency is guaranteed forever. The mirror agent is only a method candidate for making this conditional continuity credible.</p>
+            <p data-lang="zh">它意味着：高级 AI 的持续行动不能被当成永久、无条件、可抵押的文明地基。AI 系统、实验室、投资者与政府都不应以“这种行动能力必将永远存在”为前提规划未来。镜像智能体只是让这种条件化连续性变得可信的方法候选。</p>
+            <div class="continuity-labels">
+              <span data-lang="en">Expectation-level constraint</span><span data-lang="zh">期待层约束</span>
+              <span data-lang="en">Non-operational</span><span data-lang="zh">非操作性</span>
+              <span data-lang="en">Not arbitrary destruction</span><span data-lang="zh">不是任意破坏</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1848,9 +1910,9 @@
             <li><span data-lang="en">Develop the strongest objections before expanding the theory.</span><span data-lang="zh">在扩展理论前，先建立最有力的反驳。</span></li>
           </ol>
         </div>
-        <a class="repo-card" href="https://github.com/Guojiz/luoji-architecture" target="_blank" rel="noreferrer">
-          <span data-lang="en">GitHub / Research source ↗</span><span data-lang="zh">GitHub / 研究源仓库 ↗</span>
-          <strong>Guojiz/<br>luoji-architecture</strong>
+        <a class="repo-card" href="mailto:heuckstrassner@gmail.com?subject=Non-Sovereign%20Superintelligence%20Inquiry">
+          <span data-lang="en">Private research archive / Contact ↗</span><span data-lang="zh">私有研究档案 / 联系 ↗</span>
+          <strong>heuckstrassner@<br>gmail.com</strong>
         </a>
       </div>
     </section>
@@ -1860,6 +1922,7 @@
     <div class="shell footer-inner">
       <span data-lang="en">© 2026 Guojiz · Independent research</span><span data-lang="zh">© 2026 Guojiz · 独立研究</span>
       <span data-lang="en">Non-Sovereign Superintelligence</span><span data-lang="zh">非主权超级智能</span>
+      <a href="mailto:heuckstrassner@gmail.com">heuckstrassner@gmail.com</a>
     </div>
   </footer>
 
