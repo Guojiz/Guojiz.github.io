@@ -2767,7 +2767,7 @@
         sequenceTimers.delete(name);
       }
 
-      const playSequence = (name, states, setState, interval = 1350) => {
+      const playSequence = (name, states, setState, interval = 3000) => {
         clearSequence(name);
         setState(states[0]);
         const timers = states.slice(1).map((state, index) => window.setTimeout(() => {
