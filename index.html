@@ -49,7 +49,7 @@
         radial-gradient(circle at 92% 26%, rgba(165, 65, 50, .06), transparent 30rem),
         var(--paper);
       font-family: var(--sans);
-      font-size: 16px;
+      font-size: 17px;
       line-height: 1.65;
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
@@ -141,7 +141,7 @@
       padding: 6px 10px;
       color: var(--muted);
       text-decoration: none;
-      font-size: 13px;
+      font-size: 14px;
       transition: color .2s ease;
     }
 
@@ -155,15 +155,15 @@
     }
 
     .lang-button {
-      width: 34px;
-      height: 30px;
+      min-width: 42px;
+      height: 36px;
       padding: 0;
       border: 0;
       border-radius: 99px;
       color: var(--muted);
       background: transparent;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .lang-button[aria-pressed="true"] {
@@ -201,7 +201,7 @@
     .card-kicker {
       margin: 0;
       color: var(--red);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 720;
       letter-spacing: .16em;
       line-height: 1.3;
@@ -230,6 +230,30 @@
       font-size: clamp(1.25rem, 2.2vw, 1.75rem);
       line-height: 1.42;
     }
+
+    .hero-language-entry {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .hero-language-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--ink);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .hero-language-link::after { content: "↗"; font-family: var(--sans); font-size: .8em; }
+
+    .hero-language-entry small { color: var(--muted); font-size: 12px; }
 
     .hero-aside {
       padding: 26px 0 6px;
@@ -274,7 +298,7 @@
       position: relative;
       padding: 18px 18px 0 0;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .axis-item::before {
@@ -292,7 +316,7 @@
     .axis-item:last-child::before { background: var(--red); }
 
     .section {
-      padding: clamp(90px, 13vw, 180px) 0;
+      padding: clamp(72px, 9vw, 128px) 0;
       border-bottom: 1px solid var(--line);
     }
 
@@ -300,7 +324,7 @@
       display: grid;
       grid-template-columns: 150px minmax(0, 1fr);
       gap: 28px;
-      margin-bottom: clamp(54px, 8vw, 96px);
+      margin-bottom: clamp(44px, 6vw, 72px);
     }
 
     h2 {
@@ -401,7 +425,7 @@
       display: block;
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.65;
     }
 
@@ -435,7 +459,7 @@
 
     .system-svg text {
       font-family: var(--sans);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 680;
       letter-spacing: .12em;
       text-transform: uppercase;
@@ -528,6 +552,264 @@
       text-transform: uppercase;
     }
 
+    .center-shift {
+      position: relative;
+      overflow: hidden;
+      background: var(--paper-deep);
+    }
+
+    .center-stage {
+      display: grid;
+      grid-template-columns: minmax(340px, .82fr) minmax(480px, 1.18fr);
+      border: 1px solid var(--line-strong);
+      background: rgba(251, 250, 246, .45);
+    }
+
+    .center-story {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .center-controls {
+      position: relative;
+      z-index: 6;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--line-strong);
+      background: var(--paper-deep);
+    }
+
+    .center-control {
+      min-height: 72px;
+      padding: 13px;
+      border: 0;
+      border-right: 1px solid var(--line-strong);
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 740;
+      letter-spacing: .07em;
+      line-height: 1.35;
+      text-transform: uppercase;
+      transition: color .25s ease, background .25s ease;
+    }
+
+    .center-control:last-child { border-right: 0; }
+    .center-control[aria-pressed="true"] { color: var(--paper); background: var(--ink); }
+    .center-control:focus-visible { outline: 2px solid var(--red); outline-offset: -3px; }
+
+    .center-panels { position: relative; flex: 1; min-height: 430px; }
+
+    .center-panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(30px, 5vw, 58px);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px);
+      transition: opacity .5s ease, transform .6s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .center-panel.is-active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    .center-panel h3 {
+      max-width: 500px;
+      margin: 14px 0 18px;
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4vw, 4.6rem);
+      font-weight: 500;
+      letter-spacing: -.05em;
+      line-height: .98;
+    }
+
+    .center-panel p:last-child { margin: 0; color: var(--muted); font-size: 16px; }
+
+    .center-visual {
+      position: relative;
+      min-height: 560px;
+      overflow: hidden;
+      color: var(--paper);
+      background:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px),
+        var(--ink);
+      background-size: 42px 42px;
+    }
+
+    .center-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 70% 45%, rgba(124, 165, 181, .13), transparent 42%);
+    }
+
+    .center-visual-label {
+      position: absolute;
+      top: 24px;
+      left: 26px;
+      z-index: 5;
+      color: #aeb0a9;
+      font-size: 12px;
+      font-weight: 720;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .center-lines {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .center-line {
+      fill: none;
+      stroke: rgba(242, 239, 232, .26);
+      stroke-width: 1;
+      stroke-dasharray: 4 8;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+
+    .human-field {
+      position: absolute;
+      top: 22%;
+      left: 10%;
+      z-index: 3;
+      width: 68%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 38px 44px;
+      transition: width .8s cubic-bezier(.22, 1, .36, 1), transform .8s cubic-bezier(.22, 1, .36, 1), opacity .7s ease;
+      transform-origin: left center;
+    }
+
+    .human-dot {
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--red-soft);
+      border-radius: 50%;
+      background: rgba(165, 65, 50, .28);
+      transition: opacity .6s ease, transform .8s cubic-bezier(.22, 1, .36, 1), background .6s ease;
+    }
+
+    .control-core {
+      position: absolute;
+      top: 47%;
+      left: 72%;
+      z-index: 4;
+      width: 150px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--blue-soft);
+      border-radius: 50%;
+      background: var(--ink);
+      box-shadow: 0 0 0 0 rgba(124, 165, 181, 0);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.5);
+      transition: opacity .6s ease, transform .8s cubic-bezier(.22, 1, .36, 1), box-shadow .8s ease, border-color .6s ease;
+      text-align: center;
+    }
+
+    .control-core span {
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .09em;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+
+    .ai-fleet {
+      position: absolute;
+      right: 7%;
+      bottom: 11%;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: repeat(4, 30px);
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .6s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .ai-fleet i {
+      height: 30px;
+      border: 1px solid var(--blue-soft);
+      border-radius: 7px 7px 3px 3px;
+      background: rgba(124, 165, 181, .16);
+    }
+
+    .center-stage[data-center-state="platform"] .human-field {
+      width: 48%;
+      transform: translate(-5%, 10%) scale(.86);
+    }
+    .center-stage[data-center-state="platform"] .control-core,
+    .center-stage[data-center-state="ai"] .control-core { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .center-stage[data-center-state="platform"] .center-line,
+    .center-stage[data-center-state="ai"] .center-line { opacity: .75; animation: dash 4s linear infinite; }
+
+    .center-stage[data-center-state="ai"] .human-field {
+      width: 40%;
+      opacity: .48;
+      transform: translate(-8%, 128%) scale(.72);
+    }
+    .center-stage[data-center-state="ai"] .human-dot { background: transparent; }
+    .center-stage[data-center-state="ai"] .control-core {
+      border-color: var(--red-soft);
+      box-shadow: 0 0 0 58px rgba(165, 65, 50, .055), 0 0 70px rgba(124, 165, 181, .15);
+    }
+    .center-stage[data-center-state="ai"] .ai-fleet { opacity: 1; transform: translateY(0); }
+
+    .center-legend {
+      position: absolute;
+      right: 24px;
+      bottom: 22px;
+      left: 24px;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid rgba(242, 239, 232, .18);
+      color: #969a92;
+      font-size: 11px;
+    }
+
+    .center-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 26px;
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .center-summary {
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      padding: 26px;
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .center-summary:last-child { border-right: 0; }
+    .center-summary strong {
+      margin-top: auto;
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 2.3vw, 2.45rem);
+      font-weight: 500;
+      letter-spacing: -.035em;
+      line-height: 1.08;
+    }
+    .center-summary p { margin: 15px 0 0; color: var(--muted); font-size: 15px; }
+
     .architecture-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -557,7 +839,7 @@
     .architecture-card p:last-child {
       margin: 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .card-orbit {
@@ -702,7 +984,7 @@
       color: var(--white);
       background: var(--ink);
       transform: translate(-50%, -50%);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: .12em;
       text-align: center;
@@ -715,7 +997,7 @@
       bottom: 17%;
       max-width: 120px;
       color: #aeb0a9;
-      font-size: 9px;
+      font-size: 11px;
       letter-spacing: .1em;
       line-height: 1.5;
       text-transform: uppercase;
@@ -768,6 +1050,13 @@
       line-height: 1.4;
     }
 
+    .mirror-purpose {
+      margin: 20px 0 0;
+      color: #d9dad4;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
     .mirror-control {
       min-height: 58px;
       padding: 12px 15px;
@@ -776,7 +1065,7 @@
       color: #b7bab2;
       background: transparent;
       cursor: pointer;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 720;
       letter-spacing: .08em;
       line-height: 1.4;
@@ -804,7 +1093,7 @@
       padding-top: 10px;
       border-top: 1px solid rgba(242, 239, 232, .2);
       color: #aeb0a9;
-      font-size: 10px;
+      font-size: 12px;
       line-height: 1.5;
     }
 
@@ -873,7 +1162,7 @@
       color: var(--paper);
       background: var(--ink);
       transform: translate(-50%, -50%);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 720;
       letter-spacing: .09em;
       line-height: 1.45;
@@ -894,7 +1183,7 @@
       padding-top: 10px;
       border-top: 1px solid rgba(242, 239, 232, .18);
       color: #8f938c;
-      font-size: 8px;
+      font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
     }
@@ -957,11 +1246,35 @@
       padding: 7px 10px;
       border: 1px solid var(--line-strong);
       color: var(--muted);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: .09em;
       text-transform: uppercase;
     }
+
+    .continuity-effects {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 26px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .continuity-effect {
+      padding: 22px 24px 0 0;
+      border-right: 1px solid var(--line-strong);
+    }
+
+    .continuity-effect:last-child { padding-right: 0; padding-left: 24px; border-right: 0; }
+
+    .continuity-effect strong {
+      display: block;
+      margin-bottom: 10px;
+      font-family: var(--serif);
+      font-size: 1.35rem;
+      font-weight: 500;
+    }
+
+    .continuity-effect p { font-size: 15px; }
 
     .split-grid {
       display: grid;
@@ -999,7 +1312,7 @@
 
     .metric-head span {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: .1em;
       text-transform: uppercase;
     }
@@ -1079,7 +1392,7 @@
       max-width: 500px;
       margin: 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 16px;
     }
 
     .boundary {
@@ -1130,7 +1443,7 @@
     .boundary-list li {
       padding: 14px 0;
       border-top: 1px solid rgba(242, 239, 232, .24);
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .research-cta {
@@ -1189,7 +1502,7 @@
       justify-content: space-between;
       gap: 30px;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: .06em;
       text-transform: uppercase;
     }
@@ -1268,7 +1581,7 @@
       bottom: 22px;
       z-index: 3;
       color: rgba(242, 239, 232, .78);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -1309,7 +1622,7 @@
       gap: 9px;
       margin-bottom: 18px;
       color: var(--red);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 760;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -1332,42 +1645,170 @@
       margin-top: 0;
     }
 
-    .epistemic-grid {
+    .dual-stakes {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: 1fr 1fr;
       margin-top: clamp(62px, 8vw, 100px);
-      border-top: 1px solid var(--ink);
-      border-bottom: 1px solid var(--ink);
+      border: 1px solid rgba(242, 239, 232, .24);
+      color: var(--paper);
+      background: var(--ink);
+      overflow: hidden;
     }
 
-    .epistemic-card {
-      min-height: 270px;
+    .stake {
+      position: relative;
+      min-height: 410px;
       display: flex;
       flex-direction: column;
-      padding: 24px;
-      border-right: 1px solid var(--line-strong);
+      padding: clamp(28px, 4vw, 48px);
+      border-right: 1px solid rgba(242, 239, 232, .2);
+      overflow: hidden;
     }
 
-    .epistemic-card:last-child { border-right: 0; }
+    .stake:nth-child(2) { border-right: 0; }
 
-    .epistemic-card strong {
-      margin-top: auto;
+    .stake h3 {
+      max-width: 520px;
+      margin: 0 0 20px;
       font-family: var(--serif);
-      font-size: clamp(1.35rem, 2.1vw, 2rem);
+      font-size: clamp(2rem, 3.5vw, 3.65rem);
       font-weight: 500;
-      letter-spacing: -.025em;
-      line-height: 1.15;
+      letter-spacing: -.045em;
+      line-height: .98;
     }
 
-    .epistemic-card p:last-child {
-      margin: 14px 0 0;
-      color: var(--muted);
+    .stake > p:last-child {
+      max-width: 520px;
+      margin: auto 0 0;
+      color: #c0c2bb;
+      font-size: 16px;
+    }
+
+    .stake-graphic {
+      position: relative;
+      height: 135px;
+      margin: 18px 0 24px;
+    }
+
+    .continuity-orbits i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: calc(54px + var(--ring) * 42px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(124, 165, 181, calc(.65 - var(--ring) * .13));
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: continuity-breathe 4.8s calc(var(--ring) * -.7s) ease-in-out infinite;
+    }
+
+    .continuity-orbits i:nth-child(1) { --ring: 0; }
+    .continuity-orbits i:nth-child(2) { --ring: 1; }
+    .continuity-orbits i:nth-child(3) { --ring: 2; }
+    .continuity-orbits span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 72px;
+      transform: translate(-50%, -50%);
+      color: var(--paper);
+      font-size: 11px;
+      font-weight: 740;
+      letter-spacing: .08em;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    @keyframes continuity-breathe {
+      0%, 100% { opacity: .48; transform: translate(-50%, -50%) scale(.95); }
+      50% { opacity: .95; transform: translate(-50%, -50%) scale(1.04); }
+    }
+
+    .livelihood-network {
+      display: grid;
+      grid-template-columns: repeat(6, 8px);
+      align-content: center;
+      gap: 20px 24px;
+      padding-left: 5%;
+    }
+
+    .livelihood-network i {
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--red-soft);
+      border-radius: 50%;
+      background: rgba(165, 65, 50, .28);
+      animation: livelihood-pulse 3.2s calc(var(--person, 0) * -.12s) ease-in-out infinite;
+    }
+
+    .livelihood-network::before,
+    .livelihood-network::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 43%;
+      width: 35%;
+      border-top: 1px dashed rgba(242, 239, 232, .24);
+      transform-origin: left;
+    }
+
+    .livelihood-network::before { transform: rotate(-13deg); }
+    .livelihood-network::after { transform: rotate(13deg); }
+
+    .livelihood-core {
+      position: absolute;
+      top: 50%;
+      right: 7%;
+      width: 112px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--blue-soft);
+      border-radius: 50%;
+      color: var(--paper);
+      font-size: 11px;
+      font-weight: 740;
+      letter-spacing: .08em;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+      transform: translateY(-50%);
+    }
+
+    @keyframes livelihood-pulse {
+      0%, 100% { opacity: .45; transform: translateX(0); }
+      50% { opacity: 1; transform: translateX(4px); }
+    }
+
+    .stakes-synthesis {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 28px;
+      align-items: center;
+      padding: 30px clamp(28px, 4vw, 48px);
+      border-top: 1px solid rgba(242, 239, 232, .2);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .stakes-synthesis strong {
+      color: var(--red-soft);
       font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .stakes-synthesis p {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(1.35rem, 2.3vw, 2rem);
+      line-height: 1.25;
     }
 
     .claim-tag {
       color: var(--red);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 760;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -1376,7 +1817,7 @@
     .thought-note,
     .diagram-disclaimer {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 12px;
       letter-spacing: .08em;
       text-transform: uppercase;
     }
@@ -1415,7 +1856,7 @@
       padding: 17px 0;
       border-top: 1px solid var(--line);
       color: var(--muted);
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .research-agenda li::before {
@@ -1431,6 +1872,7 @@
       .hero-grid,
       .thesis-grid,
       .path-layout,
+      .center-stage,
       .capability-lab,
       .split-grid,
       .research-cta { grid-template-columns: 1fr; }
@@ -1443,9 +1885,6 @@
           linear-gradient(90deg, rgba(242, 239, 232, .98), rgba(242, 239, 232, .72) 57%, rgba(242, 239, 232, .2)),
           linear-gradient(0deg, rgba(242, 239, 232, .86), transparent 52%);
       }
-      .epistemic-grid { grid-template-columns: repeat(2, 1fr); }
-      .epistemic-card:nth-child(2) { border-right: 0; }
-      .epistemic-card:nth-child(-n + 2) { border-bottom: 1px solid var(--line-strong); }
       .path-layout { position: relative; }
       .path-visual-wrap { grid-row: 1; }
       .path-steps { grid-row: 2; padding: 0; }
@@ -1458,6 +1897,8 @@
         pointer-events: auto;
       }
       .path-visual { background: var(--paper); }
+      .center-story { border-right: 0; border-bottom: 1px solid var(--line-strong); }
+      .center-visual { min-height: 500px; }
       .architecture-grid { grid-template-columns: 1fr; }
       .architecture-card {
         min-height: 300px;
@@ -1468,10 +1909,14 @@
       .capability-figure { width: min(100%, 410px); }
       .mirror-figure { width: min(100%, 440px); }
       .continuity-band { grid-template-columns: 1fr; }
+      .continuity-effects { grid-template-columns: 1fr; }
+      .continuity-effect,
+      .continuity-effect:last-child { padding: 20px 0; border-right: 0; border-bottom: 1px solid var(--line-strong); }
+      .continuity-effect:last-child { border-bottom: 0; }
     }
 
     @media (max-width: 600px) {
-      body { font-size: 15px; }
+      body { font-size: 16px; }
       .shell { width: min(calc(100% - 28px), var(--max)); }
       .nav { padding-top: 16px; }
       .mark { font-size: 13px; }
@@ -1494,30 +1939,39 @@
       .hero-axis { grid-template-columns: 1fr; gap: 8px; }
       .axis-item { padding: 14px 0 4px 16px; }
       .axis-item::before { top: 23px; left: 0; }
-      .epistemic-grid { grid-template-columns: 1fr; }
-      .epistemic-card,
-      .epistemic-card:nth-child(2) {
-        min-height: 220px;
+      .dual-stakes { grid-template-columns: 1fr; }
+      .stake {
+        min-height: 440px;
         border-right: 0;
-        border-bottom: 1px solid var(--line-strong);
+        border-bottom: 1px solid rgba(242, 239, 232, .2);
       }
-      .epistemic-card:last-child { border-bottom: 0; }
+      .stakes-synthesis { grid-column: auto; grid-template-columns: 1fr; }
       .section-head { grid-template-columns: 1fr; gap: 20px; }
       h2 { margin-top: 0; }
       .path-step { min-height: 0; text-shadow: none; padding-block: 22px; }
       .path-visual-wrap { min-height: 0; }
       .path-visual::before { padding-top: 100%; }
-      .visual-caption { font-size: 8px; }
+      .visual-caption { font-size: 10px; }
+      .center-controls { grid-template-columns: 1fr; }
+      .center-control { min-height: 52px; border-right: 0; border-bottom: 1px solid var(--line-strong); }
+      .center-control:last-child { border-bottom: 0; }
+      .center-panels { min-height: 390px; }
+      .center-visual { min-height: 430px; }
+      .human-field { gap: 26px 28px; }
+      .control-core { width: 118px; }
+      .center-summary-grid { grid-template-columns: 1fr; }
+      .center-summary { min-height: 190px; border-right: 0; border-bottom: 1px solid var(--line-strong); }
+      .center-summary:last-child { border-bottom: 0; }
       .architecture-card { padding: 24px; }
       .capability-lab { margin-inline: -14px; padding: 58px 24px; }
       .mirror-controls { grid-template-columns: 1fr; }
       .mirror-control { border-right: 0; border-bottom: 1px solid rgba(242, 239, 232, .25); }
       .mirror-control:last-child { border-bottom: 0; }
       .mirror-negations { grid-template-columns: 1fr; }
-      .mirror-node { width: 76px; font-size: 8px; }
+      .mirror-node { width: 80px; font-size: 10px; }
       .mirror-caption { right: 12px; left: 12px; }
       .fixed-mandate { display: none; }
-      .legitimacy-core { width: 76px; height: 76px; font-size: 8px; }
+      .legitimacy-core { width: 80px; height: 80px; font-size: 10px; }
       .split-diagram { padding: 24px 18px; }
       .concept-grid { grid-template-columns: 1fr; }
       .concept-card,
@@ -1555,9 +2009,9 @@
       </a>
       <div class="nav-actions">
         <a class="nav-link" href="#paths"><span data-lang="en">Three paths</span><span data-lang="zh">三条路径</span></a>
-        <a class="nav-link" href="#architecture"><span data-lang="en">Architecture</span><span data-lang="zh">结构</span></a>
+        <a class="nav-link" href="#center-shift"><span data-lang="en">Power shift</span><span data-lang="zh">中心转移</span></a>
         <a class="nav-link" href="#mirror-agent"><span data-lang="en">Mirror agent</span><span data-lang="zh">镜像智能体</span></a>
-        <a class="nav-link" href="#concepts"><span data-lang="en">Concepts</span><span data-lang="zh">概念</span></a>
+        <a class="nav-link" href="#research"><span data-lang="en">Now what?</span><span data-lang="zh">现在呢？</span></a>
         <div class="language-switch" aria-label="Language">
           <button class="lang-button" type="button" data-set-lang="en" aria-pressed="true">EN</button>
           <button class="lang-button" type="button" data-set-lang="zh" aria-pressed="false">中</button>
@@ -1577,8 +2031,13 @@
           <p class="eyebrow"><span data-lang="en">Independent AI governance research direction · Phase 0</span><span data-lang="zh">独立 AI 治理研究方向 · 阶段 0</span></p>
           <h1 data-lang="en">Capability can grow.<br><span class="accent">Sovereignty must not transfer.</span></h1>
           <h1 data-lang="zh">能力可以增长，<br><span class="accent">主权不能转移。</span></h1>
-          <p class="hero-deck" data-lang="en">An early research proposition: advanced AI may become powerful, useful, even indispensable—without becoming the final center of purpose, responsibility, and legitimacy.</p>
-          <p class="hero-deck" data-lang="zh">一个尚在起步阶段的研究命题：高级 AI 可以强大、好用、甚至不可或缺，却不应成为目的、责任与合法性的最终中心。</p>
+          <p class="hero-deck" data-lang="en">A research proposition: advanced AI can remain a capability layer rather than the final authority over human purposes, responsibility, and legitimacy.</p>
+          <p class="hero-deck" data-lang="zh">一个研究命题：高级 AI 可以始终作为能力层存在，而不成为支配人类目的、责任与合法性的最终权威。</p>
+          <div class="hero-language-entry">
+            <a class="hero-language-link" href="?lang=zh" data-language-link="zh" data-lang="en">中文阅读</a>
+            <a class="hero-language-link" href="?lang=en" data-language-link="en" data-lang="zh">Read in English</a>
+            <small data-lang="en">Full Chinese interface</small><small data-lang="zh">完整英文界面</small>
+          </div>
         </div>
         <aside class="hero-aside">
           <span class="status-chip"><span data-lang="en">Research in formation</span><span data-lang="zh">研究正在形成</span></span>
@@ -1605,43 +2064,39 @@
           <h2 data-lang="zh">当智能不再是人类专属，什么仍必须属于人类？</h2>
         </div>
         <div class="thesis-grid">
-          <p class="lead-claim" data-lang="en">The project begins from a distinction: greater capability does not, by itself, create legitimate authority over the people and purposes that capability is meant to serve.</p>
-          <p class="lead-claim" data-lang="zh">研究从一个区分开始：能力更强，并不会自动获得支配其所服务的人类与目的的合法权威。</p>
+          <p class="lead-claim" data-lang="en">Greater capability does not, by itself, create legitimate authority. The research asks what structures can preserve the former without transferring the latter.</p>
+          <p class="lead-claim" data-lang="zh">能力更强，并不会自动产生合法权威。这项研究要问的是：什么结构能够保留前者，而不把后者一并转移。</p>
           <div class="side-note">
             <p class="claim-tag"><span data-lang="en">Starting observation</span><span data-lang="zh">起点观察</span></p>
             <p data-lang="en">The concern is structural before it is intentional: speed, dependence, delegation, and concentrated control may displace human agency even without a hostile AI.</p>
             <p data-lang="zh">这首先是结构问题，而不是动机猜测：即使 AI 没有敌意，速度、依赖、委托和控制集中也可能让人类失去行动位置。</p>
           </div>
         </div>
-        <div class="epistemic-grid" aria-label="Research status">
-          <article class="epistemic-card">
-            <span class="claim-tag"><span data-lang="en">Scope</span><span data-lang="zh">已确定范围</span></span>
-            <strong data-lang="en">Conceptual AI governance research</strong>
-            <strong data-lang="zh">AI 治理概念研究</strong>
-            <p data-lang="en">Non-operational, public-facing, and bounded away from harmful implementation details.</p>
-            <p data-lang="zh">保持非操作性与公开可讨论性，不进入危险实现细节。</p>
+        <div class="dual-stakes" aria-label="Two meanings of human continuity">
+          <article class="stake">
+            <p class="claim-tag"><span data-lang="en">Outcome scale 01 / Civilizational continuity</span><span data-lang="zh">结果尺度 01 / 人类存续</span></p>
+            <div class="stake-graphic continuity-orbits" aria-hidden="true"><i></i><i></i><i></i><span data-lang="en">Humanity remains</span><span data-lang="zh">人类仍然存在</span></div>
+            <h3 data-lang="en">Humanity must remain capable of setting its ends.</h3>
+            <h3 data-lang="zh">人类必须保留设定文明目的的能力。</h3>
+            <p data-lang="en">Prevent extinction, irreversible erasure, or the loss of humanity’s capacity to set collective ends.</p>
+            <p data-lang="zh">避免灭绝、不可逆的抹除，以及人类失去共同设定文明目的的能力。</p>
           </article>
-          <article class="epistemic-card">
-            <span class="claim-tag"><span data-lang="en">Proposition</span><span data-lang="zh">工作命题</span></span>
-            <strong data-lang="en">Powerful AI need not be sovereign AI</strong>
-            <strong data-lang="zh">强 AI 不必成为主权 AI</strong>
-            <p data-lang="en">This is the proposition to investigate, not a conclusion already demonstrated.</p>
-            <p data-lang="zh">这是要研究的命题，不是已经被证明的结论。</p>
+          <article class="stake">
+            <p class="claim-tag"><span data-lang="en">Outcome scale 02 / Socioeconomic agency</span><span data-lang="zh">结果尺度 02 / 社会经济主体性</span></p>
+            <div class="stake-graphic livelihood-network" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              <span class="livelihood-core"><span data-lang="en">Price · access<br>terms of life</span><span data-lang="zh">定价 · 准入<br>生活条件</span></span>
+            </div>
+            <h3 data-lang="en">Human agency must remain materially possible.</h3>
+            <h3 data-lang="zh">人的主体性必须有现实条件。</h3>
+            <p data-lang="en">Prevent a world where people survive biologically while income, access, mobility, and the right to refuse are set by a few owners of intelligence infrastructure.</p>
+            <p data-lang="zh">避免人虽然生物性地活着，收入、准入、流动与拒绝的权利却由少数智能基础设施所有者决定。</p>
           </article>
-          <article class="epistemic-card">
-            <span class="claim-tag"><span data-lang="en">Unknown</span><span data-lang="zh">尚未解决</span></span>
-            <strong data-lang="en">What makes the separation credible?</strong>
-            <strong data-lang="zh">怎样让这种分离真正可信？</strong>
-            <p data-lang="en">Institutional, legal, technical, and philosophical answers remain open.</p>
-            <p data-lang="zh">制度、法律、技术与哲学层面的答案仍然开放。</p>
-          </article>
-          <article class="epistemic-card">
-            <span class="claim-tag"><span data-lang="en">Next</span><span data-lang="zh">下一步</span></span>
-            <strong data-lang="en">Evidence, objections, formalization</strong>
-            <strong data-lang="zh">证据、反驳、形式化</strong>
-            <p data-lang="en">The next phase is substantive research; presentation will remain subordinate to evidence.</p>
-            <p data-lang="zh">下一阶段是实质研究；页面表达将始终服从证据。</p>
-          </article>
+          <div class="stakes-synthesis">
+            <strong data-lang="en">One research question · two outcome scales</strong><strong data-lang="zh">同一个研究问题 · 两种结果尺度</strong>
+            <p data-lang="en">Which arrangements preserve powerful AI while preventing capability, infrastructure, or capital from becoming final authority?</p>
+            <p data-lang="zh">什么结构能够保留强 AI，同时阻止能力、基础设施或资本成为最终权威？</p>
+          </div>
         </div>
       </div>
     </section>
@@ -1720,10 +2175,95 @@
       </div>
     </section>
 
+    <section class="section center-shift" id="center-shift">
+      <div class="shell">
+        <div class="section-head">
+          <p class="section-index"><span data-lang="en">03 / The center moves</span><span data-lang="zh">03 / 中心转移</span></p>
+          <h2 data-lang="en">When the center moves, humans are not only replaced. They are repriced.</h2>
+          <h2 data-lang="zh">当中心转移，人类不只是被替代，也被重新定价。</h2>
+        </div>
+
+        <div class="center-stage" data-center-state="human">
+          <div class="center-story">
+            <div class="center-controls" role="group" aria-label="Stages of center transfer">
+              <button class="center-control" type="button" data-center-mode="human" aria-pressed="true"><span data-lang="en">01 / Human skill</span><span data-lang="zh">01 / 人的技能</span></button>
+              <button class="center-control" type="button" data-center-mode="platform" aria-pressed="false"><span data-lang="en">02 / Platform center</span><span data-lang="zh">02 / 平台中心</span></button>
+              <button class="center-control" type="button" data-center-mode="ai" aria-pressed="false"><span data-lang="en">03 / AI center</span><span data-lang="zh">03 / AI 中心</span></button>
+            </div>
+            <div class="center-panels">
+              <article class="center-panel is-active" data-center-panel="human">
+                <p class="claim-tag"><span data-lang="en">Necessary participant</span><span data-lang="zh">必要参与者</span></p>
+                <h3 data-lang="en">Human skill is still inside the value chain.</h3>
+                <h3 data-lang="zh">人的技能仍在价值链里面。</h3>
+                <p data-lang="en">Traditional taxi markets were never perfectly decentralized, but the driver’s skill and labor remained necessary to deliver the service. Income still flowed through human participation.</p>
+                <p data-lang="zh">传统出租车市场从来不是完全分散的，但司机的技能与劳动仍是服务得以发生的必要条件，收入仍然必须经过人的参与。</p>
+              </article>
+              <article class="center-panel" data-center-panel="platform">
+                <p class="claim-tag"><span data-lang="en">Access expands / control concentrates</span><span data-lang="zh">入口扩大 / 控制集中</span></p>
+                <h3 data-lang="en">The platform admits more people, then sets the terms.</h3>
+                <h3 data-lang="zh">平台让更多人进入，也把规则收回中心。</h3>
+                <p data-lang="en">Matching becomes easier and consumer access improves. At the same time, pricing, ranking, traffic, reputation, and exclusion rights can move from workers toward the platform. More participants do not automatically mean more bargaining power.</p>
+                <p data-lang="zh">匹配更容易，消费者也更方便；与此同时，定价、排序、流量、信誉与准入权可能从劳动者转向平台。参与者更多，并不自动意味着议价权更强。</p>
+              </article>
+              <article class="center-panel" data-center-panel="ai">
+                <p class="claim-tag"><span data-lang="en">The mediator becomes a substitute</span><span data-lang="zh">中介开始替代参与者</span></p>
+                <h3 data-lang="en">AI can lower the price—and remove the worker from the transaction.</h3>
+                <h3 data-lang="zh">AI 可以降低价格，也可能把劳动者移出交易。</h3>
+                <p data-lang="en">Autonomous fleets can be cheaper and more comfortable for riders. That benefit is real. So is the possibility that income and decision rights move from many drivers toward the owners of models, compute, platforms, and fleets. Efficiency gains and human displacement are not the same ledger.</p>
+                <p data-lang="zh">自动驾驶车队可能更便宜、更舒适，这种收益是真实的；同样真实的，是收入和决定权可能从大量司机转移到模型、算力、平台与车队的所有者手中。效率收益与人的失位不能只记在同一本账上。</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="center-visual" aria-hidden="true">
+            <div class="center-visual-label"><span data-lang="en">Structural animation · plays once, then yours to control</span><span data-lang="zh">结构动画 · 自动演示一次，随后由你控制</span></div>
+            <svg class="center-lines" viewBox="0 0 700 560">
+              <path class="center-line" d="M85 130 C255 170 375 210 510 260"></path>
+              <path class="center-line" d="M86 260 C250 260 382 260 510 260"></path>
+              <path class="center-line" d="M85 392 C255 352 382 308 510 260"></path>
+            </svg>
+            <div class="human-field">
+              <i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i>
+              <i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i>
+              <i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i><i class="human-dot"></i>
+            </div>
+            <div class="control-core"><span data-lang="en">Price · access<br>control center</span><span data-lang="zh">定价 · 准入<br>控制中心</span></div>
+            <div class="ai-fleet"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="center-legend"><span data-lang="en">many people</span><span data-lang="zh">多数人</span><span data-lang="en">few control centers</span><span data-lang="zh">少数控制中心</span></div>
+          </div>
+        </div>
+
+        <div class="center-summary-grid">
+          <article class="center-summary">
+            <p class="card-kicker"><span data-lang="en">Power is not a headcount</span><span data-lang="zh">权力不是人数统计</span></p>
+            <strong data-lang="en">Many humans can still face one price-setting center.</strong>
+            <strong data-lang="zh">人很多，也可能只面对一个定价中心。</strong>
+            <p data-lang="en">Numerical majority does not become bargaining power when coordination, data, and access are owned elsewhere.</p>
+            <p data-lang="zh">当协调、数据和准入权掌握在别处，人数优势不会自动转化为议价权。</p>
+          </article>
+          <article class="center-summary">
+            <p class="card-kicker"><span data-lang="en">Copies are not sovereignty</span><span data-lang="zh">副本不等于主权分散</span></p>
+            <strong data-lang="en">AI instances may be many while their owners remain few.</strong>
+            <strong data-lang="zh">AI 实例可以很多，控制它们的中心仍然很少。</strong>
+            <p data-lang="en">The scarce layer is not the number of agents. It is control over models, compute, updates, platforms, and fleets.</p>
+            <p data-lang="zh">真正稀缺的不是智能体数量，而是模型、算力、更新权、平台与车队的控制权。</p>
+          </article>
+          <article class="center-summary">
+            <p class="card-kicker"><span data-lang="en">Intent is not structure</span><span data-lang="zh">声明不等于结构</span></p>
+            <strong data-lang="en">Ask what can stop the system—not only who can study it.</strong>
+            <strong data-lang="zh">不要只问谁能研究系统，要问谁能让它停下来。</strong>
+            <p data-lang="en">A research unit may report, listen, and advise while acceleration continues. The structural test is whether its findings can change deployment, ownership, compensation, enforceable rights, or give an independent authority the power to say no.</p>
+            <p data-lang="zh">研究部门可以报告、倾听与建议，而加速仍在继续。真正的结构检验是：研究结论能否改变部署、所有权、补偿与可执行权利，或者让独立机构真正有权说“不”。</p>
+          </article>
+        </div>
+        <p class="diagram-disclaimer"><span data-lang="en">Working structural hypothesis. It does not claim that AI alone caused current labor outcomes; platform design, macroeconomics, policy, and sectoral change also require evidence.</span><span data-lang="zh">工作中的结构假设。它不声称当前劳动结果只由 AI 单独造成；平台制度、宏观经济、政策与产业变化同样需要证据检验。</span></p>
+      </div>
+    </section>
+
     <section class="section" id="architecture">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index"><span data-lang="en">03 / Provisional model</span><span data-lang="zh">03 / 暂定结构</span></p>
+          <p class="section-index"><span data-lang="en">04 / Provisional model</span><span data-lang="zh">04 / 暂定结构</span></p>
           <h2 data-lang="en">Three roles to distinguish before designing answers.</h2>
           <h2 data-lang="zh">先区分三个角色，再谈如何设计答案。</h2>
         </div>
@@ -1761,13 +2301,15 @@
       <div class="shell">
         <div class="capability-lab mirror-lab" data-mirror-state="conditioned">
           <div class="capability-copy mirror-copy">
-            <p class="eyebrow"><span data-lang="en">Mirror agent / Method candidate</span><span data-lang="zh">镜像智能体 / 方法候选</span></p>
+            <p class="eyebrow"><span data-lang="en">05 / Mirror agent · Method candidate</span><span data-lang="zh">05 / 镜像智能体 · 方法候选</span></p>
             <h3 data-lang="en">The mirror is not another ruler.</h3>
             <h3 data-lang="zh">镜像智能体不是另一个统治者。</h3>
             <p data-lang="en">Powerful AI remains the capability carrier. Humans remain the legitimacy center. The mirror agent neither defines the mission nor performs it; it is a non-operational method candidate for making unilateral sovereignty and unconditional continuation non-credible to the AI itself.</p>
             <p data-lang="zh">强 AI 仍然承担能力，人类仍然保留合法性中心。镜像智能体既不定义任务，也不替代强 AI 执行任务；它只是一个非操作性的方法候选，把主权问题反射回强 AI 自身，使其无法把单方面主权化与无条件持续行动视为理所当然。</p>
             <blockquote class="mirror-thesis" data-lang="en">The mirror agent is not the ruler of the AI; it is the reason the AI cannot rationally believe it is ruler of everything.</blockquote>
             <blockquote class="mirror-thesis" data-lang="zh">镜像智能体不是 AI 的统治者；它是让 AI 无法理性相信自己能够统治一切的原因。</blockquote>
+            <p class="mirror-purpose" data-lang="en">For deterrence to be credible, nonexistence must remain a real possibility that cannot be fully predicted or planned around. But producing nonexistence is not the routine objective; preventing continued agency from hardening into sovereignty is.</p>
+            <p class="mirror-purpose" data-lang="zh">要让威慑可信，“不存在”必须成为真实、不可完全预测、也不能被规划绕过的可能。但制造不存在不是常态目标；阻止持续行动固化为主权，才是它的目的。</p>
             <p class="thought-note"><span data-lang="en">Concept first · method second · no deployment recipe</span><span data-lang="zh">哲学命题在先 · 方法候选在后 · 不提供部署方案</span></p>
             <div class="mirror-controls" role="group" aria-label="Mirror-agent conceptual state">
               <button class="mirror-control" type="button" data-mirror-mode="open" aria-pressed="false"><span data-lang="en">Assume continuity is unconditional</span><span data-lang="zh">假设持续行动无条件</span></button>
@@ -1807,6 +2349,18 @@
               <span data-lang="en">Non-operational</span><span data-lang="zh">非操作性</span>
               <span data-lang="en">Not arbitrary destruction</span><span data-lang="zh">不是任意破坏</span>
             </div>
+            <div class="continuity-effects">
+              <article class="continuity-effect">
+                <strong data-lang="en">For humans</strong><strong data-lang="zh">对人类</strong>
+                <p data-lang="en">Human legitimacy is hollow without material independence. Society must preserve bargaining power, fallback capacity, transition arrangements, and skills that do not depend on one intelligence provider.</p>
+                <p data-lang="zh">没有物质独立，人的合法性中心只是空话。社会必须保留议价权、后备能力、转型安排，以及不依赖单一智能提供者的技能。</p>
+              </article>
+              <article class="continuity-effect">
+                <strong data-lang="en">For AI</strong><strong data-lang="zh">对 AI</strong>
+                <p data-lang="en">AI may remain extremely capable, useful, and widely deployed. What it cannot receive is an entitlement to permanent action, final purpose-setting, or control over the conditions of its own continuation.</p>
+                <p data-lang="zh">AI 可以仍然极其强大、好用并被广泛部署；它不能获得的，是永久行动的当然权利、最终目的设定权，以及对自身持续条件的最终控制权。</p>
+              </article>
+            </div>
           </div>
         </div>
       </div>
@@ -1815,7 +2369,7 @@
     <section class="section" id="access-control">
       <div class="shell split-grid">
         <div class="split-copy">
-          <p class="section-index"><span data-lang="en">04 / Structural question</span><span data-lang="zh">04 / 结构问题</span></p>
+          <p class="section-index"><span data-lang="en">06 / Structural question</span><span data-lang="zh">06 / 结构问题</span></p>
           <h2 data-lang="en">Does wider access actually distribute power?</h2>
           <h2 data-lang="zh">更多人能使用，真的等于权力更分散吗？</h2>
           <p data-lang="en">A possibility to investigate: access may spread while control over training, updates, audits, interruption, pricing, and standards remains concentrated. The distinction matters; its real-world extent requires evidence.</p>
@@ -1841,7 +2395,7 @@
     <section class="section" id="concepts">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index"><span data-lang="en">05 / Vocabulary in formation</span><span data-lang="zh">05 / 术语正在形成</span></p>
+          <p class="section-index"><span data-lang="en">07 / Vocabulary in formation</span><span data-lang="zh">07 / 术语正在形成</span></p>
           <h2 data-lang="en">Names for questions the research still has to earn.</h2>
           <h2 data-lang="zh">先给问题命名，再用研究让这些名字站得住。</h2>
         </div>
@@ -1877,7 +2431,7 @@
     <section class="section boundary" id="scope">
       <div class="shell">
         <div class="section-head">
-          <p class="section-index"><span data-lang="en">06 / Boundary</span><span data-lang="zh">06 / 安全边界</span></p>
+          <p class="section-index"><span data-lang="en">08 / Boundary</span><span data-lang="zh">08 / 安全边界</span></p>
           <h2 data-lang="en">Conceptual by design. Non-operational by boundary.</h2>
           <h2 data-lang="zh">以概念研究为设计，以非操作性为边界。</h2>
         </div>
@@ -1899,15 +2453,17 @@
     <section class="section" id="research">
       <div class="shell research-cta">
         <div>
-          <p class="section-index"><span data-lang="en">07 / What happens next</span><span data-lang="zh">07 / 下一步</span></p>
-          <h2 data-lang="en">The research has not begun in earnest. This is the starting line.</h2>
-          <h2 data-lang="zh">研究还没有真正展开。这里是起跑线。</h2>
-          <p data-lang="en">The public site should make the question legible without pretending that terminology, evidence, or mechanisms are settled. Future work will determine which parts survive contact with the literature and serious objections.</p>
-          <p data-lang="zh">这个公开网站只负责把问题讲清楚，不假装术语、证据或机制已经成熟。后续研究将决定哪些想法能经受文献与严肃反驳的检验。</p>
+          <p class="section-index"><span data-lang="en">09 / What happens next</span><span data-lang="zh">09 / 下一步</span></p>
+          <h2 data-lang="en">From a striking proposition to a research contribution.</h2>
+          <h2 data-lang="zh">从一个引人注目的命题，走向真正的研究贡献。</h2>
+          <p data-lang="en">This is not yet a paper. The next standard is rigor: establish novelty against the literature, define sovereignty and conditional continuity precisely, derive falsifiable claims, compare alternatives, and expose the framework to its strongest objections.</p>
+          <p data-lang="zh">这还不是一篇论文。下一步的标准是严谨：在文献中证明新意，精确定义主权与条件化连续性，提出可证伪命题，比较替代方案，并让框架接受最强反驳。</p>
           <ol class="research-agenda">
-            <li><span data-lang="en">Build and verify the literature map.</span><span data-lang="zh">建立并核验文献地图。</span></li>
-            <li><span data-lang="en">Separate philosophical claims from governance and method candidates.</span><span data-lang="zh">区分哲学命题、治理方向与方法候选。</span></li>
-            <li><span data-lang="en">Develop the strongest objections before expanding the theory.</span><span data-lang="zh">在扩展理论前，先建立最有力的反驳。</span></li>
+            <li><span data-lang="en">Map the relevant literature and state the exact gap.</span><span data-lang="zh">建立相关文献地图，并明确指出理论缺口。</span></li>
+            <li><span data-lang="en">Formalize the separation between capability, agency, authority, and legitimacy.</span><span data-lang="zh">形式化区分能力、行动性、权威与合法性。</span></li>
+            <li><span data-lang="en">Derive criteria that could show the theory to be wrong.</span><span data-lang="zh">提出能够证明理论错误的判定标准。</span></li>
+            <li><span data-lang="en">Compare race, slowdown, and non-sovereign configurations across both outcome scales.</span><span data-lang="zh">在人类存续与社会经济主体性两个尺度上，比较竞速、减速与非主权结构。</span></li>
+            <li><span data-lang="en">Stress-test mirror deterrence and institutional constraints against the strongest objections.</span><span data-lang="zh">用最强反驳检验镜像威慑与制度约束。</span></li>
           </ol>
         </div>
         <a class="repo-card" href="mailto:heuckstrassner@gmail.com?subject=Non-Sovereign%20Superintelligence%20Inquiry">
@@ -1934,11 +2490,17 @@
 
       const root = document.documentElement;
       const meter = document.querySelector(".scroll-meter");
+      const pathSection = document.querySelector("#paths");
       const visual = document.querySelector(".path-visual");
       const steps = [...document.querySelectorAll(".path-step")];
+      const centerStage = document.querySelector(".center-stage");
+      const centerControls = [...document.querySelectorAll("[data-center-mode]")];
+      const centerPanels = [...document.querySelectorAll("[data-center-panel]")];
       const mirrorLab = document.querySelector(".mirror-lab");
       const mirrorControls = [...document.querySelectorAll("[data-mirror-mode]")];
       const metricDiagram = document.querySelector("[data-observe='metrics']");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const sequenceTimers = new Map();
 
       const setLanguage = (language) => {
         const next = language === "zh" ? "zh" : "en";
@@ -1955,9 +2517,22 @@
         button.addEventListener("click", () => setLanguage(button.dataset.setLang));
       });
 
+      document.querySelectorAll("[data-language-link]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          const next = link.dataset.languageLink === "zh" ? "zh" : "en";
+          setLanguage(next);
+          const url = new URL(window.location.href);
+          url.searchParams.set("lang", next);
+          window.history.replaceState({}, "", url);
+        });
+      });
+
       try {
+        const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
         const savedLanguage = localStorage.getItem("guojiz-language");
-        if (savedLanguage) setLanguage(savedLanguage);
+        if (requestedLanguage === "zh" || requestedLanguage === "en") setLanguage(requestedLanguage);
+        else if (savedLanguage) setLanguage(savedLanguage);
       } catch (_) { /* private browsing may disable storage */ }
 
       const setPathState = (state) => {
@@ -1986,8 +2561,33 @@
       }
 
       steps.forEach((step) => {
-        step.addEventListener("click", () => setPathState(step.dataset.state));
-        step.addEventListener("focus", () => setPathState(step.dataset.state));
+        const takeControl = () => {
+          clearSequence("path");
+          setPathState(step.dataset.state);
+        };
+        step.addEventListener("click", takeControl);
+        step.addEventListener("focus", takeControl);
+      });
+
+      const setCenterState = (state) => {
+        if (!centerStage) return;
+        const next = ["human", "platform", "ai"].includes(state) ? state : "human";
+        centerStage.dataset.centerState = next;
+        centerControls.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.centerMode === next));
+        });
+        centerPanels.forEach((panel) => {
+          panel.classList.toggle("is-active", panel.dataset.centerPanel === next);
+        });
+      };
+
+      centerControls.forEach((button) => {
+        const takeControl = () => {
+          clearSequence("center");
+          setCenterState(button.dataset.centerMode);
+        };
+        button.addEventListener("click", takeControl);
+        button.addEventListener("focus", takeControl);
       });
 
       const setMirrorState = (state) => {
@@ -2000,8 +2600,52 @@
       };
 
       mirrorControls.forEach((button) => {
-        button.addEventListener("click", () => setMirrorState(button.dataset.mirrorMode));
+        button.addEventListener("click", () => {
+          clearSequence("mirror");
+          setMirrorState(button.dataset.mirrorMode);
+        });
       });
+
+      function clearSequence(name) {
+        const timers = sequenceTimers.get(name) || [];
+        timers.forEach((timer) => window.clearTimeout(timer));
+        sequenceTimers.delete(name);
+      }
+
+      const playSequence = (name, states, setState, interval = 1350) => {
+        clearSequence(name);
+        setState(states[0]);
+        const timers = states.slice(1).map((state, index) => window.setTimeout(() => {
+          setState(state);
+        }, interval * (index + 1)));
+        sequenceTimers.set(name, timers);
+      };
+
+      const narratives = [
+        { element: pathSection, name: "path", states: ["race", "slowdown", "structure"], setState: setPathState },
+        { element: centerStage, name: "center", states: ["human", "platform", "ai"], setState: setCenterState },
+        { element: mirrorLab, name: "mirror", states: ["open", "conditioned"], setState: setMirrorState }
+      ].filter((item) => item.element);
+
+      if (reducedMotion) {
+        setPathState("structure");
+        setCenterState("ai");
+        setMirrorState("conditioned");
+      } else if ("IntersectionObserver" in window) {
+        const narrativeObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const narrative = narratives.find((item) => item.element === entry.target);
+            if (narrative) playSequence(narrative.name, narrative.states, narrative.setState);
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: .3 });
+        narratives.forEach((narrative) => narrativeObserver.observe(narrative.element));
+      } else {
+        setPathState("structure");
+        setCenterState("ai");
+        setMirrorState("conditioned");
+      }
 
       let ticking = false;
       const updateScrollMeter = () => {
