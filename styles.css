@@ -136,7 +136,7 @@ body.is-document .site-header {
 .site-nav a {
   padding: 8px 10px;
   color: currentColor;
-  font-size: .7rem;
+  font-size: .78rem;
   letter-spacing: .08em;
   opacity: .58;
   text-decoration: none;
@@ -161,7 +161,7 @@ body.is-document .site-header {
   color: inherit;
   background: transparent;
   cursor: pointer;
-  font-size: .68rem;
+  font-size: .76rem;
   letter-spacing: .06em;
   opacity: .78;
 }
@@ -236,7 +236,7 @@ body.is-document .site-header {
   display: flex;
   gap: 20px;
   color: rgba(240, 231, 210, .48);
-  font-size: .58rem;
+  font-size: .72rem;
   font-weight: 600;
   letter-spacing: .15em;
 }
@@ -276,7 +276,7 @@ body.is-document .site-header {
 .mini-label {
   margin: 0;
   color: var(--mirror);
-  font-size: .64rem;
+  font-size: .72rem;
   font-weight: 700;
   letter-spacing: .16em;
   line-height: 1.45;
@@ -337,7 +337,7 @@ html[data-language="en"] .story-chapter h2 {
   border-bottom: 1px solid rgba(240, 231, 210, .14);
   color: rgba(240, 231, 210, .52);
   background: rgba(11, 13, 12, .78);
-  font-size: .57rem;
+  font-size: .7rem;
   letter-spacing: .13em;
   text-transform: uppercase;
 }
@@ -372,7 +372,7 @@ html[data-language="en"] .story-chapter h2 {
 .chat-message > b {
   grid-column: 1;
   color: rgba(240, 231, 210, .48);
-  font-size: .58rem;
+  font-size: .7rem;
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -382,7 +382,7 @@ html[data-language="en"] .story-chapter h2 {
   grid-column: 2;
   margin: 0;
   color: rgba(240, 231, 210, .43);
-  font-size: clamp(.8rem, .9vw, .94rem);
+  font-size: clamp(.92rem, 1vw, 1.06rem);
   line-height: 1.72;
 }
 
@@ -406,7 +406,7 @@ html[data-language="en"] .story-chapter h2 {
 
 .chat-message .ai-note {
   color: rgba(240, 231, 210, .32);
-  font-size: .62rem;
+  font-size: .72rem;
   letter-spacing: .04em;
 }
 
@@ -421,7 +421,7 @@ html[data-language="en"] .story-chapter h2 {
   align-items: center;
   color: rgba(240, 231, 210, .45);
   font-family: var(--serif);
-  font-size: .68rem;
+  font-size: .74rem;
 }
 
 .meter-track {
@@ -444,7 +444,7 @@ html[data-language="en"] .story-chapter h2 {
   grid-template-columns: repeat(3, max-content);
   gap: 9px 24px;
   color: rgba(240, 231, 210, .52);
-  font-size: .58rem;
+  font-size: .7rem;
   letter-spacing: .08em;
   text-transform: uppercase;
 }
@@ -474,7 +474,7 @@ html[data-language="en"] .story-chapter h2 {
   top: 106px;
   margin: 0;
   color: rgba(240, 231, 210, .42);
-  font-size: .58rem;
+  font-size: .68rem;
   letter-spacing: .14em;
   text-transform: uppercase;
 }
@@ -628,7 +628,7 @@ html[data-language="en"] .research-document h2 {
   margin-top: auto;
   padding-top: 24px;
   border-top: 1px solid var(--line-light);
-  font-size: .68rem;
+  font-size: .76rem;
   letter-spacing: .1em;
   text-transform: uppercase;
 }
@@ -870,7 +870,7 @@ html[data-language="en"] .research-document h2 {
   align-items: baseline;
   margin: 30px 0 0;
   color: var(--muted);
-  font-size: .66rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -920,14 +920,14 @@ html[data-language="en"] .research-document h2 {
 .research-questions strong {
   display: block;
   margin-bottom: 5px;
-  font-size: .78rem;
+  font-size: .88rem;
   letter-spacing: .04em;
 }
 
 .research-questions p {
   margin: 0;
   color: var(--muted);
-  font-size: .88rem;
+  font-size: .96rem;
   line-height: 1.68;
 }
 
@@ -987,7 +987,7 @@ html[data-language="en"] .research-document h2 {
   padding: 14px 0;
   border-bottom: 1px solid var(--line-light);
   color: var(--muted);
-  font-size: .84rem;
+  font-size: .94rem;
 }
 
 .contact-link {
@@ -1007,7 +1007,7 @@ html[data-language="en"] .research-document h2 {
   display: flex;
   justify-content: space-between;
   gap: 18px;
-  font-size: .65rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .13em;
   text-transform: uppercase;
@@ -1030,7 +1030,7 @@ html[data-language="en"] .research-document h2 {
   padding: 28px clamp(24px, 5vw, 78px);
   color: rgba(240, 231, 210, .52);
   background: var(--night);
-  font-size: .58rem;
+  font-size: .68rem;
   letter-spacing: .1em;
   text-transform: uppercase;
 }
@@ -1091,7 +1091,7 @@ html[data-language="en"] .research-document h2 {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 16px;
-    font-size: .5rem;
+    font-size: .68rem;
   }
   .story-meter { width: calc(100% - 48px); left: 24px; bottom: 40px; }
   .scroll-cue { display: none; }
@@ -1146,19 +1146,19 @@ html[data-language="en"] .research-document h2 {
 
   .story-stage { min-height: 0; }
   .story-interface { padding: 84px 20px 28px; }
-  .story-context { top: 82px; left: 20px; font-size: .52rem; }
+  .story-context { top: 82px; left: 20px; font-size: .65rem; }
   .particle-legend { display: none; }
   .story-copy { top: 108px; right: 20px; left: 20px; min-height: 126px; }
   .story-chapter h2,
   html[data-language="en"] .story-chapter h2 { margin-top: 10px; font-size: clamp(1.72rem, 8vw, 2.55rem); line-height: 1.01; }
   .story-chapter p:last-child { display: none; }
   .story-transcript { right: 14px; bottom: 52px; left: 14px; height: clamp(180px, 36vh, 260px); }
-  .transcript-bar { height: 34px; padding-inline: 14px; font-size: .48rem; }
-  .transcript-viewport { height: calc(100% - 34px); }
+  .transcript-bar { height: 36px; padding-inline: 14px; font-size: .62rem; }
+  .transcript-viewport { height: calc(100% - 36px); }
   .transcript-flow { padding: 16px 16px 64px; }
   .chat-message { display: block; padding: 14px 0 18px; }
-  .chat-message > b { display: block; margin-bottom: 7px; font-size: .5rem; }
-  .chat-message > p { font-size: .75rem; line-height: 1.58; }
+  .chat-message > b { display: block; margin-bottom: 7px; font-size: .62rem; }
+  .chat-message > p { font-size: .88rem; line-height: 1.6; }
   .chat-message > p + p { margin-top: 8px; }
   .story-meter { right: 20px; bottom: 24px; left: 20px; width: auto; }
 
