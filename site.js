@@ -16,12 +16,22 @@
   const brand = document.querySelector(".brand");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const CHAPTER_STOPS = [0, 0.14, 0.29, 0.43, 0.57, 0.71, 0.85, 0.95];
+  const PROLOGUE_COUNT = 7;
+  const CHAPTER_STOPS = [0, 0.065, 0.13, 0.195, 0.26, 0.325, 0.39, 0.47, 0.535, 0.6, 0.665, 0.73, 0.795, 0.86, 0.93];
+  const PARTICLE_KEYFRAMES = [0.03, 0.14, 0.27, 0.4, 0.54, 0.71, 0.85, 0, 0.14, 0.29, 0.43, 0.57, 0.71, 0.85, 0.95];
   let activeScene = -1;
   let ticking = false;
 
   function clamp(value, min = 0, max = 1) {
     return Math.max(min, Math.min(max, value));
+  }
+
+  function lerp(a, b, amount) {
+    return a + (b - a) * amount;
+  }
+
+  function power3InOut(value) {
+    return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2;
   }
 
   function setLanguage(language, updateUrl = true) {
@@ -56,12 +66,18 @@
     }
   }
 
-  function sceneForProgress(progress) {
-    let scene = 0;
-    for (let index = 1; index < CHAPTER_STOPS.length; index += 1) {
-      if (progress >= CHAPTER_STOPS[index]) scene = index;
+  function segmentForProgress(progress) {
+    if (progress >= CHAPTER_STOPS[CHAPTER_STOPS.length - 1]) {
+      const last = CHAPTER_STOPS.length - 1;
+      return { from: last, to: last, raw: 1, handoff: 0 };
     }
-    return scene;
+    let from = 0;
+    while (from < CHAPTER_STOPS.length - 2 && progress >= CHAPTER_STOPS[from + 1]) from += 1;
+    const start = CHAPTER_STOPS[from];
+    const end = CHAPTER_STOPS[from + 1];
+    const raw = clamp((progress - start) / (end - start));
+    const handoff = reducedMotion ? (raw >= 0.82 ? 1 : 0) : power3InOut(clamp((raw - 0.68) / 0.32));
+    return { from, to: from + 1, raw, handoff };
   }
 
   function setScene(scene) {
@@ -72,7 +88,42 @@
       chapter.classList.toggle("is-active", active);
       chapter.setAttribute("aria-hidden", String(!active));
     });
-    if (sceneCount) sceneCount.textContent = String(scene).padStart(2, "0");
+    document.body.classList.toggle("is-prologue", scene < PROLOGUE_COUNT);
+    if (sceneCount) sceneCount.textContent = chapters[scene]?.dataset.meter || String(scene).padStart(2, "0");
+  }
+
+  function updateBeats(chapter, beatIndex) {
+    chapter.querySelectorAll("[data-beats]").forEach((group) => {
+      const beats = [...group.children];
+      beats.forEach((beat, index) => {
+        beat.classList.toggle("is-read", index < beatIndex);
+        beat.classList.toggle("is-highlighted", index === beatIndex);
+      });
+    });
+  }
+
+  function updateNarrative(progress) {
+    const segment = segmentForProgress(progress);
+    const position = lerp(segment.from, segment.to, segment.handoff);
+    const visibleScene = segment.from;
+
+    chapters.forEach((chapter, index) => {
+      const offset = index - position;
+      const proximity = clamp(1 - Math.abs(offset) * 0.88);
+      chapter.style.setProperty("--card-x", `${offset * 118}%`);
+      chapter.style.opacity = String(proximity);
+      if (index < PROLOGUE_COUNT) {
+        const groups = chapter.querySelectorAll("[data-beats]");
+        const beatCount = groups[0]?.children.length || 0;
+        const reading = index === segment.from ? clamp(segment.raw / 0.64) : 0;
+        const beatIndex = beatCount ? Math.min(beatCount - 1, Math.floor(reading * beatCount)) : -1;
+        updateBeats(chapter, beatIndex);
+      }
+    });
+
+    setScene(visibleScene);
+    const particleAmount = power3InOut(segment.raw);
+    return lerp(PARTICLE_KEYFRAMES[segment.from], PARTICLE_KEYFRAMES[segment.to], particleAmount);
   }
 
   function scrollToScene(scene) {
@@ -92,15 +143,15 @@
     const pageDistance = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     const pageProgress = clamp(window.scrollY / pageDistance);
 
-    setScene(sceneForProgress(storyProgress));
+    const particleProgress = updateNarrative(storyProgress);
     if (storyMeter) storyMeter.style.width = `${storyProgress * 100}%`;
     if (pageMeter) pageMeter.style.width = `${pageProgress * 100}%`;
-    if (scrollCue) scrollCue.style.opacity = String(clamp(1 - storyProgress * 18));
+    if (scrollCue) scrollCue.style.opacity = String(clamp(1 - storyProgress * 22));
 
     document.body.classList.toggle("is-document", window.scrollY >= research.offsetTop - 70);
     if (themeColor) themeColor.content = document.body.classList.contains("is-document") ? "#f1ede4" : "#0b0d0c";
 
-    if (window.ParticleStory) window.ParticleStory.setProgress(storyProgress);
+    if (window.ParticleStory) window.ParticleStory.setProgress(particleProgress);
     ticking = false;
   }
 
