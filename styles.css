@@ -319,10 +319,9 @@ html[data-language="en"] .story-chapter h2 {
   width: min(78vw, 1040px);
   height: clamp(180px, 31vh, 292px);
   overflow: hidden;
-  border: 1px solid rgba(240, 231, 210, .2);
-  background: rgba(11, 13, 12, .48);
-  box-shadow: 20px 20px 0 rgba(89, 183, 206, .025);
-  backdrop-filter: blur(16px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .transcript-bar {
@@ -333,12 +332,13 @@ html[data-language="en"] .story-chapter h2 {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 0 20px;
-  border-bottom: 1px solid rgba(240, 231, 210, .14);
+  padding: 0;
+  border-bottom: 0;
   color: rgba(240, 231, 210, .52);
-  background: rgba(11, 13, 12, .78);
+  background: transparent;
   font-size: .7rem;
   letter-spacing: .13em;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .9);
   text-transform: uppercase;
 }
 
@@ -375,6 +375,7 @@ html[data-language="en"] .story-chapter h2 {
   font-size: .7rem;
   font-weight: 600;
   letter-spacing: .12em;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .9);
   text-transform: uppercase;
 }
 
@@ -384,6 +385,7 @@ html[data-language="en"] .story-chapter h2 {
   color: rgba(240, 231, 210, .43);
   font-size: clamp(.92rem, 1vw, 1.06rem);
   line-height: 1.72;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, .92);
 }
 
 .chat-message > p + p { margin-top: 9px; }
