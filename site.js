@@ -7,6 +7,10 @@
   const chapters = [...document.querySelectorAll(".story-chapter")];
   const sceneCount = document.querySelector(".scene-count");
   const storyMeter = document.querySelector(".meter-track i");
+  const transcriptMeter = document.querySelector(".transcript-bar i");
+  const transcript = document.querySelector(".story-transcript");
+  const transcriptViewport = document.querySelector(".transcript-viewport");
+  const transcriptFlows = [...document.querySelectorAll(".transcript-flow")];
   const pageMeter = document.querySelector(".page-progress i");
   const scrollCue = document.querySelector(".scroll-cue");
   const languageToggle = document.querySelector("[data-toggle-language]");
@@ -16,9 +20,8 @@
   const brand = document.querySelector(".brand");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const PROLOGUE_COUNT = 7;
-  const CHAPTER_STOPS = [0, 0.065, 0.13, 0.195, 0.26, 0.325, 0.39, 0.47, 0.535, 0.6, 0.665, 0.73, 0.795, 0.86, 0.93];
-  const PARTICLE_KEYFRAMES = [0.03, 0.14, 0.27, 0.4, 0.54, 0.71, 0.85, 0, 0.14, 0.29, 0.43, 0.57, 0.71, 0.85, 0.95];
+  const CHAPTER_STOPS = [0, 0.095, 0.19, 0.285, 0.38, 0.475, 0.57, 0.665, 0.76, 0.855, 0.94];
+  const PARTICLE_KEYFRAMES = [0, 0.14, 0.24, 0.33, 0.43, 0.52, 0.63, 0.71, 0.79, 0.86, 0.95];
   let activeScene = -1;
   let ticking = false;
 
@@ -48,10 +51,12 @@
       document.title = "郭己正 · 非主权超级智能";
       if (description) description.content = "郭己正关于非主权超级智能、镜像威慑与人类备用连续性的独立研究。2026 年 7 月正式启动，欢迎专家学者合作。";
       if (brand) brand.setAttribute("aria-label", "郭己正，独立人工智能研究");
+      if (transcript) transcript.setAttribute("aria-label", "完整对话记录，原始角色已保留");
     } else {
       document.title = "Guojiz · Non-Sovereign Superintelligence";
       if (description) description.content = "Independent research on non-sovereign superintelligence, mirror deterrence, and human fallback continuity. Formal research begins July 2026; expert collaborators are welcome.";
       if (brand) brand.setAttribute("aria-label", "Guojiz, independent AI research");
+      if (transcript) transcript.setAttribute("aria-label", "Full dialogue transcript with original roles preserved");
     }
 
     try {
@@ -64,6 +69,8 @@
     } catch (_) {
       // The language switch still works when storage or history is unavailable.
     }
+
+    if (story) window.requestAnimationFrame(update);
   }
 
   function segmentForProgress(progress) {
@@ -76,7 +83,7 @@
     const start = CHAPTER_STOPS[from];
     const end = CHAPTER_STOPS[from + 1];
     const raw = clamp((progress - start) / (end - start));
-    const handoff = reducedMotion ? (raw >= 0.82 ? 1 : 0) : power3InOut(clamp((raw - 0.68) / 0.32));
+    const handoff = reducedMotion ? (raw >= 0.8 ? 1 : 0) : power3InOut(clamp((raw - 0.62) / 0.38));
     return { from, to: from + 1, raw, handoff };
   }
 
@@ -88,16 +95,33 @@
       chapter.classList.toggle("is-active", active);
       chapter.setAttribute("aria-hidden", String(!active));
     });
-    document.body.classList.toggle("is-prologue", scene < PROLOGUE_COUNT);
     if (sceneCount) sceneCount.textContent = chapters[scene]?.dataset.meter || String(scene).padStart(2, "0");
   }
 
-  function updateBeats(chapter, beatIndex) {
-    chapter.querySelectorAll("[data-beats]").forEach((group) => {
-      const beats = [...group.children];
-      beats.forEach((beat, index) => {
-        beat.classList.toggle("is-read", index < beatIndex);
-        beat.classList.toggle("is-highlighted", index === beatIndex);
+  function transcriptTarget(flow, target) {
+    if (!transcriptViewport) return 0;
+    const beat = flow.querySelector(`[data-transcript-beat="${target}"]`);
+    if (!beat) return 0;
+    const flowBox = flow.getBoundingClientRect();
+    const beatBox = beat.getBoundingClientRect();
+    const relativeTop = beatBox.top - flowBox.top;
+    const maxScroll = Math.max(0, flow.scrollHeight - transcriptViewport.clientHeight);
+    return clamp(relativeTop - transcriptViewport.clientHeight * 0.28, 0, maxScroll);
+  }
+
+  function updateTranscript(segment) {
+    const fromTarget = Number(chapters[segment.from]?.dataset.chatTarget || 0);
+    const toTarget = Number(chapters[segment.to]?.dataset.chatTarget || fromTarget);
+    const movement = reducedMotion ? segment.handoff : power3InOut(clamp((segment.raw - 0.08) / 0.84));
+    const currentTarget = segment.raw < 0.58 ? fromTarget : toTarget;
+
+    transcriptFlows.forEach((flow) => {
+      if (flow.offsetParent === null) return;
+      const fromY = transcriptTarget(flow, fromTarget);
+      const toY = transcriptTarget(flow, toTarget);
+      flow.style.transform = `translate3d(0, ${-lerp(fromY, toY, movement)}px, 0)`;
+      flow.querySelectorAll("[data-transcript-beat]").forEach((beat) => {
+        beat.classList.toggle("is-current", Number(beat.dataset.transcriptBeat) === currentTarget);
       });
     });
   }
@@ -109,19 +133,13 @@
 
     chapters.forEach((chapter, index) => {
       const offset = index - position;
-      const proximity = clamp(1 - Math.abs(offset) * 0.88);
-      chapter.style.setProperty("--card-x", `${offset * 118}%`);
+      const proximity = clamp(1 - Math.abs(offset));
+      chapter.style.setProperty("--statement-y", `${offset * 28}px`);
       chapter.style.opacity = String(proximity);
-      if (index < PROLOGUE_COUNT) {
-        const groups = chapter.querySelectorAll("[data-beats]");
-        const beatCount = groups[0]?.children.length || 0;
-        const reading = index === segment.from ? clamp(segment.raw / 0.64) : 0;
-        const beatIndex = beatCount ? Math.min(beatCount - 1, Math.floor(reading * beatCount)) : -1;
-        updateBeats(chapter, beatIndex);
-      }
     });
 
     setScene(visibleScene);
+    updateTranscript(segment);
     const particleAmount = power3InOut(segment.raw);
     return lerp(PARTICLE_KEYFRAMES[segment.from], PARTICLE_KEYFRAMES[segment.to], particleAmount);
   }
@@ -145,6 +163,7 @@
 
     const particleProgress = updateNarrative(storyProgress);
     if (storyMeter) storyMeter.style.width = `${storyProgress * 100}%`;
+    if (transcriptMeter) transcriptMeter.style.width = `${storyProgress * 100}%`;
     if (pageMeter) pageMeter.style.width = `${pageProgress * 100}%`;
     if (scrollCue) scrollCue.style.opacity = String(clamp(1 - storyProgress * 22));
 
@@ -209,6 +228,26 @@
       });
     }, { rootMargin: "-25% 0px -68% 0px", threshold: 0 });
     sections.forEach((section) => navObserver.observe(section));
+  }
+
+  const revealCards = [...document.querySelectorAll(".outcome-grid article, .path-table article, .role-grid article, .glossary-card, .test-list li")];
+  revealCards.forEach((card, index) => {
+    card.classList.add("reveal-card");
+    card.style.setProperty("--reveal-x", `${index % 2 ? 54 : -54}px`);
+  });
+
+  if ("IntersectionObserver" in window && !reducedMotion) {
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
+    revealCards.forEach((card) => cardObserver.observe(card));
+  } else {
+    revealCards.forEach((card) => card.classList.add("is-revealed"));
   }
 
   let initialLanguage = "en";
