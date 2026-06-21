@@ -111,7 +111,7 @@ body.is-document .site-header {
 .brand {
   display: flex;
   align-items: baseline;
-  gap: 13px;
+  gap: 0;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -121,14 +121,6 @@ body.is-document .site-header {
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: .02em;
-}
-
-.brand span {
-  color: currentColor;
-  font-size: .62rem;
-  letter-spacing: .14em;
-  opacity: .58;
-  text-transform: uppercase;
 }
 
 .header-actions,
@@ -1149,7 +1141,6 @@ html[data-language="en"] .research-document h2 {
 @media (max-width: 600px) {
   .site-header { height: 64px; padding-inline: 18px; }
   .brand { gap: 0; }
-  .brand span { display: none !important; }
   .header-actions { gap: 0; }
   .language-switch { padding-left: 10px; }
 
