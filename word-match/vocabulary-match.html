@@ -164,10 +164,14 @@
     }
 
     .top-count {
-      min-width: 42px;
+      min-width: 68px;
       color: var(--muted);
       font-weight: 900;
       text-align: right;
+    }
+
+    .top-count.time-low {
+      color: var(--red);
     }
 
     .prompt {
@@ -1028,7 +1032,11 @@
       score: 0,
       mistakes: 0,
       streak: 0,
-      roundStartedAt: performance.now()
+      roundStartedAt: performance.now(),
+      levelEndsAt: 0,
+      levelDurationMs: 120000,
+      timerId: null,
+      refillTimerId: null
     };
 
     function createWord(en, zh, custom = false, id = null) {
@@ -1315,6 +1323,53 @@
     const SLOT_COUNT = 5;
     const CORRECT_ANIM_MS = 300;
     const WRONG_ANIM_MS = 520;
+    const LEVEL_BASE_MS = 120000;
+    const LEVEL_VARIANCE_MS = 15000;
+    const REFILL_MIN_MS = 520;
+    const REFILL_MAX_MS = 1650;
+    const TIMER_TICK_MS = 250;
+
+    function randomBetween(min, max) {
+      return Math.floor(min + Math.random() * (max - min + 1));
+    }
+
+    function formatTime(ms) {
+      const seconds = Math.max(0, Math.ceil(ms / 1000));
+      const minutes = Math.floor(seconds / 60);
+      return `${minutes}:${String(seconds % 60).padStart(2, "0")}`;
+    }
+
+    function clearLevelTimers() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+      if (state.refillTimerId) {
+        clearTimeout(state.refillTimerId);
+        state.refillTimerId = null;
+      }
+    }
+
+    function isLevelOver() {
+      return state.levelEndsAt > 0 && performance.now() >= state.levelEndsAt;
+    }
+
+    function startLevelTimer() {
+      if (state.timerId) clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        renderStats();
+        if (isLevelOver()) {
+          handleLevelTimeout();
+        }
+      }, TIMER_TICK_MS);
+    }
+
+    function handleLevelTimeout() {
+      if (els.completionView.classList.contains("show")) return;
+      state.selected = null;
+      state.locked = true;
+      showCompletion(false, "timeout");
+    }
 
     function buildWordQueue() {
       const unmastered = state.words.filter(word => !word.mastered);
@@ -1356,12 +1411,15 @@
     }
 
     function renderRound() {
+      clearLevelTimers();
       state.selected = null;
       state.locked = false;
       state.completedThisRun = 0;
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
       state.roundStartedAt = performance.now();
+      state.levelDurationMs = LEVEL_BASE_MS + randomBetween(-LEVEL_VARIANCE_MS, LEVEL_VARIANCE_MS);
+      state.levelEndsAt = performance.now() + state.levelDurationMs;
 
       if (!state.sessionTotal) {
         showCompletion(true);
@@ -1373,15 +1431,17 @@
         initialWords.push(takeNextWord());
       }
 
-      state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, initialWords[index] || null));
+      const leftWords = shuffle(initialWords);
+      state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, leftWords[index] || null));
       const rightWords = shuffle(initialWords);
       state.rightSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("right", index, rightWords[index] || null));
 
       els.practiceView.classList.remove("hidden");
       els.completionView.classList.remove("show");
-      els.roundLabel.textContent = `第 ${state.round} 轮`;
+      els.roundLabel.textContent = `第 ${state.round} 关 · 0/${state.sessionTotal}`;
       els.feedback.className = "feedback";
-      els.feedback.textContent = "选择一个中文和一个英文。";
+      els.feedback.textContent = `限时挑战：${formatTime(state.levelDurationMs)}。新词会随机延迟出现。`;
+      startLevelTimer();
       renderSlots();
       renderStats();
     }
@@ -1415,7 +1475,7 @@
     }
 
     function selectCard(card, side, index) {
-      if (state.locked || card.disabled) return;
+      if (state.locked || card.disabled || isLevelOver()) return;
       clearWrong();
       const slot = getSlot(side, index);
       if (!slot || !slot.word) return;
@@ -1455,6 +1515,7 @@
     }
 
     function markCorrect(first, second) {
+      if (isLevelOver()) return;
       const word = first.slot.word;
       const elapsed = Math.round(performance.now() - state.roundStartedAt);
       word.seen += 1;
@@ -1479,28 +1540,66 @@
       renderStats();
 
       setTimeout(() => {
+        if (els.completionView.classList.contains("show")) return;
         first.card.classList.add("replacing");
         second.card.classList.add("replacing");
-        replaceMatchedSlots(first, second);
-        state.locked = false;
+        clearMatchedSlots(first, second);
         renderSlots();
         renderStats();
         if (isStreamComplete()) {
           showCompletion(false);
+          return;
         }
+        const waitMs = randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
+        els.feedback.className = "feedback";
+        els.feedback.textContent = `等一下，下一组会随机出现...`;
+        state.refillTimerId = setTimeout(() => {
+          state.refillTimerId = null;
+          if (els.completionView.classList.contains("show") || isLevelOver()) return;
+          refillRandomSlotPair();
+          reshuffleSlots();
+          state.locked = false;
+          renderSlots();
+          renderStats();
+          if (isStreamComplete()) {
+            showCompletion(false);
+          }
+        }, waitMs);
       }, CORRECT_ANIM_MS);
     }
 
-    function replaceMatchedSlots(first, second) {
-      const nextWord = takeNextWord();
+    function clearMatchedSlots(first, second) {
       const leftTarget = first.side === "left" ? first : second;
       const rightTarget = first.side === "right" ? first : second;
 
-      state.leftSlots[leftTarget.index] = makeSlot("left", leftTarget.index, nextWord);
-      state.rightSlots[rightTarget.index] = makeSlot("right", rightTarget.index, nextWord);
+      state.leftSlots[leftTarget.index] = makeSlot("left", leftTarget.index, null);
+      state.rightSlots[rightTarget.index] = makeSlot("right", rightTarget.index, null);
+    }
+
+    function refillRandomSlotPair() {
+      const nextWord = takeNextWord();
+      if (!nextWord) return false;
+
+      const leftOpen = state.leftSlots.map((slot, index) => slot.word ? null : index).filter(index => index !== null);
+      const rightOpen = state.rightSlots.map((slot, index) => slot.word ? null : index).filter(index => index !== null);
+      if (!leftOpen.length || !rightOpen.length) return false;
+
+      const leftIndex = leftOpen[randomBetween(0, leftOpen.length - 1)];
+      const rightIndex = rightOpen[randomBetween(0, rightOpen.length - 1)];
+      state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord);
+      state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord);
+      return true;
+    }
+
+    function reshuffleSlots() {
+      const leftWords = shuffle(state.leftSlots.map(slot => slot.word));
+      const rightWords = shuffle(state.rightSlots.map(slot => slot.word));
+      state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, leftWords[index] || null));
+      state.rightSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("right", index, rightWords[index] || null));
     }
 
     function markWrong(first, second) {
+      if (isLevelOver()) return;
       first.slot.word.mistakes += 1;
       second.slot.word.mistakes += 1;
       first.slot.word.streak = 0;
@@ -1542,16 +1641,19 @@
       return !state.wordQueue.length && activeSlotPairs() === 0;
     }
 
-    function showCompletion(allDone) {
+    function showCompletion(allDone, reason = "queue") {
+      clearLevelTimers();
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       const remaining = state.words.filter(word => !word.mastered).length;
-      els.completionTitle.textContent = allDone ? "全部过关" : "这一组完成";
+      els.completionTitle.textContent = allDone ? "全部过关" : reason === "timeout" ? "时间到" : "这一关完成";
       els.completionText.textContent = allDone
         ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
-        : `本次流式队列已清空。还有 ${remaining} 个词没有稳定，继续后会进入下一条队列。`;
+        : reason === "timeout"
+          ? `这一关配对 ${state.completedThisRun || 0} 组。继续后会重新洗牌，并优先出现不熟的词。`
+          : `本关队列已清空。还有 ${remaining} 个词没有稳定，继续后会进入下一关。`;
       els.feedback.className = "feedback good";
-      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续就会补入下一批需要巩固的词。";
+      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续进入下一关。";
       saveWords();
       renderStats();
     }
@@ -1561,7 +1663,10 @@
       const remaining = state.words.length - mastered;
       const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
       els.progressFill.style.width = `${pct}%`;
-      els.topCount.textContent = `${state.completedThisRun || 0}/${state.sessionTotal || 0}`;
+      const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
+      els.topCount.textContent = formatTime(timeLeft);
+      els.topCount.classList.toggle("time-low", timeLeft <= 15000);
+      els.roundLabel.textContent = `第 ${state.round} 关 · ${state.completedThisRun || 0}/${state.sessionTotal || 0}`;
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
       els.streak.textContent = state.streak;
