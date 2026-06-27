@@ -1,0 +1,1811 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Word Snap</title>
+  <meta name="theme-color" content="#131f24" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Word Snap" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+  <style>
+    :root {
+      --bg: #131f24;
+      --panel: #202f36;
+      --panel-2: #1a2a30;
+      --line: #37464f;
+      --line-strong: #52656d;
+      --text: #f1f7fb;
+      --muted: #8fa5af;
+      --dim: #52656d;
+      --green: #58cc02;
+      --green-dark: #46a302;
+      --blue: #1cb0f6;
+      --blue-deep: #1899d6;
+      --red: #ff4b4b;
+      --red-deep: #ea2b2b;
+      --yellow: #ffc800;
+      --radius: 12px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 96px 1fr;
+    }
+
+    .rail {
+      border-right: 2px solid var(--line);
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #102015;
+      background: var(--green);
+      font-size: 26px;
+      font-weight: 1000;
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .14);
+    }
+
+    .rail-btn {
+      width: 52px;
+      height: 52px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
+    }
+
+    .rail-btn.active,
+    .rail-btn:hover {
+      border-color: var(--line);
+      color: var(--green);
+      background: #17282e;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      justify-content: center;
+      padding: 36px 36px 28px;
+    }
+
+    .lesson {
+      width: min(760px, 100%);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: calc(100vh - 64px);
+    }
+
+    .lesson-top {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 54px;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 50%;
+      color: var(--dim);
+      background: transparent;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .icon-button:hover {
+      color: var(--text);
+      background: #1a2a30;
+    }
+
+    .progress {
+      height: 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #283940;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--green);
+      transition: width 260ms var(--ease);
+    }
+
+    .top-count {
+      min-width: 42px;
+      color: var(--muted);
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .prompt {
+      width: min(540px, 100%);
+      margin: 0 auto;
+    }
+
+    .prompt-kicker {
+      color: var(--green);
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 32px;
+      line-height: 1.18;
+      text-wrap: pretty;
+    }
+
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 255px));
+      grid-template-rows: repeat(5, 52px);
+      grid-auto-flow: column;
+      justify-content: center;
+      gap: 10px 30px;
+    }
+
+    .match-card {
+      height: 52px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: transparent;
+      box-shadow: 0 4px 0 #26363d;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      align-items: center;
+      padding: 0 16px 4px 12px;
+      text-align: left;
+      transition: transform 90ms var(--ease), border-color 90ms var(--ease), color 90ms var(--ease), background 90ms var(--ease), box-shadow 90ms var(--ease);
+    }
+
+    .match-card:hover {
+      border-color: var(--line-strong);
+      background: #17282e;
+    }
+
+    .match-card:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #26363d;
+    }
+
+    .match-card.selected {
+      border-color: var(--blue);
+      color: #ddf4ff;
+      background: #14394a;
+      box-shadow: 0 4px 0 #0e719d;
+    }
+
+    .match-card.paired {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(.98);
+    }
+
+    .match-card.correct {
+      border-color: var(--green);
+      color: #eaffdf;
+      background: #183d22;
+      box-shadow: 0 4px 0 #2d7f12;
+      animation: correctPulse 300ms ease;
+    }
+
+    .match-card.replacing {
+      opacity: 0;
+      transform: scale(.96);
+      pointer-events: none;
+    }
+
+    .match-card.empty {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .match-card.is-locked {
+      pointer-events: none;
+    }
+
+    .match-card.wrong {
+      border-color: var(--red);
+      color: #ffe8e8;
+      background: #461f22;
+      box-shadow: 0 4px 0 #9d2828;
+      animation: shake 220ms ease;
+    }
+
+    .match-card[disabled] {
+      cursor: default;
+    }
+
+    .num {
+      width: 22px;
+      color: var(--dim);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .word {
+      min-width: 0;
+      overflow: hidden;
+      color: inherit;
+      font-size: 18px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .lesson-foot {
+      min-height: 112px;
+      border-top: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 36px;
+      padding-top: 24px;
+    }
+
+    .feedback {
+      min-height: 44px;
+      color: var(--muted);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .feedback.good {
+      color: #b8f28a;
+    }
+
+    .feedback.bad {
+      color: #ff9a9a;
+    }
+
+    .duo-button {
+      min-width: 150px;
+      height: 50px;
+      border: 0;
+      border-radius: 16px;
+      color: #102015;
+      background: var(--green);
+      box-shadow: 0 4px 0 var(--green-dark);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), filter 90ms var(--ease);
+    }
+
+    .duo-button:hover {
+      filter: brightness(1.03);
+    }
+
+    .duo-button:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--green-dark);
+    }
+
+    .duo-button.secondary {
+      color: var(--blue);
+      background: transparent;
+      border: 2px solid var(--line);
+      box-shadow: 0 4px 0 #26363d;
+    }
+
+    .duo-button.warning {
+      color: #2b1800;
+      background: var(--yellow);
+      box-shadow: 0 4px 0 #d99f00;
+    }
+
+    .duo-button[disabled] {
+      color: var(--dim);
+      background: #283940;
+      box-shadow: 0 4px 0 #1e2d33;
+      cursor: not-allowed;
+      filter: none;
+      transform: none;
+    }
+
+    .panel {
+      display: none;
+      align-self: start;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      background: #17282e;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .panel-head h2,
+    .modal-card h2 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .panel-head p,
+    .modal-card p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .stat {
+      min-height: 72px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--bg);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .weak-list {
+      display: grid;
+      gap: 8px;
+      padding: 0 14px 14px;
+    }
+
+    .weak-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--bg);
+    }
+
+    .weak-row b {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 14px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .weak-row span {
+      color: #ff9a9a;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .panel-actions {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-top: 2px solid var(--line);
+    }
+
+    .small-button {
+      min-height: 42px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--blue);
+      background: var(--bg);
+      cursor: pointer;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .small-button:hover {
+      border-color: var(--line-strong);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(10, 18, 21, .72);
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(720px, 100%);
+      max-height: min(760px, calc(100vh - 40px));
+      overflow: auto;
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .4);
+    }
+
+    .modal-top,
+    .modal-section {
+      padding: 20px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      padding: 12px 13px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--blue);
+    }
+
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .custom-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .custom-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--bg);
+    }
+
+    .custom-row b,
+    .custom-row span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .link-button {
+      border: 0;
+      color: var(--red);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .completion {
+      display: none;
+      width: min(540px, 100%);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .completion.show {
+      display: block;
+    }
+
+    .completion-badge {
+      width: 104px;
+      height: 104px;
+      display: grid;
+      place-items: center;
+      margin: 16px auto 18px;
+      border-radius: 30px;
+      color: #102015;
+      background: var(--green);
+      box-shadow: inset 0 -8px 0 rgba(0, 0, 0, .16);
+      font-size: 56px;
+      font-weight: 1000;
+    }
+
+    .completion h2 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    .completion p {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .install-nudge {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 20;
+      width: min(372px, calc(100vw - 32px));
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      color: var(--text);
+      background: #17282e;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, .38), 0 5px 0 #0f1d22;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(.98);
+      transition: opacity 220ms var(--ease), transform 220ms var(--ease);
+    }
+
+    .install-nudge.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .install-nudge-body {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 14px;
+      padding: 18px 18px 16px;
+    }
+
+    .install-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #102015;
+      background: var(--green);
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .16);
+      font-size: 24px;
+      font-weight: 1000;
+    }
+
+    .install-copy h2 {
+      margin: 0 34px 6px 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .install-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      text-wrap: pretty;
+    }
+
+    .install-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 50%;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .install-close:hover {
+      color: var(--text);
+      background: #20343b;
+    }
+
+    .install-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 18px 18px;
+    }
+
+    .install-small {
+      min-height: 40px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--blue);
+      background: var(--bg);
+      cursor: pointer;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 1000;
+    }
+
+    .install-small.primary {
+      border-color: transparent;
+      color: #102015;
+      background: var(--green);
+      box-shadow: 0 4px 0 var(--green-dark);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-7px); }
+      75% { transform: translateX(7px); }
+    }
+
+    @keyframes correctPulse {
+      0%, 100% { filter: brightness(1); }
+      45% { filter: brightness(1.45); }
+    }
+
+    @media (max-width: 1050px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        display: none;
+      }
+
+      .main {
+        display: block;
+        padding: 28px 18px;
+      }
+
+      .lesson {
+        min-height: auto;
+      }
+
+      .panel {
+        width: min(760px, 100%);
+        justify-self: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .lesson-top {
+        grid-template-columns: 36px 1fr;
+        margin-bottom: 30px;
+      }
+
+      .top-count {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .match-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-auto-flow: row;
+        gap: 10px;
+      }
+
+      .lesson-foot {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .duo-button {
+        width: 100%;
+      }
+
+      .form-grid,
+      .custom-row {
+        grid-template-columns: 1fr;
+      }
+
+      .install-nudge {
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .install-nudge-body {
+        grid-template-columns: 42px 1fr;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .install-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 21px;
+      }
+
+      .install-actions {
+        padding: 0 16px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" aria-label="练习导航">
+      <div class="logo" aria-hidden="true">W</div>
+      <button class="rail-btn active" type="button">练习</button>
+      <button class="rail-btn" type="button" id="openLibraryRail">词库</button>
+      <button class="rail-btn" type="button" id="resetRail">重置</button>
+    </aside>
+
+    <main class="main">
+      <section class="lesson" aria-label="单词配对练习">
+        <div class="lesson-top">
+          <button class="icon-button" type="button" id="quitBtn" aria-label="重新开始">×</button>
+          <div class="progress" aria-label="掌握进度"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="top-count" id="topCount">10</div>
+        </div>
+
+        <div class="prompt" id="practiceView">
+          <div class="prompt-kicker" id="roundLabel">第 1 轮</div>
+          <h1>选择配对</h1>
+          <div class="match-grid" id="matchGrid"></div>
+        </div>
+
+        <div class="completion" id="completionView">
+          <div class="completion-badge">✓</div>
+          <h2 id="completionTitle">这一轮结束</h2>
+          <p id="completionText">下一轮会优先出现你不熟的词。</p>
+          <button class="duo-button" type="button" id="continueBtn">继续</button>
+        </div>
+
+        <div class="lesson-foot">
+          <div class="feedback" id="feedback">选择一个中文和一个英文。</div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="练习状态">
+        <div class="panel-head">
+          <h2>单词训练</h2>
+          <p>自适应分配：错词、慢词、只答对一次的词会优先出现。</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong id="score">0</strong><span>正确配对</span></div>
+          <div class="stat"><strong id="mistakes">0</strong><span>错选</span></div>
+          <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
+          <div class="stat"><strong id="remaining">0</strong><span>未掌握</span></div>
+        </div>
+        <div class="weak-list" id="weakList"></div>
+        <div class="panel-actions">
+          <button class="small-button" type="button" id="openLibrary">录入新单词</button>
+          <button class="small-button" type="button" id="modeBtn">模式：自适应</button>
+          <button class="small-button" type="button" id="resetProgress">清空进度</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="install-nudge" id="installNudge" role="dialog" aria-live="polite" aria-labelledby="installTitle" aria-describedby="installText">
+    <button class="install-close" type="button" id="closeInstallNudge" aria-label="关闭安装提醒">×</button>
+    <div class="install-nudge-body">
+      <div class="install-icon" aria-hidden="true">W</div>
+      <div class="install-copy">
+        <h2 id="installTitle">添加到主屏幕</h2>
+        <p id="installText">Safari 用户可以点底部分享按钮，再选择“添加到主屏幕”，下次就能像 App 一样打开。</p>
+      </div>
+    </div>
+    <div class="install-actions">
+      <button class="install-small" type="button" id="hideInstallNudge">不再提示</button>
+      <button class="install-small primary" type="button" id="installAction">知道了</button>
+    </div>
+  </div>
+
+  <div class="modal" id="libraryModal" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
+    <div class="modal-card">
+      <div class="modal-top">
+        <div>
+          <h2 id="libraryTitle">词库</h2>
+          <p id="librarySummary">新增词会保存在当前浏览器里，下次打开仍然可练。</p>
+        </div>
+        <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭">×</button>
+      </div>
+
+      <section class="modal-section">
+        <div class="form-grid">
+          <label>
+            英文
+            <input id="newEnglish" autocomplete="off" placeholder="example" />
+          </label>
+          <label>
+            中文
+            <input id="newChinese" autocomplete="off" placeholder="例子" />
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="addOneBtn">添加一个</button>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <label>
+          批量录入
+          <textarea id="bulkInput" placeholder="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织"></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="addBulkBtn">批量添加</button>
+          <button class="duo-button warning" type="button" id="clearCustomBtn">清空自定义词</button>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h2>自定义词</h2>
+        <p>这里只显示你后续录入的词，原始最终单词列表不会被删除。</p>
+        <div class="custom-list" id="customList"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "duo_like_word_match_v1";
+    const INSTALL_NUDGE_KEY = "word_snap_install_nudge_hidden_v1";
+    let deferredInstallPrompt = null;
+
+    const starterWords = [
+      ["literature", "文学"], ["UNESCO", "联合国教科文组织"], ["disaster", "灾难"],
+      ["once in a while", "偶尔"], ["quite", "相当；十分"], ["pressure", "压力"],
+      ["narrow", "狭窄的"], ["graduate", "毕业；毕业生"], ["grammar", "语法"], ["porridge", "粥"],
+      ["benefit", "好处；受益"], ["characteristic", "特征；特点"], ["congratulation", "祝贺"],
+      ["courage", "勇气"], ["culture", "文化"], ["influence", "影响"], ["thought", "想法；思想"],
+      ["secret", "秘密"], ["average", "平均的；普通的"], ["aware", "意识到的"],
+      ["common", "普通的；常见的"], ["convenient", "方便的"], ["similar", "相似的"],
+      ["awful", "糟糕的"], ["weak", "虚弱的；薄弱的"], ["avoid", "避免"], ["cooperate", "合作"],
+      ["take part in", "参加"], ["look out", "当心"], ["start up", "启动；创办"],
+      ["carry away", "带走；冲走"], ["pull off", "脱下；成功完成"], ["see off", "送别"],
+      ["college", "大学；学院"], ["conversation", "谈话"], ["instruction", "指示；说明"],
+      ["voice", "嗓音；声音"], ["instrument", "乐器；工具"], ["behaviour", "行为"],
+      ["humorous", "幽默的"], ["astronaut", "宇航员"], ["athlete", "运动员"], ["coach", "教练"],
+      ["society", "社会"], ["award", "奖；授予"], ["charity", "慈善；慈善机构"],
+      ["voluntary", "自愿的"], ["honour", "荣誉"], ["industry", "工业；行业"], ["trouble", "麻烦"],
+      ["asleep", "睡着的"], ["awake", "醒着的"], ["sharp", "锋利的；敏锐的"], ["yogurt", "酸奶"],
+      ["chopsticks", "筷子"], ["hungry", "饥饿的"], ["trousers", "裤子"], ["umbrella", "雨伞"],
+      ["character", "人物；性格；汉字"], ["whale", "鲸"], ["alien", "外星人；陌生的"],
+      ["throughout", "遍及；贯穿"], ["until", "直到"], ["within", "在……以内"], ["without", "没有；不带"]
+    ];
+
+    const els = {
+      progressFill: document.getElementById("progressFill"),
+      topCount: document.getElementById("topCount"),
+      roundLabel: document.getElementById("roundLabel"),
+      matchGrid: document.getElementById("matchGrid"),
+      practiceView: document.getElementById("practiceView"),
+      completionView: document.getElementById("completionView"),
+      completionTitle: document.getElementById("completionTitle"),
+      completionText: document.getElementById("completionText"),
+      feedback: document.getElementById("feedback"),
+      checkBtn: document.getElementById("checkBtn"),
+      continueBtn: document.getElementById("continueBtn"),
+      score: document.getElementById("score"),
+      mistakes: document.getElementById("mistakes"),
+      streak: document.getElementById("streak"),
+      remaining: document.getElementById("remaining"),
+      weakList: document.getElementById("weakList"),
+      modeBtn: document.getElementById("modeBtn"),
+      libraryModal: document.getElementById("libraryModal"),
+      librarySummary: document.getElementById("librarySummary"),
+      newEnglish: document.getElementById("newEnglish"),
+      newChinese: document.getElementById("newChinese"),
+      bulkInput: document.getElementById("bulkInput"),
+      customList: document.getElementById("customList"),
+      installNudge: document.getElementById("installNudge"),
+      installTitle: document.getElementById("installTitle"),
+      installText: document.getElementById("installText"),
+      installAction: document.getElementById("installAction"),
+      closeInstallNudge: document.getElementById("closeInstallNudge"),
+      hideInstallNudge: document.getElementById("hideInstallNudge")
+    };
+
+    const state = {
+      words: [],
+      mode: "adaptive",
+      round: 1,
+      selected: null,
+      solvedIds: new Set(),
+      activePairs: [],
+      activeTiles: [],
+      score: 0,
+      mistakes: 0,
+      streak: 0,
+      roundStartedAt: performance.now()
+    };
+
+    function createWord(en, zh, custom = false, id = null) {
+      return {
+        id: id || `${custom ? "custom" : "base"}-${en.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+        en,
+        zh,
+        custom,
+        seen: 0,
+        correct: 0,
+        mistakes: 0,
+        streak: 0,
+        mastered: false,
+        lastMs: 0
+      };
+    }
+
+    function loadWords() {
+      const base = starterWords.map((item, index) => createWord(item[0], item[1], false, `base-${index}`));
+      let saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      } catch (error) {
+        saved = null;
+      }
+
+      if (!saved || !Array.isArray(saved.words)) return base;
+
+      const byId = new Map(base.map(word => [word.id, word]));
+      saved.words.forEach(savedWord => {
+        const existing = byId.get(savedWord.id);
+        if (existing) {
+          Object.assign(existing, {
+            seen: savedWord.seen || 0,
+            correct: savedWord.correct || 0,
+            mistakes: savedWord.mistakes || 0,
+            streak: savedWord.streak || 0,
+            mastered: Boolean(savedWord.mastered),
+            lastMs: savedWord.lastMs || 0
+          });
+        } else if (savedWord.custom && savedWord.en && savedWord.zh) {
+          byId.set(savedWord.id, {
+            ...createWord(savedWord.en, savedWord.zh, true, savedWord.id),
+            seen: savedWord.seen || 0,
+            correct: savedWord.correct || 0,
+            mistakes: savedWord.mistakes || 0,
+            streak: savedWord.streak || 0,
+            mastered: Boolean(savedWord.mastered),
+            lastMs: savedWord.lastMs || 0
+          });
+        }
+      });
+      return Array.from(byId.values());
+    }
+
+    function saveWords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        words: state.words,
+        savedAt: new Date().toISOString()
+      }));
+    }
+
+    function shuffle(list) {
+      const copy = [...list];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function weakness(word) {
+      return word.mistakes * 5 + Math.max(0, 2 - word.streak) * 3 + (word.seen ? 0 : 2) + (word.lastMs > 4200 ? 2 : 0);
+    }
+
+    function chooseRound() {
+      const unmastered = state.words.filter(word => !word.mastered);
+      if (!unmastered.length) return [];
+
+      if (state.mode === "all") {
+        return unmastered.sort((a, b) => a.id.localeCompare(b.id)).slice(0, 5);
+      }
+
+      const weak = unmastered
+        .filter(word => word.mistakes > 0 || word.streak < 2)
+        .sort((a, b) => weakness(b) - weakness(a));
+
+      if (state.mode === "weak") {
+        return (weak.length ? weak : unmastered).slice(0, 5);
+      }
+
+      const unseen = unmastered.filter(word => word.seen === 0);
+      let pool = [...weak.slice(0, 4), ...unseen.slice(0, 2)];
+      pool = Array.from(new Map(pool.map(word => [word.id, word])).values());
+      if (pool.length < 5) {
+        pool = [...pool, ...unmastered.filter(word => !pool.includes(word))];
+      }
+      return pool.slice(0, 5);
+    }
+
+    function renderRound() {
+      state.selected = null;
+      state.solvedIds = new Set();
+      state.activePairs = chooseRound();
+      state.roundStartedAt = performance.now();
+
+      if (!state.activePairs.length) {
+        showCompletion(true);
+        return;
+      }
+
+      els.practiceView.classList.remove("hidden");
+      els.completionView.classList.remove("show");
+      els.roundLabel.textContent = `第 ${state.round} 轮`;
+      els.feedback.className = "feedback";
+      els.feedback.textContent = "选择一个中文和一个英文。";
+      els.checkBtn.disabled = true;
+      els.matchGrid.innerHTML = "";
+
+      const zhTiles = shuffle(state.activePairs).map(word => ({ word, type: "zh" }));
+      const enTiles = shuffle(state.activePairs).map(word => ({ word, type: "en" }));
+      state.activeTiles = [...zhTiles, ...enTiles].map((tile, index) => ({
+        ...tile,
+        key: index === 9 ? "0" : String(index + 1)
+      }));
+
+      state.activeTiles.forEach(tile => els.matchGrid.appendChild(makeCard(tile)));
+      renderStats();
+    }
+
+    function makeCard(tile) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "match-card";
+      button.dataset.id = tile.word.id;
+      button.dataset.type = tile.type;
+      button.dataset.key = tile.key;
+      button.innerHTML = `<span class="num">${tile.key}</span><span class="word">${tile.type === "en" ? tile.word.en : tile.word.zh}</span>`;
+      button.addEventListener("click", () => selectCard(button, tile.word, tile.type));
+      return button;
+    }
+
+    function selectCard(card, word, type) {
+      if (card.classList.contains("paired")) return;
+      clearWrong();
+
+      if (!state.selected) {
+        state.selected = { card, word, type };
+        card.classList.add("selected");
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "再选它的配对。";
+        return;
+      }
+
+      if (state.selected.card === card) {
+        card.classList.remove("selected");
+        state.selected = null;
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "选择一个中文和一个英文。";
+        return;
+      }
+
+      const first = state.selected;
+      const matched = first.word.id === word.id && first.type !== type;
+
+      if (matched) {
+        markCorrect(first.card, card, word);
+      } else {
+        markWrong(first, { card, word, type });
+      }
+
+      saveWords();
+      renderStats();
+    }
+
+    function markCorrect(firstCard, secondCard, word) {
+      const elapsed = Math.round(performance.now() - state.roundStartedAt);
+      word.seen += 1;
+      word.correct += 1;
+      word.streak += 1;
+      word.lastMs = elapsed;
+      word.mastered = word.streak >= 2;
+
+      state.score += 1;
+      state.streak += 1;
+      state.solvedIds.add(word.id);
+      state.selected = null;
+      state.roundStartedAt = performance.now();
+
+      firstCard.classList.remove("selected");
+      firstCard.classList.add("paired");
+      secondCard.classList.add("paired");
+
+      const finished = state.solvedIds.size === state.activePairs.length;
+      els.feedback.className = finished ? "feedback good" : "feedback";
+      els.feedback.textContent = finished ? "全部配完了。现在检查。" : "配对成功。";
+      els.checkBtn.disabled = !finished;
+    }
+
+    function markWrong(first, second) {
+      first.word.mistakes += 1;
+      second.word.mistakes += 1;
+      first.word.streak = 0;
+      second.word.streak = 0;
+      first.word.mastered = false;
+      second.word.mastered = false;
+
+      state.mistakes += 1;
+      state.streak = 0;
+      state.selected = null;
+
+      first.card.classList.remove("selected");
+      first.card.classList.add("wrong");
+      second.card.classList.add("wrong");
+
+      els.feedback.className = "feedback bad";
+      els.feedback.textContent = `不对：${first.word.en} = ${first.word.zh}`;
+    }
+
+    function clearWrong() {
+      document.querySelectorAll(".match-card.wrong").forEach(card => card.classList.remove("wrong"));
+    }
+
+    function showCompletion(allDone) {
+      els.practiceView.classList.add("hidden");
+      els.completionView.classList.add("show");
+      els.checkBtn.disabled = true;
+      const remaining = state.words.filter(word => !word.mastered).length;
+      els.completionTitle.textContent = allDone ? "全部过关" : "这一轮结束";
+      els.completionText.textContent = allDone
+        ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
+        : `还有 ${remaining} 个词没有稳定。下一轮会优先出现错过、慢过或只答对一次的词。`;
+      els.feedback.className = "feedback good";
+      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续就会进入下一组。";
+      saveWords();
+      renderStats();
+    }
+
+    function renderStats() {
+      const mastered = state.words.filter(word => word.mastered).length;
+      const remaining = state.words.length - mastered;
+      const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
+      els.progressFill.style.width = `${pct}%`;
+      els.topCount.textContent = `${state.solvedIds.size * 2}/${state.activePairs.length * 2 || 10}`;
+      els.score.textContent = state.score;
+      els.mistakes.textContent = state.mistakes;
+      els.streak.textContent = state.streak;
+      els.remaining.textContent = remaining;
+      els.librarySummary.textContent = `当前共 ${state.words.length} 个词，其中自定义 ${state.words.filter(word => word.custom).length} 个。`;
+
+      const weak = state.words
+        .filter(word => !word.mastered)
+        .sort((a, b) => weakness(b) - weakness(a))
+        .slice(0, 6);
+
+      els.weakList.innerHTML = weak.length
+        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? "错 " + word.mistakes : "待巩固"}</span></div>`).join("")
+        : `<div class="weak-row"><b>暂时没有弱项</b><span>完成</span></div>`;
+
+      renderCustomList();
+    }
+
+    function renderCustomList() {
+      const custom = state.words.filter(word => word.custom);
+      els.customList.innerHTML = custom.length
+        ? custom.map(word => `
+          <div class="custom-row">
+            <b title="${word.en}">${word.en}</b>
+            <span title="${word.zh}">${word.zh}</span>
+            <button class="link-button" type="button" data-delete="${word.id}">删除</button>
+          </div>
+        `).join("")
+        : `<div class="custom-row"><b>还没有自定义词</b><span>从上方录入</span><span></span></div>`;
+
+      els.customList.querySelectorAll("[data-delete]").forEach(button => {
+        button.addEventListener("click", () => {
+          state.words = state.words.filter(word => word.id !== button.dataset.delete);
+          saveWords();
+          renderRound();
+        });
+      });
+    }
+
+    const SLOT_COUNT = 5;
+    const CORRECT_ANIM_MS = 300;
+    const WRONG_ANIM_MS = 520;
+
+    function buildWordQueue() {
+      const unmastered = state.words.filter(word => !word.mastered);
+      if (!unmastered.length) return [];
+
+      if (state.mode === "all") {
+        return [...unmastered].sort((a, b) => a.id.localeCompare(b.id));
+      }
+
+      const weak = [...unmastered]
+        .filter(word => word.mistakes > 0 || word.streak < 2)
+        .sort((a, b) => weakness(b) - weakness(a));
+
+      if (state.mode === "weak") {
+        return Array.from(new Map([...weak, ...unmastered].map(word => [word.id, word])).values());
+      }
+
+      const unseen = unmastered.filter(word => word.seen === 0);
+      const rest = shuffle(unmastered);
+      return Array.from(new Map([...weak, ...unseen, ...rest].map(word => [word.id, word])).values());
+    }
+
+    function slotKey(side, index) {
+      if (side === "left") return String(index + 1);
+      return index === SLOT_COUNT - 1 ? "0" : String(index + 1 + SLOT_COUNT);
+    }
+
+    function makeSlot(side, index, word = null) {
+      return {
+        side,
+        index,
+        key: slotKey(side, index),
+        word
+      };
+    }
+
+    function takeNextWord() {
+      return state.wordQueue.length ? state.wordQueue.shift() : null;
+    }
+
+    function renderRound() {
+      state.selected = null;
+      state.locked = false;
+      state.completedThisRun = 0;
+      state.wordQueue = buildWordQueue();
+      state.sessionTotal = state.wordQueue.length;
+      state.roundStartedAt = performance.now();
+
+      if (!state.sessionTotal) {
+        showCompletion(true);
+        return;
+      }
+
+      const initialWords = [];
+      while (initialWords.length < SLOT_COUNT && state.wordQueue.length) {
+        initialWords.push(takeNextWord());
+      }
+
+      state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, initialWords[index] || null));
+      const rightWords = shuffle(initialWords);
+      state.rightSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("right", index, rightWords[index] || null));
+
+      els.practiceView.classList.remove("hidden");
+      els.completionView.classList.remove("show");
+      els.roundLabel.textContent = `第 ${state.round} 轮`;
+      els.feedback.className = "feedback";
+      els.feedback.textContent = "选择一个中文和一个英文。";
+      renderSlots();
+      renderStats();
+    }
+
+    function renderSlots() {
+      els.matchGrid.innerHTML = "";
+      [...state.leftSlots, ...state.rightSlots].forEach(slot => {
+        els.matchGrid.appendChild(makeCard(slot));
+      });
+    }
+
+    function makeCard(slot) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `match-card${slot.word ? "" : " empty"}`;
+      button.dataset.key = slot.key;
+      button.dataset.side = slot.side;
+      button.dataset.index = String(slot.index);
+      button.dataset.id = slot.word ? slot.word.id : "";
+      button.disabled = !slot.word;
+      const label = slot.word
+        ? (slot.side === "left" ? slot.word.zh : slot.word.en)
+        : "";
+      button.innerHTML = `<span class="num">${slot.key}</span><span class="word">${label}</span>`;
+      button.addEventListener("click", () => selectCard(button, slot.side, slot.index));
+      return button;
+    }
+
+    function getSlot(side, index) {
+      return side === "left" ? state.leftSlots[index] : state.rightSlots[index];
+    }
+
+    function selectCard(card, side, index) {
+      if (state.locked || card.disabled) return;
+      clearWrong();
+      const slot = getSlot(side, index);
+      if (!slot || !slot.word) return;
+
+      if (!state.selected) {
+        state.selected = { card, side, index, slot };
+        card.classList.add("selected");
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "再选另一侧的配对。";
+        return;
+      }
+
+      if (state.selected.side === side && state.selected.index === index) {
+        card.classList.remove("selected");
+        state.selected = null;
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "选择一个中文和一个英文。";
+        return;
+      }
+
+      if (state.selected.side === side) {
+        state.selected.card.classList.remove("selected");
+        state.selected = { card, side, index, slot };
+        card.classList.add("selected");
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "已换选同侧卡片。";
+        return;
+      }
+
+      const first = state.selected;
+      const second = { card, side, index, slot };
+      if (first.slot.word.id === second.slot.word.id) {
+        markCorrect(first, second);
+      } else {
+        markWrong(first, second);
+      }
+    }
+
+    function markCorrect(first, second) {
+      const word = first.slot.word;
+      const elapsed = Math.round(performance.now() - state.roundStartedAt);
+      word.seen += 1;
+      word.correct += 1;
+      word.streak += 1;
+      word.lastMs = elapsed;
+      word.mastered = word.streak >= 2;
+
+      state.score += 1;
+      state.streak += 1;
+      state.completedThisRun += 1;
+      state.selected = null;
+      state.locked = true;
+      state.roundStartedAt = performance.now();
+
+      first.card.classList.remove("selected");
+      first.card.classList.add("correct");
+      second.card.classList.add("correct");
+      els.feedback.className = "feedback good";
+      els.feedback.textContent = "配对成功。";
+      saveWords();
+      renderStats();
+
+      setTimeout(() => {
+        first.card.classList.add("replacing");
+        second.card.classList.add("replacing");
+        replaceMatchedSlots(first, second);
+        state.locked = false;
+        renderSlots();
+        renderStats();
+        if (isStreamComplete()) {
+          showCompletion(false);
+        }
+      }, CORRECT_ANIM_MS);
+    }
+
+    function replaceMatchedSlots(first, second) {
+      const nextWord = takeNextWord();
+      const leftTarget = first.side === "left" ? first : second;
+      const rightTarget = first.side === "right" ? first : second;
+
+      state.leftSlots[leftTarget.index] = makeSlot("left", leftTarget.index, nextWord);
+      state.rightSlots[rightTarget.index] = makeSlot("right", rightTarget.index, nextWord);
+    }
+
+    function markWrong(first, second) {
+      first.slot.word.mistakes += 1;
+      second.slot.word.mistakes += 1;
+      first.slot.word.streak = 0;
+      second.slot.word.streak = 0;
+      first.slot.word.mastered = false;
+      second.slot.word.mastered = false;
+
+      state.mistakes += 1;
+      state.streak = 0;
+      state.selected = null;
+      state.locked = true;
+
+      first.card.classList.remove("selected");
+      first.card.classList.add("wrong");
+      second.card.classList.add("wrong");
+      els.feedback.className = "feedback bad";
+      els.feedback.textContent = `不对：${first.slot.word.en} = ${first.slot.word.zh}`;
+      saveWords();
+      renderStats();
+
+      setTimeout(() => {
+        first.card.classList.remove("wrong");
+        second.card.classList.remove("wrong");
+        state.locked = false;
+        els.feedback.className = "feedback";
+        els.feedback.textContent = "选择一个中文和一个英文。";
+      }, WRONG_ANIM_MS);
+    }
+
+    function clearWrong() {
+      document.querySelectorAll(".match-card.wrong").forEach(card => card.classList.remove("wrong"));
+    }
+
+    function activeSlotPairs() {
+      return state.leftSlots.filter(slot => slot.word).length;
+    }
+
+    function isStreamComplete() {
+      return !state.wordQueue.length && activeSlotPairs() === 0;
+    }
+
+    function showCompletion(allDone) {
+      els.practiceView.classList.add("hidden");
+      els.completionView.classList.add("show");
+      const remaining = state.words.filter(word => !word.mastered).length;
+      els.completionTitle.textContent = allDone ? "全部过关" : "这一组完成";
+      els.completionText.textContent = allDone
+        ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
+        : `本次流式队列已清空。还有 ${remaining} 个词没有稳定，继续后会进入下一条队列。`;
+      els.feedback.className = "feedback good";
+      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续就会补入下一批需要巩固的词。";
+      saveWords();
+      renderStats();
+    }
+
+    function renderStats() {
+      const mastered = state.words.filter(word => word.mastered).length;
+      const remaining = state.words.length - mastered;
+      const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
+      els.progressFill.style.width = `${pct}%`;
+      els.topCount.textContent = `${state.completedThisRun || 0}/${state.sessionTotal || 0}`;
+      els.score.textContent = state.score;
+      els.mistakes.textContent = state.mistakes;
+      els.streak.textContent = state.streak;
+      els.remaining.textContent = remaining;
+      els.librarySummary.textContent = `当前共 ${state.words.length} 个词，其中自定义 ${state.words.filter(word => word.custom).length} 个。`;
+
+      const weak = state.words
+        .filter(word => !word.mastered)
+        .sort((a, b) => weakness(b) - weakness(a))
+        .slice(0, 6);
+
+      els.weakList.innerHTML = weak.length
+        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? "错 " + word.mistakes : "待巩固"}</span></div>`).join("")
+        : `<div class="weak-row"><b>暂时没有弱项</b><span>完成</span></div>`;
+
+      renderCustomList();
+    }
+
+    function normalizePair(line) {
+      const trimmed = line.trim();
+      if (!trimmed) return null;
+      const parts = trimmed.includes("=")
+        ? trimmed.split("=")
+        : trimmed.includes("，")
+          ? trimmed.split("，")
+          : trimmed.split(",");
+      if (parts.length < 2) return null;
+      const en = parts.shift().trim();
+      const zh = parts.join(",").trim();
+      return en && zh ? [en, zh] : null;
+    }
+
+    function addWords(pairs) {
+      const existing = new Set(state.words.map(word => `${word.en.toLowerCase()}::${word.zh}`));
+      let added = 0;
+      pairs.forEach(pair => {
+        if (!pair) return;
+        const key = `${pair[0].toLowerCase()}::${pair[1]}`;
+        if (existing.has(key)) return;
+        existing.add(key);
+        state.words.push(createWord(pair[0], pair[1], true, `custom-${Date.now()}-${Math.random().toString(16).slice(2)}`));
+        added += 1;
+      });
+
+      if (added > 0) {
+        saveWords();
+        state.round += 1;
+        renderRound();
+      }
+      return added;
+    }
+
+    function resetProgress() {
+      state.words.forEach(word => {
+        word.seen = 0;
+        word.correct = 0;
+        word.mistakes = 0;
+        word.streak = 0;
+        word.mastered = false;
+        word.lastMs = 0;
+      });
+      state.round = 1;
+      state.score = 0;
+      state.mistakes = 0;
+      state.streak = 0;
+      saveWords();
+      renderRound();
+    }
+
+    function toggleMode() {
+      const modes = ["adaptive", "weak", "all"];
+      const labels = { adaptive: "自适应", weak: "只练弱项", all: "全量顺序" };
+      const next = modes[(modes.indexOf(state.mode) + 1) % modes.length];
+      state.mode = next;
+      els.modeBtn.textContent = `模式：${labels[next]}`;
+      state.round += 1;
+      renderRound();
+    }
+
+    function openLibrary() {
+      els.libraryModal.classList.add("open");
+      els.newEnglish.focus();
+      renderStats();
+    }
+
+    function closeLibrary() {
+      els.libraryModal.classList.remove("open");
+    }
+
+    function isIOSDevice() {
+      const ua = navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    function isSafariBrowser() {
+      const ua = navigator.userAgent.toLowerCase();
+      return /safari/.test(ua) && !/chrome|crios|fxios|edgios|android/.test(ua);
+    }
+
+    function isStandaloneApp() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function hasHiddenInstallNudge() {
+      try {
+        return localStorage.getItem(INSTALL_NUDGE_KEY) === "1";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function rememberInstallNudgeHidden() {
+      try {
+        localStorage.setItem(INSTALL_NUDGE_KEY, "1");
+      } catch (error) {
+        // Storage can be unavailable in private browsing; closing still works for this page view.
+      }
+    }
+
+    function setInstallNudgeCopy() {
+      if (deferredInstallPrompt) {
+        els.installTitle.textContent = "安装 Word Snap";
+        els.installText.textContent = "安装后可以从主屏幕直接打开，单词和练习进度仍然保存在这台设备里。";
+        els.installAction.textContent = "安装";
+        return;
+      }
+
+      if (isIOSDevice() || isSafariBrowser()) {
+        els.installTitle.textContent = "添加到主屏幕";
+        els.installText.textContent = "Safari 用户可以点底部分享按钮，再选择“添加到主屏幕”，下次就能像 App 一样打开。";
+        els.installAction.textContent = "知道了";
+        return;
+      }
+
+      els.installTitle.textContent = "保存到桌面";
+      els.installText.textContent = "这个练习可以作为网页 App 使用。浏览器出现安装入口时，可以把它放到桌面或主屏幕。";
+      els.installAction.textContent = "知道了";
+    }
+
+    function showInstallNudge() {
+      if (!els.installNudge || isStandaloneApp() || hasHiddenInstallNudge()) return;
+      setInstallNudgeCopy();
+      els.installNudge.classList.add("show");
+    }
+
+    function closeInstallNudge(remember = false) {
+      if (!els.installNudge) return;
+      els.installNudge.classList.remove("show");
+      if (remember) rememberInstallNudgeHidden();
+    }
+
+    function initInstallNudge() {
+      if (!els.installNudge) return;
+
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        showInstallNudge();
+      });
+
+      window.addEventListener("appinstalled", () => closeInstallNudge(true));
+
+      els.closeInstallNudge.addEventListener("click", () => closeInstallNudge(false));
+      els.hideInstallNudge.addEventListener("click", () => closeInstallNudge(true));
+      els.installAction.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) {
+          closeInstallNudge(false);
+          return;
+        }
+
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice.catch(() => null);
+        deferredInstallPrompt = null;
+        closeInstallNudge(choice && choice.outcome === "accepted");
+      });
+
+      setTimeout(() => {
+        if (isIOSDevice() || isSafariBrowser()) showInstallNudge();
+      }, 900);
+    }
+
+    function registerServiceWorker() {
+      if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
+
+    document.getElementById("openLibrary").addEventListener("click", openLibrary);
+    document.getElementById("openLibraryRail").addEventListener("click", openLibrary);
+    document.getElementById("closeLibrary").addEventListener("click", closeLibrary);
+    document.getElementById("modeBtn").addEventListener("click", toggleMode);
+    document.getElementById("resetProgress").addEventListener("click", resetProgress);
+    document.getElementById("resetRail").addEventListener("click", resetProgress);
+    document.getElementById("quitBtn").addEventListener("click", resetProgress);
+
+    document.getElementById("addOneBtn").addEventListener("click", () => {
+      const added = addWords([[els.newEnglish.value.trim(), els.newChinese.value.trim()]]);
+      if (added) {
+        els.newEnglish.value = "";
+        els.newChinese.value = "";
+        els.feedback.className = "feedback good";
+        els.feedback.textContent = "新词已加入下一轮。";
+      }
+    });
+
+    document.getElementById("addBulkBtn").addEventListener("click", () => {
+      const pairs = els.bulkInput.value.split(/\r?\n/).map(normalizePair).filter(Boolean);
+      const added = addWords(pairs);
+      if (added) {
+        els.bulkInput.value = "";
+        els.feedback.className = "feedback good";
+        els.feedback.textContent = `已加入 ${added} 个新词。`;
+      }
+    });
+
+    document.getElementById("clearCustomBtn").addEventListener("click", () => {
+      if (!confirm("只清空自定义词，保留原始最终单词列表。确定吗？")) return;
+      state.words = state.words.filter(word => !word.custom);
+      saveWords();
+      renderRound();
+    });
+
+    if (els.checkBtn) {
+      els.checkBtn.addEventListener("click", () => {
+        showCompletion(false);
+      });
+    }
+
+    els.continueBtn.addEventListener("click", () => {
+      state.round += 1;
+      renderRound();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && els.installNudge.classList.contains("show")) {
+        closeInstallNudge(false);
+        return;
+      }
+      if (els.libraryModal.classList.contains("open")) {
+        if (event.key === "Escape") closeLibrary();
+        return;
+      }
+      if (!/^[0-9]$/.test(event.key)) return;
+      const card = document.querySelector(`.match-card[data-key="${event.key}"]`);
+      if (!card) return;
+      event.preventDefault();
+      card.click();
+    });
+
+    els.libraryModal.addEventListener("click", event => {
+      if (event.target === els.libraryModal) closeLibrary();
+    });
+
+    initInstallNudge();
+    registerServiceWorker();
+    state.words = loadWords();
+    renderRound();
+  </script>
+</body>
+</html>

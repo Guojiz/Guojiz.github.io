@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Word Snap">
+  <rect width="512" height="512" rx="112" fill="#131f24"/>
+  <rect x="84" y="78" width="344" height="356" rx="86" fill="#58cc02"/>
+  <path d="M148 181h45l26 139 36-139h39l36 139 26-139h44l-45 190h-48l-32-121-32 121h-48l-47-190z" fill="#102015"/>
+  <path d="M118 414h276" stroke="#102015" stroke-width="28" stroke-linecap="round" opacity=".18"/>
+</svg>
