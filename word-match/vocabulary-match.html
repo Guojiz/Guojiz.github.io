@@ -271,6 +271,10 @@
       pointer-events: none;
     }
 
+    .match-card.entering {
+      animation: cardEnter 520ms var(--ease) both;
+    }
+
     .match-card.empty {
       visibility: hidden;
       pointer-events: none;
@@ -763,6 +767,17 @@
       45% { filter: brightness(1.45); }
     }
 
+    @keyframes cardEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
     @media (max-width: 1050px) {
       .app {
         grid-template-columns: 1fr;
@@ -1062,6 +1077,10 @@
       levelDurationMs: 120000,
       timerId: null,
       refillTimers: [],
+      refillKeys: new Set(),
+      pendingRefillSlots: [],
+      clearedSinceLastRefill: 0,
+      nextRefillBatchSize: 2,
       wrongQueue: []
     };
 
@@ -1426,6 +1445,7 @@
       }
       state.refillTimers.forEach(timerId => clearTimeout(timerId));
       state.refillTimers = [];
+      state.refillKeys.clear();
     }
 
     function isLevelOver() {
@@ -1480,12 +1500,13 @@
       return index === SLOT_COUNT - 1 ? "0" : String(index + 1 + SLOT_COUNT);
     }
 
-    function makeSlot(side, index, word = null) {
+    function makeSlot(side, index, word = null, entering = false) {
       return {
         side,
         index,
         key: slotKey(side, index),
-        word
+        word,
+        entering
       };
     }
 
@@ -1493,7 +1514,7 @@
       const dueWrong = takeWrongReplay(true);
       if (dueWrong) return dueWrong;
       if (state.wordQueue.length) return state.wordQueue.shift();
-      return takeWrongReplay(false);
+      return null;
     }
 
     function isWordActive(wordId) {
@@ -1522,7 +1543,7 @@
     function refillDelayFor(elapsed) {
       if (elapsed < 1600) return randomBetween(FAST_REFILL_MIN_MS, FAST_REFILL_MAX_MS);
       if (elapsed > 4200) return randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
-      return randomBetween(220, 560);
+      return randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
     }
 
     function renderRound() {
@@ -1531,6 +1552,9 @@
       state.locked = false;
       state.completedThisRun = 0;
       state.wrongQueue = [];
+      state.pendingRefillSlots = [];
+      state.clearedSinceLastRefill = 0;
+      state.nextRefillBatchSize = randomBetween(2, 3);
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
       state.roundStartedAt = performance.now();
@@ -1566,13 +1590,14 @@
       els.matchGrid.innerHTML = "";
       [...state.leftSlots, ...state.rightSlots].forEach(slot => {
         els.matchGrid.appendChild(makeCard(slot));
+        slot.entering = false;
       });
     }
 
     function makeCard(slot) {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `match-card${slot.word ? "" : " empty"}`;
+      button.className = `match-card${slot.word ? "" : " empty"}${slot.entering ? " entering" : ""}`;
       button.dataset.key = slot.key;
       button.dataset.side = slot.side;
       button.dataset.index = String(slot.index);
@@ -1638,7 +1663,7 @@
       word.correct += 1;
       word.streak += 1;
       word.lastMs = elapsed;
-      word.mastered = word.streak >= 2;
+      applyReviewSuccess(word);
 
       state.score += 1;
       state.streak += 1;
@@ -1667,10 +1692,9 @@
           showCompletion(false);
           return;
         }
-        const waitMs = refillDelayFor(elapsed);
         els.feedback.className = "feedback";
-        els.feedback.textContent = "空槽会稍后补上，你可以先继续配其他词。";
-        scheduleSlotRefill(cleared.leftIndex, cleared.rightIndex, waitMs);
+        queueRefillSlot(cleared.leftIndex, cleared.rightIndex);
+        maybeScheduleBatchRefill(elapsed);
       }, CORRECT_ANIM_MS);
     }
 
@@ -1683,21 +1707,71 @@
       return { leftIndex: leftTarget.index, rightIndex: rightTarget.index };
     }
 
+    function slotPairKey(leftIndex, rightIndex) {
+      return `${leftIndex}:${rightIndex}`;
+    }
+
+    function queueRefillSlot(leftIndex, rightIndex) {
+      const key = slotPairKey(leftIndex, rightIndex);
+      if (!state.pendingRefillSlots.some(slot => slot.key === key)) {
+        state.pendingRefillSlots.push({ leftIndex, rightIndex, key });
+      }
+      state.clearedSinceLastRefill += 1;
+    }
+
+    function pendingOpenSlots() {
+      return state.pendingRefillSlots.filter(slot => {
+        return !state.refillKeys.has(slot.key)
+          && state.leftSlots[slot.leftIndex]
+          && state.rightSlots[slot.rightIndex]
+          && !state.leftSlots[slot.leftIndex].word
+          && !state.rightSlots[slot.rightIndex].word;
+      });
+    }
+
+    function maybeScheduleBatchRefill(elapsed = 2400) {
+      const pending = pendingOpenSlots();
+      if (!pending.length) return;
+
+      const shouldWaitForBatch = state.clearedSinceLastRefill < state.nextRefillBatchSize && activeSlotPairs() > 2;
+      if (shouldWaitForBatch) {
+        const left = state.nextRefillBatchSize - state.clearedSinceLastRefill;
+        els.feedback.textContent = `继续，再消掉 ${left} 组后补入新词。`;
+        return;
+      }
+
+      const baseDelay = refillDelayFor(elapsed);
+      pending.forEach((slot, order) => {
+        scheduleSlotRefill(slot.leftIndex, slot.rightIndex, baseDelay + order * 650);
+      });
+      state.clearedSinceLastRefill = 0;
+      state.nextRefillBatchSize = randomBetween(2, 3);
+      els.feedback.textContent = "空位会按批次慢慢补上。";
+    }
+
     function scheduleSlotRefill(leftIndex, rightIndex, delayMs) {
+      const key = slotPairKey(leftIndex, rightIndex);
+      if (state.refillKeys.has(key)) return;
+      state.refillKeys.add(key);
       const timerId = setTimeout(() => {
         state.refillTimers = state.refillTimers.filter(id => id !== timerId);
+        state.refillKeys.delete(key);
         if (els.completionView.classList.contains("show") || isLevelOver()) return;
         if (state.leftSlots[leftIndex].word || state.rightSlots[rightIndex].word) return;
 
         if (!refillSlotPair(leftIndex, rightIndex)) {
           if (state.wordQueue.length || state.wrongQueue.length) {
-            scheduleSlotRefill(leftIndex, rightIndex, 600);
-          } else if (isStreamComplete()) {
+            scheduleSlotRefill(leftIndex, rightIndex, 900);
+          } else {
+            state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
+          }
+          if (isStreamComplete()) {
             showCompletion(false);
           }
           return;
         }
 
+        state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
         renderSlots();
         renderStats();
         if (isStreamComplete()) {
@@ -1710,8 +1784,8 @@
     function refillSlotPair(leftIndex, rightIndex) {
       const nextWord = takeNextWord();
       if (!nextWord) return false;
-      state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord);
-      state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord);
+      state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord, true);
+      state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord, true);
       return true;
     }
 
@@ -1757,7 +1831,11 @@
     }
 
     function isStreamComplete() {
-      return !state.wordQueue.length && !state.wrongQueue.length && !state.refillTimers.length && activeSlotPairs() === 0;
+      return !state.wordQueue.length
+        && !state.wrongQueue.length
+        && !state.refillTimers.length
+        && !state.pendingRefillSlots.length
+        && activeSlotPairs() === 0;
     }
 
     function showCompletion(allDone, reason = "queue") {
