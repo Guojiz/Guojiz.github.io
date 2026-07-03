@@ -115,6 +115,21 @@
       padding: 36px 36px 28px;
     }
 
+    .mobile-nav {
+      display: none;
+      width: min(760px, 100%);
+      margin: 0 auto 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .mobile-nav .rail-btn {
+      width: auto;
+      height: 44px;
+      border-color: var(--line);
+      background: #17282e;
+    }
+
     .lesson {
       width: min(760px, 100%);
       display: grid;
@@ -303,14 +318,6 @@
       gap: 18px;
       margin-top: 36px;
       padding-top: 24px;
-    }
-
-    .lesson-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: flex-end;
     }
 
     .feedback {
@@ -770,6 +777,10 @@
         padding: 28px 18px;
       }
 
+      .mobile-nav {
+        display: grid;
+      }
+
       .lesson {
         min-height: auto;
       }
@@ -821,10 +832,6 @@
         flex-direction: column;
       }
 
-      .lesson-actions {
-        justify-content: stretch;
-      }
-
       .duo-button {
         width: 100%;
       }
@@ -868,6 +875,12 @@
     </aside>
 
     <main class="main">
+      <nav class="mobile-nav" aria-label="窄屏导航">
+        <button class="rail-btn active" type="button">练习</button>
+        <button class="rail-btn" type="button" id="openLibraryMobile">自定义词库</button>
+        <button class="rail-btn" type="button" id="resetMobile">重置</button>
+      </nav>
+
       <section class="lesson" aria-label="单词配对练习">
         <div class="lesson-top">
           <button class="icon-button" type="button" id="quitBtn" aria-label="重新开始">×</button>
@@ -890,9 +903,6 @@
 
         <div class="lesson-foot">
           <div class="feedback" id="feedback">选择一个中文和一个英文。</div>
-          <div class="lesson-actions">
-            <button class="duo-button secondary" type="button" id="openLibraryInline">添加单词</button>
-          </div>
         </div>
       </section>
 
@@ -1051,7 +1061,7 @@
       levelEndsAt: 0,
       levelDurationMs: 120000,
       timerId: null,
-      refillTimerId: null,
+      refillTimers: [],
       wrongQueue: []
     };
 
@@ -1066,7 +1076,10 @@
         mistakes: 0,
         streak: 0,
         mastered: false,
-        lastMs: 0
+        lastMs: 0,
+        reviewLevel: 0,
+        nextReviewAt: 0,
+        lastReviewedAt: 0
       };
     }
 
@@ -1091,7 +1104,10 @@
             mistakes: savedWord.mistakes || 0,
             streak: savedWord.streak || 0,
             mastered: Boolean(savedWord.mastered),
-            lastMs: savedWord.lastMs || 0
+            lastMs: savedWord.lastMs || 0,
+            reviewLevel: savedWord.reviewLevel || 0,
+            nextReviewAt: savedWord.nextReviewAt || 0,
+            lastReviewedAt: savedWord.lastReviewedAt || 0
           });
         } else if (savedWord.custom && savedWord.en && savedWord.zh) {
           byId.set(savedWord.id, {
@@ -1101,7 +1117,10 @@
             mistakes: savedWord.mistakes || 0,
             streak: savedWord.streak || 0,
             mastered: Boolean(savedWord.mastered),
-            lastMs: savedWord.lastMs || 0
+            lastMs: savedWord.lastMs || 0,
+            reviewLevel: savedWord.reviewLevel || 0,
+            nextReviewAt: savedWord.nextReviewAt || 0,
+            lastReviewedAt: savedWord.lastReviewedAt || 0
           });
         }
       });
@@ -1124,8 +1143,40 @@
       return copy;
     }
 
+    function isDueForReview(word, now = Date.now()) {
+      return word.nextReviewAt > 0 && word.nextReviewAt <= now;
+    }
+
+    function reviewUrgency(word, now = Date.now()) {
+      if (!word.nextReviewAt) return 0;
+      return Math.max(0, now - word.nextReviewAt) / 60000;
+    }
+
     function weakness(word) {
-      return word.mistakes * 5 + Math.max(0, 2 - word.streak) * 3 + (word.seen ? 0 : 2) + (word.lastMs > 4200 ? 2 : 0);
+      return word.mistakes * 6
+        + Math.max(0, 2 - word.streak) * 3
+        + (word.seen ? 0 : 3)
+        + (word.lastMs > 4200 ? 2 : 0)
+        + (isDueForReview(word) ? 8 : 0)
+        + Math.min(6, reviewUrgency(word));
+    }
+
+    function applyReviewSuccess(word) {
+      const now = Date.now();
+      const nextLevel = Math.min(word.reviewLevel + 1, REVIEW_INTERVALS.length);
+      const interval = REVIEW_INTERVALS[Math.max(0, nextLevel - 1)] || REVIEW_INTERVALS[REVIEW_INTERVALS.length - 1];
+      word.reviewLevel = nextLevel;
+      word.lastReviewedAt = now;
+      word.nextReviewAt = now + interval;
+      word.mastered = word.streak >= 2 && word.reviewLevel >= 2;
+    }
+
+    function applyReviewFailure(word) {
+      const now = Date.now();
+      word.reviewLevel = 0;
+      word.lastReviewedAt = now;
+      word.nextReviewAt = now + REVIEW_INTERVALS[0];
+      word.mastered = false;
     }
 
     function chooseRound() {
@@ -1234,7 +1285,7 @@
       word.correct += 1;
       word.streak += 1;
       word.lastMs = elapsed;
-      word.mastered = word.streak >= 2;
+      applyReviewSuccess(word);
 
       state.score += 1;
       state.streak += 1;
@@ -1341,13 +1392,22 @@
     const WRONG_ANIM_MS = 520;
     const LEVEL_BASE_MS = 120000;
     const LEVEL_VARIANCE_MS = 15000;
-    const REFILL_MIN_MS = 120;
-    const REFILL_MAX_MS = 420;
-    const FAST_REFILL_MIN_MS = 520;
-    const FAST_REFILL_MAX_MS = 860;
+    const REFILL_MIN_MS = 2600;
+    const REFILL_MAX_MS = 5200;
+    const FAST_REFILL_MIN_MS = 3600;
+    const FAST_REFILL_MAX_MS = 6200;
     const WRONG_REPLAY_MIN_MS = 4200;
     const WRONG_REPLAY_MAX_MS = 6200;
     const TIMER_TICK_MS = 250;
+    const REVIEW_INTERVALS = [
+      5 * 60 * 1000,
+      30 * 60 * 1000,
+      12 * 60 * 60 * 1000,
+      24 * 60 * 60 * 1000,
+      3 * 24 * 60 * 60 * 1000,
+      7 * 24 * 60 * 60 * 1000,
+      15 * 24 * 60 * 60 * 1000
+    ];
 
     function randomBetween(min, max) {
       return Math.floor(min + Math.random() * (max - min + 1));
@@ -1364,10 +1424,8 @@
         clearInterval(state.timerId);
         state.timerId = null;
       }
-      if (state.refillTimerId) {
-        clearTimeout(state.refillTimerId);
-        state.refillTimerId = null;
-      }
+      state.refillTimers.forEach(timerId => clearTimeout(timerId));
+      state.refillTimers = [];
     }
 
     function isLevelOver() {
@@ -1392,24 +1450,29 @@
     }
 
     function buildWordQueue() {
-      const unmastered = state.words.filter(word => !word.mastered);
-      if (!unmastered.length) return [];
+      const now = Date.now();
+      const eligible = state.words.filter(word => !word.mastered || isDueForReview(word, now));
+      if (!eligible.length) return [];
 
       if (state.mode === "all") {
-        return [...unmastered].sort((a, b) => a.id.localeCompare(b.id));
+        return [...eligible].sort((a, b) => a.id.localeCompare(b.id));
       }
 
-      const weak = [...unmastered]
+      const due = [...eligible]
+        .filter(word => isDueForReview(word, now))
+        .sort((a, b) => weakness(b) - weakness(a));
+
+      const weak = [...eligible]
         .filter(word => word.mistakes > 0 || word.streak < 2)
         .sort((a, b) => weakness(b) - weakness(a));
 
       if (state.mode === "weak") {
-        return Array.from(new Map([...weak, ...unmastered].map(word => [word.id, word])).values());
+        return Array.from(new Map([...due, ...weak, ...eligible].map(word => [word.id, word])).values());
       }
 
-      const unseen = unmastered.filter(word => word.seen === 0);
-      const rest = shuffle(unmastered);
-      return Array.from(new Map([...weak, ...unseen, ...rest].map(word => [word.id, word])).values());
+      const unseen = eligible.filter(word => word.seen === 0);
+      const rest = shuffle(eligible);
+      return Array.from(new Map([...due, ...weak, ...unseen, ...rest].map(word => [word.id, word])).values());
     }
 
     function slotKey(side, index) {
@@ -1596,7 +1659,8 @@
         if (els.completionView.classList.contains("show")) return;
         first.card.classList.add("replacing");
         second.card.classList.add("replacing");
-        clearMatchedSlots(first, second);
+        const cleared = clearMatchedSlots(first, second);
+        state.locked = false;
         renderSlots();
         renderStats();
         if (isStreamComplete()) {
@@ -1605,19 +1669,8 @@
         }
         const waitMs = refillDelayFor(elapsed);
         els.feedback.className = "feedback";
-        els.feedback.textContent = waitMs > 500 ? "节奏太快，稍等一下再出新词。" : "新词马上补上。";
-        state.refillTimerId = setTimeout(() => {
-          state.refillTimerId = null;
-          if (els.completionView.classList.contains("show") || isLevelOver()) return;
-          refillRandomSlotPair();
-          reshuffleSlots();
-          state.locked = false;
-          renderSlots();
-          renderStats();
-          if (isStreamComplete()) {
-            showCompletion(false);
-          }
-        }, waitMs);
+        els.feedback.textContent = "空槽会稍后补上，你可以先继续配其他词。";
+        scheduleSlotRefill(cleared.leftIndex, cleared.rightIndex, waitMs);
       }, CORRECT_ANIM_MS);
     }
 
@@ -1627,28 +1680,39 @@
 
       state.leftSlots[leftTarget.index] = makeSlot("left", leftTarget.index, null);
       state.rightSlots[rightTarget.index] = makeSlot("right", rightTarget.index, null);
+      return { leftIndex: leftTarget.index, rightIndex: rightTarget.index };
     }
 
-    function refillRandomSlotPair() {
+    function scheduleSlotRefill(leftIndex, rightIndex, delayMs) {
+      const timerId = setTimeout(() => {
+        state.refillTimers = state.refillTimers.filter(id => id !== timerId);
+        if (els.completionView.classList.contains("show") || isLevelOver()) return;
+        if (state.leftSlots[leftIndex].word || state.rightSlots[rightIndex].word) return;
+
+        if (!refillSlotPair(leftIndex, rightIndex)) {
+          if (state.wordQueue.length || state.wrongQueue.length) {
+            scheduleSlotRefill(leftIndex, rightIndex, 600);
+          } else if (isStreamComplete()) {
+            showCompletion(false);
+          }
+          return;
+        }
+
+        renderSlots();
+        renderStats();
+        if (isStreamComplete()) {
+          showCompletion(false);
+        }
+      }, delayMs);
+      state.refillTimers.push(timerId);
+    }
+
+    function refillSlotPair(leftIndex, rightIndex) {
       const nextWord = takeNextWord();
       if (!nextWord) return false;
-
-      const leftOpen = state.leftSlots.map((slot, index) => slot.word ? null : index).filter(index => index !== null);
-      const rightOpen = state.rightSlots.map((slot, index) => slot.word ? null : index).filter(index => index !== null);
-      if (!leftOpen.length || !rightOpen.length) return false;
-
-      const leftIndex = leftOpen[randomBetween(0, leftOpen.length - 1)];
-      const rightIndex = rightOpen[randomBetween(0, rightOpen.length - 1)];
       state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord);
       state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord);
       return true;
-    }
-
-    function reshuffleSlots() {
-      const leftWords = shuffle(state.leftSlots.map(slot => slot.word));
-      const rightWords = shuffle(state.rightSlots.map(slot => slot.word));
-      state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, leftWords[index] || null));
-      state.rightSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("right", index, rightWords[index] || null));
     }
 
     function markWrong(first, second) {
@@ -1657,8 +1721,8 @@
       second.slot.word.mistakes += 1;
       first.slot.word.streak = 0;
       second.slot.word.streak = 0;
-      first.slot.word.mastered = false;
-      second.slot.word.mastered = false;
+      applyReviewFailure(first.slot.word);
+      applyReviewFailure(second.slot.word);
       queueWrongReplay(first.slot.word);
       queueWrongReplay(second.slot.word);
 
@@ -1693,14 +1757,14 @@
     }
 
     function isStreamComplete() {
-      return !state.wordQueue.length && !state.wrongQueue.length && activeSlotPairs() === 0;
+      return !state.wordQueue.length && !state.wrongQueue.length && !state.refillTimers.length && activeSlotPairs() === 0;
     }
 
     function showCompletion(allDone, reason = "queue") {
       clearLevelTimers();
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
-      const remaining = state.words.filter(word => !word.mastered).length;
+      const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
       els.completionTitle.textContent = allDone ? "全部过关" : reason === "timeout" ? "时间到" : "这一关完成";
       els.completionText.textContent = allDone
         ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
@@ -1714,8 +1778,8 @@
     }
 
     function renderStats() {
-      const mastered = state.words.filter(word => word.mastered).length;
-      const remaining = state.words.length - mastered;
+      const mastered = state.words.filter(word => word.mastered && !isDueForReview(word)).length;
+      const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
       const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
       els.progressFill.style.width = `${pct}%`;
       const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
@@ -1783,6 +1847,9 @@
         word.streak = 0;
         word.mastered = false;
         word.lastMs = 0;
+        word.reviewLevel = 0;
+        word.nextReviewAt = 0;
+        word.lastReviewedAt = 0;
       });
       state.round = 1;
       state.score = 0;
@@ -1913,11 +1980,12 @@
 
     document.getElementById("openLibrary").addEventListener("click", openLibrary);
     document.getElementById("openLibraryRail").addEventListener("click", openLibrary);
-    document.getElementById("openLibraryInline").addEventListener("click", openLibrary);
+    document.getElementById("openLibraryMobile").addEventListener("click", openLibrary);
     document.getElementById("closeLibrary").addEventListener("click", closeLibrary);
     document.getElementById("modeBtn").addEventListener("click", toggleMode);
     document.getElementById("resetProgress").addEventListener("click", resetProgress);
     document.getElementById("resetRail").addEventListener("click", resetProgress);
+    document.getElementById("resetMobile").addEventListener("click", resetProgress);
     document.getElementById("quitBtn").addEventListener("click", resetProgress);
 
     document.getElementById("addOneBtn").addEventListener("click", () => {
