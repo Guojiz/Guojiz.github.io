@@ -305,6 +305,14 @@
       padding-top: 24px;
     }
 
+    .lesson-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
     .feedback {
       min-height: 44px;
       color: var(--muted);
@@ -813,6 +821,10 @@
         flex-direction: column;
       }
 
+      .lesson-actions {
+        justify-content: stretch;
+      }
+
       .duo-button {
         width: 100%;
       }
@@ -851,7 +863,7 @@
     <aside class="rail" aria-label="练习导航">
       <div class="logo" aria-hidden="true">W</div>
       <button class="rail-btn active" type="button">练习</button>
-      <button class="rail-btn" type="button" id="openLibraryRail">词库</button>
+      <button class="rail-btn" type="button" id="openLibraryRail">自定义词库</button>
       <button class="rail-btn" type="button" id="resetRail">重置</button>
     </aside>
 
@@ -878,6 +890,9 @@
 
         <div class="lesson-foot">
           <div class="feedback" id="feedback">选择一个中文和一个英文。</div>
+          <div class="lesson-actions">
+            <button class="duo-button secondary" type="button" id="openLibraryInline">添加单词</button>
+          </div>
         </div>
       </section>
 
@@ -894,7 +909,7 @@
         </div>
         <div class="weak-list" id="weakList"></div>
         <div class="panel-actions">
-          <button class="small-button" type="button" id="openLibrary">录入新单词</button>
+          <button class="small-button" type="button" id="openLibrary">自定义词库</button>
           <button class="small-button" type="button" id="modeBtn">模式：自适应</button>
           <button class="small-button" type="button" id="resetProgress">清空进度</button>
         </div>
@@ -921,8 +936,8 @@
     <div class="modal-card">
       <div class="modal-top">
         <div>
-          <h2 id="libraryTitle">词库</h2>
-          <p id="librarySummary">新增词会保存在当前浏览器里，下次打开仍然可练。</p>
+          <h2 id="libraryTitle">自定义词库</h2>
+          <p id="librarySummary">在这里添加自己的单词。新增词只保存在当前浏览器里，不会改掉别人网页上的词。</p>
         </div>
         <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭">×</button>
       </div>
@@ -1036,7 +1051,8 @@
       levelEndsAt: 0,
       levelDurationMs: 120000,
       timerId: null,
-      refillTimerId: null
+      refillTimerId: null,
+      wrongQueue: []
     };
 
     function createWord(en, zh, custom = false, id = null) {
@@ -1325,8 +1341,12 @@
     const WRONG_ANIM_MS = 520;
     const LEVEL_BASE_MS = 120000;
     const LEVEL_VARIANCE_MS = 15000;
-    const REFILL_MIN_MS = 520;
-    const REFILL_MAX_MS = 1650;
+    const REFILL_MIN_MS = 120;
+    const REFILL_MAX_MS = 420;
+    const FAST_REFILL_MIN_MS = 520;
+    const FAST_REFILL_MAX_MS = 860;
+    const WRONG_REPLAY_MIN_MS = 4200;
+    const WRONG_REPLAY_MAX_MS = 6200;
     const TIMER_TICK_MS = 250;
 
     function randomBetween(min, max) {
@@ -1407,7 +1427,39 @@
     }
 
     function takeNextWord() {
-      return state.wordQueue.length ? state.wordQueue.shift() : null;
+      const dueWrong = takeWrongReplay(true);
+      if (dueWrong) return dueWrong;
+      if (state.wordQueue.length) return state.wordQueue.shift();
+      return takeWrongReplay(false);
+    }
+
+    function isWordActive(wordId) {
+      return [...state.leftSlots, ...state.rightSlots].some(slot => slot.word && slot.word.id === wordId);
+    }
+
+    function takeWrongReplay(requireDue) {
+      const now = performance.now();
+      const index = state.wrongQueue.findIndex(item => {
+        if (isWordActive(item.word.id)) return false;
+        return !requireDue || item.availableAt <= now;
+      });
+      if (index < 0) return null;
+      const [item] = state.wrongQueue.splice(index, 1);
+      return item.word;
+    }
+
+    function queueWrongReplay(word) {
+      if (state.wrongQueue.some(item => item.word.id === word.id)) return;
+      state.wrongQueue.push({
+        word,
+        availableAt: performance.now() + randomBetween(WRONG_REPLAY_MIN_MS, WRONG_REPLAY_MAX_MS)
+      });
+    }
+
+    function refillDelayFor(elapsed) {
+      if (elapsed < 1600) return randomBetween(FAST_REFILL_MIN_MS, FAST_REFILL_MAX_MS);
+      if (elapsed > 4200) return randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
+      return randomBetween(220, 560);
     }
 
     function renderRound() {
@@ -1415,6 +1467,7 @@
       state.selected = null;
       state.locked = false;
       state.completedThisRun = 0;
+      state.wrongQueue = [];
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
       state.roundStartedAt = performance.now();
@@ -1440,7 +1493,7 @@
       els.completionView.classList.remove("show");
       els.roundLabel.textContent = `第 ${state.round} 关 · 0/${state.sessionTotal}`;
       els.feedback.className = "feedback";
-      els.feedback.textContent = `限时挑战：${formatTime(state.levelDurationMs)}。新词会随机延迟出现。`;
+      els.feedback.textContent = `限时挑战：${formatTime(state.levelDurationMs)}。答对快速补位，错词会回滚。`;
       startLevelTimer();
       renderSlots();
       renderStats();
@@ -1550,9 +1603,9 @@
           showCompletion(false);
           return;
         }
-        const waitMs = randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
+        const waitMs = refillDelayFor(elapsed);
         els.feedback.className = "feedback";
-        els.feedback.textContent = `等一下，下一组会随机出现...`;
+        els.feedback.textContent = waitMs > 500 ? "节奏太快，稍等一下再出新词。" : "新词马上补上。";
         state.refillTimerId = setTimeout(() => {
           state.refillTimerId = null;
           if (els.completionView.classList.contains("show") || isLevelOver()) return;
@@ -1606,6 +1659,8 @@
       second.slot.word.streak = 0;
       first.slot.word.mastered = false;
       second.slot.word.mastered = false;
+      queueWrongReplay(first.slot.word);
+      queueWrongReplay(second.slot.word);
 
       state.mistakes += 1;
       state.streak = 0;
@@ -1616,7 +1671,7 @@
       first.card.classList.add("wrong");
       second.card.classList.add("wrong");
       els.feedback.className = "feedback bad";
-      els.feedback.textContent = `不对：${first.slot.word.en} = ${first.slot.word.zh}`;
+      els.feedback.textContent = `不对：${first.slot.word.en} = ${first.slot.word.zh}。错词会回滚再出现。`;
       saveWords();
       renderStats();
 
@@ -1638,7 +1693,7 @@
     }
 
     function isStreamComplete() {
-      return !state.wordQueue.length && activeSlotPairs() === 0;
+      return !state.wordQueue.length && !state.wrongQueue.length && activeSlotPairs() === 0;
     }
 
     function showCompletion(allDone, reason = "queue") {
@@ -1651,7 +1706,7 @@
         ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
         : reason === "timeout"
           ? `这一关配对 ${state.completedThisRun || 0} 组。继续后会重新洗牌，并优先出现不熟的词。`
-          : `本关队列已清空。还有 ${remaining} 个词没有稳定，继续后会进入下一关。`;
+          : `本关队列已清空。错词已经回滚练过，还有 ${remaining} 个词没有稳定。`;
       els.feedback.className = "feedback good";
       els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续进入下一关。";
       saveWords();
@@ -1666,7 +1721,8 @@
       const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
       els.topCount.textContent = formatTime(timeLeft);
       els.topCount.classList.toggle("time-low", timeLeft <= 15000);
-      els.roundLabel.textContent = `第 ${state.round} 关 · ${state.completedThisRun || 0}/${state.sessionTotal || 0}`;
+      const targetTotal = Math.max(state.sessionTotal || 0, (state.completedThisRun || 0) + state.wordQueue.length + state.wrongQueue.length + activeSlotPairs());
+      els.roundLabel.textContent = `第 ${state.round} 关 · ${state.completedThisRun || 0}/${targetTotal}`;
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
       els.streak.textContent = state.streak;
@@ -1857,6 +1913,7 @@
 
     document.getElementById("openLibrary").addEventListener("click", openLibrary);
     document.getElementById("openLibraryRail").addEventListener("click", openLibrary);
+    document.getElementById("openLibraryInline").addEventListener("click", openLibrary);
     document.getElementById("closeLibrary").addEventListener("click", closeLibrary);
     document.getElementById("modeBtn").addEventListener("click", toggleMode);
     document.getElementById("resetProgress").addEventListener("click", resetProgress);
