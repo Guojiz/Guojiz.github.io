@@ -1,63 +1,145 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Review OS | Guojiz</title>
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" data-en="Review OS — a GitHub-based study system that turns notes, mistakes, writing materials, and AI handoff rules into a maintainable learning project." data-zh="Review OS —— 一套基于 GitHub 的学习系统，把笔记、错题、写作素材和 AI 交接规则变成一个可维护的学习项目。" content="Review OS — a GitHub-based study system that turns notes, mistakes, writing materials, and AI handoff rules into a maintainable learning project.">
+  <meta name="theme-color" content="#e9e7de">
+  <meta property="og:title" content="Review OS — Guojiz">
+  <meta property="og:description" content="A GitHub-native, AI-assisted learning system by Guojiz.">
+  <meta property="og:type" content="website">
+  <title data-en="Review OS — Guojiz" data-zh="Review OS — Guojiz">Review OS — Guojiz</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="../styles.css">
 </head>
-<body class="detail-page">
-  <header class="site-header">
+<body>
+  <div class="frame" aria-hidden="true">
+    <span class="crop tl"></span><span class="crop tr"></span>
+    <span class="crop bl"></span><span class="crop br"></span>
+  </div>
+
+  <div class="ruler" aria-hidden="true">
+    <span class="ruler-mark">◆</span>
+    <span class="ruler-label" data-en="Review OS — Layer Register" data-zh="Review OS — 层级登记册">Review OS — Layer Register</span>
+    <span class="ruler-coord">W-02 · N 31°</span>
+    <span class="ruler-mark">◆</span>
+  </div>
+
+  <header class="masthead">
     <a class="brand" href="../" aria-label="Guojiz home">
-      <span class="brand-mark">G</span>
-      <span>Guojiz</span>
+      <span class="brand-mark">GZ</span>
+      <span class="brand-name">Guojiz</span>
     </a>
-    <nav aria-label="main navigation">
-      <a href="../agi-safety/">Research</a>
-      <a href="../word-match/">Word Match</a>
-      <a href="./">Review OS</a>
-      <a href="https://github.com/Guojiz">GitHub</a>
-    </nav>
+    <div class="masthead-right">
+      <nav aria-label="Primary">
+        <a href="../#work" data-en="All work" data-zh="全部项目">All work</a>
+        <a href="#layers" data-en="Layers" data-zh="层级">Layers</a>
+        <a href="https://github.com/Guojiz">GitHub</a>
+      </nav>
+      <button class="lang-toggle" type="button" aria-label="Switch language">
+        <span class="lang-opt" data-lang="en">EN</span>
+        <span class="lang-sep">/</span>
+        <span class="lang-opt" data-lang="zh">中</span>
+      </button>
+    </div>
   </header>
 
   <main>
     <section class="hero">
-      <p class="eyebrow">Deployable learning system</p>
-      <h1>Review OS</h1>
-      <p class="hero-copy">A GitHub-based study system that turns notes, mistakes, writing materials, daily practice, and AI handoff rules into a maintainable learning project.</p>
+      <p class="eyebrow" data-rise data-en="Deployable learning system · GitHub-native" data-zh="可部署学习系统 · 基于 GitHub">Deployable learning system · GitHub-native</p>
+      <h1 class="display" data-rise data-en="Review&lt;br&gt;&lt;em&gt;OS.&lt;/em&gt;" data-zh="Review&lt;br&gt;&lt;em&gt;OS.&lt;/em&gt;">Review<br><em>OS.</em></h1>
+      <p class="lede" data-rise data-en="A GitHub-based study system that turns notes, mistakes, writing materials, daily practice, and AI handoff rules into a maintainable learning project — not a folder of notes, but a structure that survives the study period." data-zh="一套基于 GitHub 的学习系统，把笔记、错题、写作素材、日常练习和 AI 交接规则变成一个可维护的学习项目——不是一堆笔记，而是一段学习结束后还能留下的结构。">A GitHub-based study system that turns notes, mistakes, writing materials, daily practice, and AI handoff rules into a maintainable learning project — not a folder of notes, but a structure that survives the study period.</p>
+      <dl class="hero-meta" data-rise>
+        <div><dt data-en="Type" data-zh="类型">Type</dt><dd data-en="AI learning system" data-zh="AI 学习系统">AI learning system</dd></div>
+        <div><dt data-en="Status" data-zh="状态">Status</dt><dd><span class="dot"></span><span data-en="Prototype · in progress" data-zh="原型 · 进行中">Prototype · in progress</span></dd></div>
+        <div><dt data-en="Repo" data-zh="仓库">Repo</dt><dd><a href="https://github.com/Guojiz/zhongkao" data-en="Guojiz/zhongkao ↗" data-zh="Guojiz/zhongkao ↗">Guojiz/zhongkao ↗</a></dd></div>
+      </dl>
     </section>
 
-    <section class="detail-layout">
-      <article class="prose">
-        <h2>Project idea</h2>
-        <p>Review OS is not just a folder of notes. It is a structured workflow for keeping learning materials traceable, reusable, and ready for future AI-assisted maintenance.</p>
+    <section class="work" id="layers" aria-labelledby="layers-title">
+      <div class="section-head">
+        <span class="code" data-en="§ Layers · 05" data-zh="§ 层级 · 05">§ Layers · 05</span>
+        <h2 id="layers-title" data-en="The stack" data-zh="结构分层">The stack</h2>
+        <p class="section-note" data-en="Five layers, from raw source to public deploy. Each does one job; together they keep learning traceable and reusable." data-zh="从原始素材到对外发布，共五层。每层只做一件事，合起来让学习可追踪、可复用。">Five layers, from raw source to public deploy. Each does one job; together they keep learning traceable and reusable.</p>
+      </div>
 
-        <h2>Layers</h2>
-        <ul>
-          <li><strong>Vault:</strong> source notes and attachments.</li>
-          <li><strong>Models:</strong> reusable problem-solving patterns.</li>
-          <li><strong>Writing:</strong> essay materials, drafts, and adaptation rules.</li>
-          <li><strong>Agent:</strong> handoff rules for AI tools.</li>
-          <li><strong>Deploy:</strong> public pages and reusable templates.</li>
-        </ul>
+      <ol class="register">
+        <li class="entry" data-status="open">
+          <span class="coord">L-01</span>
+          <div class="entry-body">
+            <span class="tag" data-en="Source" data-zh="素材">Source</span>
+            <h3 data-en="Vault" data-zh="Vault">Vault</h3>
+            <p data-en="Source notes and attachments — the raw material everything else builds on." data-zh="源笔记与附件——其它一切的基础原材料。">Source notes and attachments — the raw material everything else builds on.</p>
+          </div>
+          <span class="status" data-en="Base" data-zh="基础">Base</span>
+        </li>
 
-        <h2>Why it matters</h2>
-        <p>A study period ends, but the system can remain. The repository becomes a reusable prototype for AI-assisted review workflows.</p>
-      </article>
+        <li class="entry" data-status="open">
+          <span class="coord">L-02</span>
+          <div class="entry-body">
+            <span class="tag" data-en="Patterns" data-zh="模式">Patterns</span>
+            <h3 data-en="Models" data-zh="Models">Models</h3>
+            <p data-en="Reusable problem-solving patterns extracted from practice, so a method survives the problem that produced it." data-zh="从练习中提炼的可复用解题模式，让方法不会随产生它的那道题一起消失。">Reusable problem-solving patterns extracted from practice, so a method survives the problem that produced it.</p>
+          </div>
+          <span class="status" data-en="Reuse" data-zh="复用">Reuse</span>
+        </li>
 
-      <aside class="side-panel">
-        <h2>Project brief</h2>
-        <p>Repo as Review OS: a deployable AI-assisted learning system.</p>
-        <a class="button primary" href="https://github.com/Guojiz/zhongkao">Prototype repository</a>
-        <a class="button" href="../">Back home</a>
-      </aside>
+        <li class="entry" data-status="open">
+          <span class="coord">L-03</span>
+          <div class="entry-body">
+            <span class="tag" data-en="Essays" data-zh="写作">Essays</span>
+            <h3 data-en="Writing" data-zh="Writing">Writing</h3>
+            <p data-en="Essay materials, drafts, and adaptation rules — accumulated into a reusable writing toolkit." data-zh="作文素材、草稿与改写规则——沉淀成一套可复用的写作工具箱。">Essay materials, drafts, and adaptation rules — accumulated into a reusable writing toolkit.</p>
+          </div>
+          <span class="status" data-en="Drafts" data-zh="草稿">Drafts</span>
+        </li>
+
+        <li class="entry" data-status="open">
+          <span class="coord">L-04</span>
+          <div class="entry-body">
+            <span class="tag" data-en="Handoff" data-zh="交接">Handoff</span>
+            <h3 data-en="Agent" data-zh="Agent">Agent</h3>
+            <p data-en="Handoff rules for AI tools — what to delegate, how to brief it, and where the human stays in the loop." data-zh="交给 AI 工具的交接规则——委托什么、怎么交代、人留在回路里的哪一环。">Handoff rules for AI tools — what to delegate, how to brief it, and where the human stays in the loop.</p>
+          </div>
+          <span class="status" data-en="AI" data-zh="AI">AI</span>
+        </li>
+
+        <li class="entry" data-status="open">
+          <span class="coord">L-05</span>
+          <div class="entry-body">
+            <span class="tag" data-en="Public" data-zh="发布">Public</span>
+            <h3 data-en="Deploy" data-zh="Deploy">Deploy</h3>
+            <p data-en="Public pages and reusable templates that ship the system outward — the part other people can actually touch." data-zh="对外发布的页面与可复用模板——别人真正能碰到的那一层。">Public pages and reusable templates that ship the system outward — the part other people can actually touch.</p>
+          </div>
+          <span class="status" data-en="Ship" data-zh="交付">Ship</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="colophon" id="why" aria-labelledby="why-title">
+      <div class="section-head">
+        <span class="code" data-en="§ Why" data-zh="§ 缘由">§ Why</span>
+        <h2 id="why-title" data-en="It outlives the exam" data-zh="比考试活得更久">It outlives the exam</h2>
+      </div>
+      <div class="colophon-grid">
+        <p data-en="A study period ends, but the system can remain. Notes become patterns, patterns become templates, and the repository turns into a reusable prototype for AI-assisted review workflows." data-zh="一段学习会结束，但系统可以留下。笔记沉淀成模式，模式沉淀成模板，仓库变成 AI 辅助复习流程的可复用原型。">A study period ends, but the system can remain. Notes become patterns, patterns become templates, and the repository turns into a reusable prototype for AI-assisted review workflows.</p>
+        <p data-en="The point isn’t a tidier notebook. It’s a learning project that stays maintainable once an AI agent is the one maintaining it." data-zh="重点不是让笔记本更整齐，而是让这个学习项目在交给 AI 维护之后仍然可维护。">The point isn’t a tidier notebook. It’s a learning project that stays maintainable once an AI agent is the one maintaining it.</p>
+        <div class="actions actions-row">
+          <a class="btn primary" href="https://github.com/Guojiz/zhongkao" data-en="Prototype repository ↗" data-zh="原型仓库 ↗">Prototype repository ↗</a>
+          <a class="btn" href="../" data-en="Back home" data-zh="返回首页">Back home</a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
     <span>© 2026 Guojiz</span>
-    <a href="https://github.com/Guojiz/Guojiz.github.io">Site repository</a>
+    <a href="../" data-en="← Project register" data-zh="← 项目登记册">← Project register</a>
   </footer>
+
+  <script src="../main.js" defer></script>
 </body>
 </html>

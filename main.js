@@ -6,15 +6,6 @@
   var DEFAULT_LANG = "en"; // English first.
   var LANGS = ["en", "zh"];
 
-  var TITLES = {
-    en: "Guojiz — Project Register",
-    zh: "Guojiz — 项目登记册"
-  };
-  var META = {
-    en: "Guojiz's project register: AI learning systems, a Claude Desktop model patch, and a word-practice tool. AGI safety research is pending.",
-    zh: "Guojiz 的项目登记册：AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。"
-  };
-
   function supported(lang) {
     return LANGS.indexOf(lang) !== -1 ? lang : DEFAULT_LANG;
   }
@@ -34,14 +25,12 @@
       if (val == null) continue;
       if (el.tagName === "META") {
         el.setAttribute("content", val);
+      } else if (el.tagName === "TITLE") {
+        document.title = val;
       } else {
         el.innerHTML = val;
       }
     }
-
-    document.title = TITLES[lang];
-    var desc = document.querySelector('meta[name="description"]');
-    if (desc) desc.setAttribute("content", META[lang]);
 
     // Toggle button state.
     var opts = document.querySelectorAll(".lang-toggle .lang-opt");

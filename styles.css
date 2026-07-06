@@ -281,6 +281,8 @@ main { width: min(var(--max), calc(100% - var(--gut) * 2)); margin: 0 auto; }
   padding-bottom: clamp(64px, 8vw, 110px);
 }
 .colophon-grid p { color: var(--ink-soft); font-size: .98rem; line-height: 1.7; max-width: 38ch; }
+.colophon-grid .actions-row { align-self: end; }
+.colophon-grid .actions-row .btn { min-height: 44px; }
 
 /* ---- Footer ---- */
 
