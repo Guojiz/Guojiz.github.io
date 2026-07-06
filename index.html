@@ -3,111 +3,138 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Guojiz 的项目主页：AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。">
-  <meta property="og:title" content="Guojiz Projects">
+  <meta name="description" content="Guojiz 的项目登记册：AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。">
+  <meta name="theme-color" content="#e9e7de">
+  <meta property="og:title" content="Guojiz — Project Register">
   <meta property="og:description" content="Independent learning systems and small AI-era tools by Guojiz.">
   <meta property="og:type" content="website">
-  <title>Guojiz Projects</title>
+  <title>Guojiz — Project Register</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <header class="site-header">
+  <div class="frame" aria-hidden="true">
+    <span class="crop tl"></span><span class="crop tr"></span>
+    <span class="crop bl"></span><span class="crop br"></span>
+  </div>
+
+  <div class="ruler" aria-hidden="true">
+    <span class="ruler-mark">◆</span>
+    <span class="ruler-label">Guojiz — Project Register</span>
+    <span class="ruler-coord">N 31° · 2026</span>
+    <span class="ruler-mark">◆</span>
+  </div>
+
+  <header class="masthead">
     <a class="brand" href="./" aria-label="Guojiz home">
-      <span class="brand-mark">G</span>
-      <span>Guojiz</span>
+      <span class="brand-mark">GZ</span>
+      <span class="brand-name">Guojiz</span>
     </a>
     <nav aria-label="主要导航">
-      <a href="#agi-safety-status">AGI Research</a>
-      <a href="./review-os/">Review OS</a>
-      <a href="./word-match/">Word Match</a>
+      <a href="#work">Work</a>
+      <a href="#colophon">Colophon</a>
       <a href="https://github.com/Guojiz">GitHub</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
-      <p class="eyebrow">Independent Tools / Learning Systems / Research Notes</p>
-      <h1>Human agency, practical tools, and AI-era learning.</h1>
-      <p class="hero-copy">这里是 Guojiz 的项目入口。当前主要展示可用工具和学习系统；AGI safety research 方向仍在打磨中，暂未开放。</p>
+      <p class="eyebrow" data-rise>Independent builder · Learning systems · Small tools</p>
+      <h1 class="display" data-rise>Tools &amp; learning<br>systems for the<br><em>AI era.</em></h1>
+      <p class="lede" data-rise>Guojiz 的项目入口。这里收着正在做的学习系统、桌面小工具和单词练习；AGI safety 研究方向还在整理，暂未开放。</p>
+      <dl class="hero-meta" data-rise>
+        <div><dt>Role</dt><dd>Independent builder</dd></div>
+        <div><dt>Focus</dt><dd>AI-era learning &amp; tooling</dd></div>
+        <div><dt>Status</dt><dd><span class="dot"></span>Open · 1 pending</dd></div>
+      </dl>
     </section>
 
-    <section class="section" aria-labelledby="projects-title">
-      <div class="section-heading">
-        <p class="eyebrow">Selected Work</p>
-        <h2 id="projects-title">当前项目</h2>
+    <section class="work" id="work" aria-labelledby="work-title">
+      <div class="section-head">
+        <span class="code">§ Work · 04 entries</span>
+        <h2 id="work-title">Selected</h2>
+        <p class="section-note">四件正在做的事。按登记顺序排列，状态实时。</p>
       </div>
 
-      <div class="project-grid">
-        <article class="project-card research-card" id="agi-safety-status">
-          <p class="card-label">Research</p>
-          <h3>AGI Safety Research</h3>
-          <p>AGI safety research 方向正在整理和打磨中，公开页面暂未开放。等框架成熟后会重新发布。</p>
-          <div class="card-actions">
-            <span class="button" aria-disabled="true">暂未开放</span>
+      <ol class="register">
+        <li class="entry" id="agi-safety-status" data-status="closed">
+          <span class="coord">W-01</span>
+          <div class="entry-body">
+            <span class="tag">Research</span>
+            <h3>AGI Safety Research</h3>
+            <p>AGI safety research 方向正在整理和打磨中，公开页面暂未开放。等框架成熟后会重新发布。</p>
+            <div class="actions">
+              <span class="btn disabled" aria-disabled="true">暂未开放</span>
+            </div>
           </div>
-        </article>
+          <span class="status" data-status="closed">Closed</span>
+        </li>
 
-        <article class="project-card learning-card">
-          <p class="card-label">AI Learning System</p>
-          <h3>Repo-as-Review OS</h3>
-          <p>一个正在发展成网页化体验的目标驱动 AI 学习操作系统，把复习、间隔重复、知识管理和 AI 代理工作流放进同一套可追踪结构。</p>
-          <div class="card-actions">
-            <a class="button primary" href="./review-os/">打开项目页</a>
-            <a class="button" href="https://github.com/Guojiz/Repo-as-Review-OS">GitHub</a>
+        <li class="entry" data-status="open">
+          <span class="coord">W-02</span>
+          <div class="entry-body">
+            <span class="tag">AI Learning System</span>
+            <h3>Repo-as-Review OS</h3>
+            <p>一个正在发展成网页化体验的目标驱动 AI 学习操作系统，把复习、间隔重复、知识管理和 AI 代理工作流放进同一套可追踪结构。</p>
+            <div class="actions">
+              <a class="btn primary" href="./review-os/">打开项目页</a>
+              <a class="btn" href="https://github.com/Guojiz/Repo-as-Review-OS">GitHub</a>
+            </div>
           </div>
-        </article>
+          <a class="status" href="./review-os/" data-status="open">Live ↗</a>
+        </li>
 
-        <article class="project-card tool-card">
-          <p class="card-label">Claude Desktop</p>
-          <h3>Claude Desktop Tweak Models</h3>
-          <p>Windows 版 Claude Desktop 补丁工具，放开第三方 Anthropic 兼容网关的自定义模型 ID 校验。</p>
-          <div class="card-actions">
-            <a class="button primary" href="https://github.com/Guojiz/claude-desktop-tweak-models">查看仓库</a>
-            <a class="button" href="https://docs.bigmodel.cn/cn/guide/develop/claude/introduction">智谱示例</a>
+        <li class="entry" data-status="open">
+          <span class="coord">W-03</span>
+          <div class="entry-body">
+            <span class="tag">Claude Desktop</span>
+            <h3>Claude Desktop Tweak Models</h3>
+            <p>Windows 版 Claude Desktop 补丁工具，放开第三方 Anthropic 兼容网关的自定义模型 ID 校验。</p>
+            <div class="actions">
+              <a class="btn primary" href="https://github.com/Guojiz/claude-desktop-tweak-models">查看仓库</a>
+              <a class="btn" href="https://docs.bigmodel.cn/cn/guide/develop/claude/introduction">智谱示例</a>
+            </div>
           </div>
-        </article>
+          <a class="status" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-status="open">Repo ↗</a>
+        </li>
 
-        <article class="project-card practice-card">
-          <p class="card-label">Practice</p>
-          <h3>Word Match Quest</h3>
-          <p>仿多邻国节奏的单词配对练习，支持自定义词表、即时反馈、错词优先和 PWA 安装。</p>
-          <div class="card-actions">
-            <a class="button primary" href="./word-match/">开始练习</a>
-            <a class="button" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match">GitHub</a>
+        <li class="entry" data-status="open">
+          <span class="coord">W-04</span>
+          <div class="entry-body">
+            <span class="tag">Practice</span>
+            <h3>Word Match Quest</h3>
+            <p>仿多邻国节奏的单词配对练习，支持自定义词表、即时反馈、错词优先和 PWA 安装。</p>
+            <div class="actions">
+              <a class="btn primary" href="./word-match/">开始练习</a>
+              <a class="btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match">GitHub</a>
+            </div>
           </div>
-        </article>
-      </div>
+          <a class="status" href="./word-match/" data-status="open">Play ↗</a>
+        </li>
+      </ol>
     </section>
 
-    <section class="section note-list" aria-labelledby="notes-title">
-      <div class="section-heading">
-        <p class="eyebrow">Map</p>
-        <h2 id="notes-title">项目索引</h2>
+    <section class="colophon" id="colophon" aria-labelledby="colophon-title">
+      <div class="section-head">
+        <span class="code">§ Colophon</span>
+        <h2 id="colophon-title">Notes</h2>
       </div>
-
-      <div class="note-row">
-        <span>Research</span>
-        <strong>AGI safety research: temporarily unavailable while the framework is being revised.</strong>
+      <div class="colophon-grid">
+        <p>这是一个静态主页，托管在 GitHub Pages。子项目各自独立发布在对应目录或仓库。</p>
+        <p>设计取向：克制的登记册——一种把"正在做什么"如实登记下来的版式。坐标、状态、编号都编码真实信息，不靠装饰。</p>
+        <p>字体：Fraunces / Hanken Grotesk / JetBrains Mono。强调色沿用站点原有朱砂。</p>
       </div>
-      <a class="note-row" href="./review-os/">
-        <span>Learning</span>
-        <strong>Repo-as-Review OS: AI-assisted learning workflow with a planned web experience.</strong>
-      </a>
-      <a class="note-row" href="https://github.com/Guojiz/claude-desktop-tweak-models">
-        <span>Tool</span>
-        <strong>Claude Desktop custom model ID patch for Anthropic-compatible gateways.</strong>
-      </a>
-      <a class="note-row" href="./word-match/">
-        <span>Practice</span>
-        <strong>Word Match Quest: vocabulary matching game and PWA.</strong>
-      </a>
     </section>
   </main>
 
   <footer>
     <span>© 2026 Guojiz</span>
-    <a href="https://github.com/Guojiz/Guojiz.github.io">Site repository</a>
+    <a href="https://github.com/Guojiz/Guojiz.github.io">Site repository ↗</a>
   </footer>
+
+  <script src="./main.js" defer></script>
 </body>
 </html>
