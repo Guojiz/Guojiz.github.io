@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Guojiz 的项目登记册：AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。">
+  <meta name="description" data-en="Guojiz's project register: AI learning systems, a Claude Desktop model patch, and a word-practice tool. AGI safety research is pending." data-zh="Guojiz 的项目登记册：AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。" content="Guojiz's project register: AI learning systems, a Claude Desktop model patch, and a word-practice tool. AGI safety research is pending.">
   <meta name="theme-color" content="#e9e7de">
   <meta property="og:title" content="Guojiz — Project Register">
   <meta property="og:description" content="Independent learning systems and small AI-era tools by Guojiz.">
@@ -23,7 +23,7 @@
 
   <div class="ruler" aria-hidden="true">
     <span class="ruler-mark">◆</span>
-    <span class="ruler-label">Guojiz — Project Register</span>
+    <span class="ruler-label" data-en="Guojiz — Project Register" data-zh="Guojiz — 项目登记册">Guojiz — Project Register</span>
     <span class="ruler-coord">N 31° · 2026</span>
     <span class="ruler-mark">◆</span>
   </div>
@@ -33,106 +33,113 @@
       <span class="brand-mark">GZ</span>
       <span class="brand-name">Guojiz</span>
     </a>
-    <nav aria-label="主要导航">
-      <a href="#work">Work</a>
-      <a href="#colophon">Colophon</a>
-      <a href="https://github.com/Guojiz">GitHub</a>
-    </nav>
+    <div class="masthead-right">
+      <nav aria-label="Primary">
+        <a href="#work" data-en="Work" data-zh="项目">Work</a>
+        <a href="#colophon" data-en="Colophon" data-zh="说明">Colophon</a>
+        <a href="https://github.com/Guojiz">GitHub</a>
+      </nav>
+      <button class="lang-toggle" type="button" aria-label="Switch language">
+        <span class="lang-opt" data-lang="en">EN</span>
+        <span class="lang-sep">/</span>
+        <span class="lang-opt" data-lang="zh">中</span>
+      </button>
+    </div>
   </header>
 
   <main>
     <section class="hero">
-      <p class="eyebrow" data-rise>Independent builder · Learning systems · Small tools</p>
-      <h1 class="display" data-rise>Tools &amp; learning<br>systems for the<br><em>AI era.</em></h1>
-      <p class="lede" data-rise>Guojiz 的项目入口。这里收着正在做的学习系统、桌面小工具和单词练习；AGI safety 研究方向还在整理，暂未开放。</p>
+      <p class="eyebrow" data-rise data-en="Independent builder · Learning systems · Small tools" data-zh="独立开发者 · 学习系统 · 小工具">Independent builder · Learning systems · Small tools</p>
+      <h1 class="display" data-rise data-en="Tools &amp; learning&lt;br&gt;systems for the&lt;br&gt;&lt;em&gt;AI era.&lt;/em&gt;" data-zh="为 AI 时代做的&lt;br&gt;工具与&lt;em&gt;学习系统。&lt;/em&gt;">Tools &amp; learning<br>systems for the<br><em>AI era.</em></h1>
+      <p class="lede" data-rise data-en="Guojiz’s project hub — learning systems, desktop tweaks, and word practice built for the AI era. AGI safety research is still being revised and isn’t open yet." data-zh="Guojiz 的项目入口。这里收着正在做的学习系统、桌面小工具和单词练习；AGI safety 研究方向还在整理，暂未开放。">Guojiz’s project hub — learning systems, desktop tweaks, and word practice built for the AI era. AGI safety research is still being revised and isn’t open yet.</p>
       <dl class="hero-meta" data-rise>
-        <div><dt>Role</dt><dd>Independent builder</dd></div>
-        <div><dt>Focus</dt><dd>AI-era learning &amp; tooling</dd></div>
-        <div><dt>Status</dt><dd><span class="dot"></span>Open · 1 pending</dd></div>
+        <div><dt data-en="Role" data-zh="角色">Role</dt><dd data-en="Independent builder" data-zh="独立开发者">Independent builder</dd></div>
+        <div><dt data-en="Focus" data-zh="方向">Focus</dt><dd data-en="AI-era learning &amp; tooling" data-zh="AI 时代学习与工具">AI-era learning &amp; tooling</dd></div>
+        <div><dt data-en="Status" data-zh="状态">Status</dt><dd><span class="dot"></span><span data-en="Open · 1 pending" data-zh="开放 · 1 项待定">Open · 1 pending</span></dd></div>
       </dl>
     </section>
 
     <section class="work" id="work" aria-labelledby="work-title">
       <div class="section-head">
-        <span class="code">§ Work · 04 entries</span>
-        <h2 id="work-title">Selected</h2>
-        <p class="section-note">四件正在做的事。按登记顺序排列，状态实时。</p>
+        <span class="code" data-en="§ Work · 04 entries" data-zh="§ 项目 · 04 条">§ Work · 04 entries</span>
+        <h2 id="work-title" data-en="Selected" data-zh="精选">Selected</h2>
+        <p class="section-note" data-en="Four things in progress, in register order. Status is live." data-zh="四件正在做的事，按登记顺序排列，状态实时。">Four things in progress, in register order. Status is live.</p>
       </div>
 
       <ol class="register">
         <li class="entry" id="agi-safety-status" data-status="closed">
           <span class="coord">W-01</span>
           <div class="entry-body">
-            <span class="tag">Research</span>
-            <h3>AGI Safety Research</h3>
-            <p>AGI safety research 方向正在整理和打磨中，公开页面暂未开放。等框架成熟后会重新发布。</p>
+            <span class="tag" data-en="Research" data-zh="研究">Research</span>
+            <h3 data-en="AGI Safety Research" data-zh="AGI Safety 研究">AGI Safety Research</h3>
+            <p data-en="The AGI safety research track is being revised and polished. The public page is closed for now and will return once the framework matures." data-zh="AGI safety 研究方向正在整理和打磨中，公开页面暂未开放。等框架成熟后会重新发布。">The AGI safety research track is being revised and polished. The public page is closed for now and will return once the framework matures.</p>
             <div class="actions">
-              <span class="btn disabled" aria-disabled="true">暂未开放</span>
+              <span class="btn disabled" aria-disabled="true" data-en="Unavailable" data-zh="暂未开放">Unavailable</span>
             </div>
           </div>
-          <span class="status" data-status="closed">Closed</span>
+          <span class="status" data-status="closed" data-en="Closed" data-zh="已关闭">Closed</span>
         </li>
 
         <li class="entry" data-status="open">
           <span class="coord">W-02</span>
           <div class="entry-body">
-            <span class="tag">AI Learning System</span>
+            <span class="tag" data-en="AI Learning System" data-zh="AI 学习系统">AI Learning System</span>
             <h3>Repo-as-Review OS</h3>
-            <p>一个正在发展成网页化体验的目标驱动 AI 学习操作系统，把复习、间隔重复、知识管理和 AI 代理工作流放进同一套可追踪结构。</p>
+            <p data-en="A goal-driven AI learning OS growing into a web experience — review, spaced repetition, knowledge management, and agent workflows in one trackable structure." data-zh="一个正在发展成网页化体验的目标驱动 AI 学习操作系统，把复习、间隔重复、知识管理和 AI 代理工作流放进同一套可追踪结构。">A goal-driven AI learning OS growing into a web experience — review, spaced repetition, knowledge management, and agent workflows in one trackable structure.</p>
             <div class="actions">
-              <a class="btn primary" href="./review-os/">打开项目页</a>
+              <a class="btn primary" href="./review-os/" data-en="Open project" data-zh="打开项目页">Open project</a>
               <a class="btn" href="https://github.com/Guojiz/Repo-as-Review-OS">GitHub</a>
             </div>
           </div>
-          <a class="status" href="./review-os/" data-status="open">Live ↗</a>
+          <a class="status" href="./review-os/" data-status="open" data-en="Live ↗" data-zh="在线 ↗">Live ↗</a>
         </li>
 
         <li class="entry" data-status="open">
           <span class="coord">W-03</span>
           <div class="entry-body">
-            <span class="tag">Claude Desktop</span>
+            <span class="tag" data-en="Claude Desktop" data-zh="Claude Desktop">Claude Desktop</span>
             <h3>Claude Desktop Tweak Models</h3>
-            <p>Windows 版 Claude Desktop 补丁工具，放开第三方 Anthropic 兼容网关的自定义模型 ID 校验。</p>
+            <p data-en="A patch tool for Windows Claude Desktop that unlocks custom model ID validation for third-party Anthropic-compatible gateways." data-zh="Windows 版 Claude Desktop 补丁工具，放开第三方 Anthropic 兼容网关的自定义模型 ID 校验。">A patch tool for Windows Claude Desktop that unlocks custom model ID validation for third-party Anthropic-compatible gateways.</p>
             <div class="actions">
-              <a class="btn primary" href="https://github.com/Guojiz/claude-desktop-tweak-models">查看仓库</a>
-              <a class="btn" href="https://docs.bigmodel.cn/cn/guide/develop/claude/introduction">智谱示例</a>
+              <a class="btn primary" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-en="View repo" data-zh="查看仓库">View repo</a>
+              <a class="btn" href="https://docs.bigmodel.cn/cn/guide/develop/claude/introduction" data-en="Zhipu example" data-zh="智谱示例">Zhipu example</a>
             </div>
           </div>
-          <a class="status" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-status="open">Repo ↗</a>
+          <a class="status" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-status="open" data-en="Repo ↗" data-zh="仓库 ↗">Repo ↗</a>
         </li>
 
         <li class="entry" data-status="open">
           <span class="coord">W-04</span>
           <div class="entry-body">
-            <span class="tag">Practice</span>
+            <span class="tag" data-en="Practice" data-zh="练习">Practice</span>
             <h3>Word Match Quest</h3>
-            <p>仿多邻国节奏的单词配对练习，支持自定义词表、即时反馈、错词优先和 PWA 安装。</p>
+            <p data-en="A Duolingo-paced word-matching practice tool with custom word lists, instant feedback, mistake prioritization, and PWA install." data-zh="仿多邻国节奏的单词配对练习，支持自定义词表、即时反馈、错词优先和 PWA 安装。">A Duolingo-paced word-matching practice tool with custom word lists, instant feedback, mistake prioritization, and PWA install.</p>
             <div class="actions">
-              <a class="btn primary" href="./word-match/">开始练习</a>
+              <a class="btn primary" href="./word-match/" data-en="Start practice" data-zh="开始练习">Start practice</a>
               <a class="btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match">GitHub</a>
             </div>
           </div>
-          <a class="status" href="./word-match/" data-status="open">Play ↗</a>
+          <a class="status" href="./word-match/" data-status="open" data-en="Play ↗" data-zh="试玩 ↗">Play ↗</a>
         </li>
       </ol>
     </section>
 
     <section class="colophon" id="colophon" aria-labelledby="colophon-title">
       <div class="section-head">
-        <span class="code">§ Colophon</span>
-        <h2 id="colophon-title">Notes</h2>
+        <span class="code" data-en="§ Colophon" data-zh="§ 说明">§ Colophon</span>
+        <h2 id="colophon-title" data-en="Notes" data-zh="备注">Notes</h2>
       </div>
       <div class="colophon-grid">
-        <p>这是一个静态主页，托管在 GitHub Pages。子项目各自独立发布在对应目录或仓库。</p>
-        <p>设计取向：克制的登记册——一种把"正在做什么"如实登记下来的版式。坐标、状态、编号都编码真实信息，不靠装饰。</p>
-        <p>字体：Fraunces / Hanken Grotesk / JetBrains Mono。强调色沿用站点原有朱砂。</p>
+        <p data-en="A static homepage hosted on GitHub Pages. Sub-projects ship independently in their own directories or repos." data-zh="静态主页，托管在 GitHub Pages。子项目各自独立发布在对应目录或仓库。">A static homepage hosted on GitHub Pages. Sub-projects ship independently in their own directories or repos.</p>
+        <p data-en="Design direction: a restrained register — a layout that records what’s being worked on as it is. Coordinates, status, and numbers encode real information, not decoration." data-zh="设计取向：克制的登记册——把“正在做什么”如实登记下来。坐标、状态、编号都编码真实信息，不靠装饰。">Design direction: a restrained register — a layout that records what’s being worked on as it is. Coordinates, status, and numbers encode real information, not decoration.</p>
+        <p data-en="Type: Fraunces / Hanken Grotesk / JetBrains Mono. Accent carries over the site’s original vermilion." data-zh="字体：Fraunces / Hanken Grotesk / JetBrains Mono。强调色沿用站点原有朱砂。">Type: Fraunces / Hanken Grotesk / JetBrains Mono. Accent carries over the site’s original vermilion.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <span>© 2026 Guojiz</span>
-    <a href="https://github.com/Guojiz/Guojiz.github.io">Site repository ↗</a>
+    <a href="https://github.com/Guojiz/Guojiz.github.io" data-en="Site repository ↗" data-zh="站点仓库 ↗">Site repository ↗</a>
   </footer>
 
   <script src="./main.js" defer></script>
