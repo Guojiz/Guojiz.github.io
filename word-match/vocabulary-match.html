@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Word Snap</title>
   <meta name="theme-color" content="#131f24" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -38,7 +38,10 @@
 
     html,
     body {
-      min-height: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: pan-x;
     }
 
     body {
@@ -515,6 +518,7 @@
       width: min(720px, 100%);
       max-height: min(760px, calc(100vh - 40px));
       overflow: auto;
+      touch-action: pan-y;
       border: 2px solid var(--line);
       border-radius: 18px;
       background: var(--panel);
@@ -2512,6 +2516,13 @@
     els.libraryModal.addEventListener("click", event => {
       if (event.target === els.libraryModal) closeLibrary();
     });
+
+    // iOS: block pinch-zoom and two-finger gestures; CSS touch-action handles the rest.
+    document.addEventListener("gesturestart", event => event.preventDefault());
+    document.addEventListener("gesturechange", event => event.preventDefault());
+    document.addEventListener("touchmove", event => {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive: false });
 
     initInstallNudge();
     registerServiceWorker();
