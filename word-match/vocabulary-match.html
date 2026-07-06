@@ -139,7 +139,7 @@
     .lesson {
       width: min(760px, 100%);
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto 1fr;
       min-height: calc(100vh - 64px);
     }
 
@@ -321,32 +321,6 @@
       text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    .lesson-foot {
-      min-height: 112px;
-      border-top: 2px solid var(--line);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-top: 36px;
-      padding-top: 24px;
-    }
-
-    .feedback {
-      min-height: 44px;
-      color: var(--muted);
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .feedback.good {
-      color: #b8f28a;
-    }
-
-    .feedback.bad {
-      color: #ff9a9a;
     }
 
     .duo-button {
@@ -905,11 +879,6 @@
         font-size: 15px;
       }
 
-      .lesson-foot {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
       .duo-button {
         width: 100%;
       }
@@ -982,9 +951,6 @@
           <button class="duo-button" type="button" id="continueBtn">继续</button>
         </div>
 
-        <div class="lesson-foot">
-          <div class="feedback" id="feedback">选择一个中文和一个英文。</div>
-        </div>
       </section>
 
       <aside class="panel" aria-label="练习状态">
@@ -1155,7 +1121,7 @@
       completionView: document.getElementById("completionView"),
       completionTitle: document.getElementById("completionTitle"),
       completionText: document.getElementById("completionText"),
-      feedback: document.getElementById("feedback"),
+      feedback: document.getElementById("feedback") || { set className(_) {}, set textContent(_) {} },
       checkBtn: document.getElementById("checkBtn"),
       continueBtn: document.getElementById("continueBtn"),
       score: document.getElementById("score"),
@@ -1401,7 +1367,7 @@
       els.roundLabel.textContent = `第 ${state.round} 轮`;
       els.feedback.className = "feedback";
       els.feedback.textContent = "选择一个中文和一个英文。";
-      els.checkBtn.disabled = true;
+      if (els.checkBtn) els.checkBtn.disabled = true;
       els.matchGrid.innerHTML = "";
 
       const zhTiles = shuffle(state.activePairs).map(word => ({ word, type: "zh" }));
@@ -1481,7 +1447,7 @@
       const finished = state.solvedIds.size === state.activePairs.length;
       els.feedback.className = finished ? "feedback good" : "feedback";
       els.feedback.textContent = finished ? "全部配完了。现在检查。" : "配对成功。";
-      els.checkBtn.disabled = !finished;
+      if (els.checkBtn) els.checkBtn.disabled = !finished;
     }
 
     function markWrong(first, second) {
@@ -1511,7 +1477,7 @@
     function showCompletion(allDone) {
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
-      els.checkBtn.disabled = true;
+      if (els.checkBtn) els.checkBtn.disabled = true;
       const remaining = state.words.filter(word => !word.mastered).length;
       els.completionTitle.textContent = allDone ? "全部过关" : "这一轮结束";
       els.completionText.textContent = allDone
