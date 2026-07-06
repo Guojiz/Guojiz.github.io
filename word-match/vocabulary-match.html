@@ -2013,15 +2013,12 @@
       const refillTriggerCount = state.settings.refillTriggerCount;
       const shouldWaitForBatch = !force && state.clearedSinceLastRefill < refillTriggerCount && activeSlotPairs() > 2;
       if (shouldWaitForBatch) {
-        const left = refillTriggerCount - state.clearedSinceLastRefill;
-        els.feedback.textContent = `继续，再消掉 ${left} 组后补入新词。`;
         return;
       }
 
       const slot = pending[0];
       scheduleSlotRefill(slot.leftIndex, slot.rightIndex, refillDelayFor());
       state.clearedSinceLastRefill = 0;
-      els.feedback.textContent = "空位开始慢慢补上。";
     }
 
     function scheduleSlotRefill(leftIndex, rightIndex, delayMs) {
