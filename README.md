@@ -12,6 +12,6 @@ The previous research-heavy homepage has been moved to:
 
 <https://github.com/Guojiz/luoji-agi-safety>
 
-Word Match Quest source:
+Word Match Quest source directory:
 
-<https://github.com/Guojiz/word-match-quest>
+<https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match>

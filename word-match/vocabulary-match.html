@@ -90,14 +90,20 @@
     .rail-btn {
       width: 52px;
       height: 52px;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
       border: 2px solid transparent;
       border-radius: 14px;
       color: var(--muted);
       background: transparent;
       cursor: pointer;
+      padding: 0;
       font-size: 12px;
       font-weight: 800;
       text-transform: uppercase;
+      text-align: center;
+      line-height: 1.15;
       transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
     }
 
@@ -119,7 +125,7 @@
       display: none;
       width: min(760px, 100%);
       margin: 0 auto 18px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -229,7 +235,7 @@
       display: grid;
       grid-template-columns: 40px 1fr;
       align-items: center;
-      padding: 0 16px 4px 12px;
+      padding: 0 16px 0 12px;
       text-align: left;
       transition: transform 90ms var(--ease), border-color 90ms var(--ease), color 90ms var(--ease), background 90ms var(--ease), box-shadow 90ms var(--ease);
     }
@@ -298,9 +304,12 @@
 
     .num {
       width: 22px;
+      display: grid;
+      place-items: center;
       color: var(--dim);
       font-size: 15px;
       font-weight: 900;
+      line-height: 1;
     }
 
     .word {
@@ -309,6 +318,7 @@
       color: inherit;
       font-size: 18px;
       font-weight: 800;
+      text-align: center;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -342,15 +352,20 @@
     .duo-button {
       min-width: 150px;
       height: 50px;
+      display: inline-grid;
+      place-items: center;
       border: 0;
       border-radius: 16px;
       color: #102015;
       background: var(--green);
       box-shadow: 0 4px 0 var(--green-dark);
       cursor: pointer;
+      padding: 0 18px;
       font-size: 15px;
       font-weight: 1000;
       text-transform: uppercase;
+      text-align: center;
+      line-height: 1.15;
       transition: transform 90ms var(--ease), box-shadow 90ms var(--ease), filter 90ms var(--ease);
     }
 
@@ -423,10 +438,13 @@
 
     .stat {
       min-height: 72px;
+      display: grid;
+      place-items: center;
       border: 2px solid var(--line);
       border-radius: var(--radius);
       padding: 10px;
       background: var(--bg);
+      text-align: center;
     }
 
     .stat strong {
@@ -469,9 +487,13 @@
     }
 
     .weak-row span {
+      display: grid;
+      min-height: 24px;
+      place-items: center;
       color: #ff9a9a;
       font-size: 12px;
       font-weight: 900;
+      text-align: center;
     }
 
     .panel-actions {
@@ -483,13 +505,18 @@
 
     .small-button {
       min-height: 42px;
+      display: grid;
+      place-items: center;
       border: 2px solid var(--line);
       border-radius: var(--radius);
       color: var(--blue);
       background: var(--bg);
       cursor: pointer;
+      padding: 0 12px;
       font-weight: 900;
       text-transform: uppercase;
+      text-align: center;
+      line-height: 1.15;
     }
 
     .small-button:hover {
@@ -539,6 +566,31 @@
       gap: 12px;
     }
 
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: none;
+    }
+
+    .check-row input {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      accent-color: var(--green);
+    }
+
     label {
       display: grid;
       gap: 7px;
@@ -586,7 +638,7 @@
 
     .custom-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
       gap: 10px;
       align-items: center;
       border: 2px solid var(--line);
@@ -604,11 +656,16 @@
     }
 
     .link-button {
+      display: inline-grid;
+      min-height: 32px;
+      place-items: center;
       border: 0;
       color: var(--red);
       background: transparent;
       cursor: pointer;
+      padding: 0 8px;
       font-weight: 900;
+      text-align: center;
     }
 
     .completion {
@@ -715,6 +772,8 @@
       right: 10px;
       width: 30px;
       height: 30px;
+      display: grid;
+      place-items: center;
       border: 0;
       border-radius: 50%;
       color: var(--muted);
@@ -739,6 +798,8 @@
 
     .install-small {
       min-height: 40px;
+      display: inline-grid;
+      place-items: center;
       border: 2px solid var(--line);
       border-radius: var(--radius);
       color: var(--blue);
@@ -747,6 +808,8 @@
       padding: 0 14px;
       font-size: 13px;
       font-weight: 1000;
+      text-align: center;
+      line-height: 1.15;
     }
 
     .install-small.primary {
@@ -830,7 +893,7 @@
 
       .match-card {
         grid-template-columns: 28px minmax(0, 1fr);
-        padding: 0 10px 4px 8px;
+        padding: 0 10px 0 8px;
       }
 
       .num {
@@ -852,6 +915,7 @@
       }
 
       .form-grid,
+      .option-grid,
       .custom-row {
         grid-template-columns: 1fr;
       }
@@ -885,21 +949,23 @@
     <aside class="rail" aria-label="练习导航">
       <div class="logo" aria-hidden="true">W</div>
       <button class="rail-btn active" type="button">练习</button>
-      <button class="rail-btn" type="button" id="openLibraryRail">自定义词库</button>
+      <button class="rail-btn" type="button" id="openLibraryRail">词库</button>
       <button class="rail-btn" type="button" id="resetRail">重置</button>
+      <a class="rail-btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match" target="_blank" rel="noopener noreferrer">GitHub</a>
     </aside>
 
     <main class="main">
       <nav class="mobile-nav" aria-label="窄屏导航">
         <button class="rail-btn active" type="button">练习</button>
-        <button class="rail-btn" type="button" id="openLibraryMobile">自定义词库</button>
+        <button class="rail-btn" type="button" id="openLibraryMobile">词库</button>
         <button class="rail-btn" type="button" id="resetMobile">重置</button>
+        <a class="rail-btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
 
       <section class="lesson" aria-label="单词配对练习">
         <div class="lesson-top">
           <button class="icon-button" type="button" id="quitBtn" aria-label="重新开始">×</button>
-          <div class="progress" aria-label="掌握进度"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress" aria-label="本关进度"><div class="progress-fill" id="progressFill"></div></div>
           <div class="top-count" id="topCount">10</div>
         </div>
 
@@ -934,7 +1000,7 @@
         </div>
         <div class="weak-list" id="weakList"></div>
         <div class="panel-actions">
-          <button class="small-button" type="button" id="openLibrary">自定义词库</button>
+          <button class="small-button" type="button" id="openLibrary">词库</button>
           <button class="small-button" type="button" id="modeBtn">模式：自适应</button>
           <button class="small-button" type="button" id="resetProgress">清空进度</button>
         </div>
@@ -961,8 +1027,8 @@
     <div class="modal-card">
       <div class="modal-top">
         <div>
-          <h2 id="libraryTitle">自定义词库</h2>
-          <p id="librarySummary">在这里添加自己的单词。新增词只保存在当前浏览器里，不会改掉别人网页上的词。</p>
+          <h2 id="libraryTitle">词库</h2>
+          <p id="librarySummary">在这里添加、删除或清空单词。修改只保存在当前浏览器里。</p>
         </div>
         <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭">×</button>
       </div>
@@ -990,13 +1056,54 @@
         </label>
         <div class="form-actions">
           <button class="duo-button secondary" type="button" id="addBulkBtn">批量添加</button>
-          <button class="duo-button warning" type="button" id="clearCustomBtn">清空自定义词</button>
+          <button class="duo-button warning" type="button" id="clearCustomBtn">清空全部词</button>
         </div>
       </section>
 
       <section class="modal-section">
-        <h2>自定义词</h2>
-        <p>这里只显示你后续录入的词，原始最终单词列表不会被删除。</p>
+        <h2>练习选项</h2>
+        <div class="option-grid">
+          <label>
+            每关时间（秒）
+            <input id="levelSeconds" type="number" min="20" max="900" step="5" />
+          </label>
+          <label>
+            消掉几组后补词
+            <input id="refillTrigger" type="number" min="1" max="5" step="1" />
+          </label>
+          <label>
+            补词最短延迟（秒）
+            <input id="refillMinSeconds" type="number" min="0.1" max="10" step="0.1" />
+          </label>
+          <label>
+            补词最长延迟（秒）
+            <input id="refillMaxSeconds" type="number" min="0.1" max="15" step="0.1" />
+          </label>
+          <label>
+            自适应最近历史
+            <input id="mlRecentHistory" type="number" min="0" max="100" step="1" />
+          </label>
+          <label>
+            自适应防重复强度
+            <input id="mlAvoidanceWeight" type="number" min="0" max="1" step="0.1" />
+          </label>
+        </div>
+        <label class="check-row">
+          <input id="pauseRefillWhileSelected" type="checkbox" />
+          <span>选中卡片时暂停补词，不打断当前选择</span>
+        </label>
+        <label class="check-row">
+          <input id="recycleMastered" type="checkbox" />
+          <span>全部掌握后继续循环练习，不让队列空掉</span>
+        </label>
+        <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="saveOptionsBtn">保存选项</button>
+        </div>
+      </section>
+
+      <section class="modal-section">
+        <h2>词库列表</h2>
+        <p>这里显示当前词库里的全部单词。清空后可以重新录入。</p>
         <div class="custom-list" id="customList"></div>
       </section>
     </div>
@@ -1005,6 +1112,16 @@
   <script>
     const STORAGE_KEY = "duo_like_word_match_v1";
     const INSTALL_NUDGE_KEY = "word_snap_install_nudge_hidden_v1";
+    const DEFAULT_SETTINGS = {
+      levelDurationMs: 120000,
+      refillTriggerCount: 2,
+      refillMinMs: 520,
+      refillMaxMs: 980,
+      pauseRefillWhileSelected: true,
+      recycleMastered: true,
+      mlRecentHistory: 20,
+      mlAvoidanceWeight: 0.8
+    };
     let deferredInstallPrompt = null;
 
     const starterWords = [
@@ -1047,12 +1164,22 @@
       remaining: document.getElementById("remaining"),
       weakList: document.getElementById("weakList"),
       modeBtn: document.getElementById("modeBtn"),
+      completionBadge: document.querySelector(".completion-badge"),
       libraryModal: document.getElementById("libraryModal"),
       librarySummary: document.getElementById("librarySummary"),
       newEnglish: document.getElementById("newEnglish"),
       newChinese: document.getElementById("newChinese"),
       bulkInput: document.getElementById("bulkInput"),
       customList: document.getElementById("customList"),
+      levelSeconds: document.getElementById("levelSeconds"),
+      refillTrigger: document.getElementById("refillTrigger"),
+      refillMinSeconds: document.getElementById("refillMinSeconds"),
+      refillMaxSeconds: document.getElementById("refillMaxSeconds"),
+      mlRecentHistory: document.getElementById("mlRecentHistory"),
+      mlAvoidanceWeight: document.getElementById("mlAvoidanceWeight"),
+      pauseRefillWhileSelected: document.getElementById("pauseRefillWhileSelected"),
+      recycleMastered: document.getElementById("recycleMastered"),
+      saveOptionsBtn: document.getElementById("saveOptionsBtn"),
       installNudge: document.getElementById("installNudge"),
       installTitle: document.getElementById("installTitle"),
       installText: document.getElementById("installText"),
@@ -1063,6 +1190,7 @@
 
     const state = {
       words: [],
+      settings: { ...DEFAULT_SETTINGS },
       mode: "adaptive",
       round: 1,
       selected: null,
@@ -1081,6 +1209,13 @@
       pendingRefillSlots: [],
       clearedSinceLastRefill: 0,
       refillPipelineActive: false,
+      wordQueue: [],
+      leftSlots: [],
+      rightSlots: [],
+      sessionTotal: 0,
+      completedThisRun: 0,
+      roundComplete: false,
+      drawHistory: [],
       wrongQueue: []
     };
 
@@ -1098,57 +1233,80 @@
         lastMs: 0,
         reviewLevel: 0,
         nextReviewAt: 0,
-        lastReviewedAt: 0
+        lastReviewedAt: 0,
+        draws: 0,
+        lastDrawRound: 0,
+        drawProbability: 1
       };
     }
 
-    function loadWords() {
-      const base = starterWords.map((item, index) => createWord(item[0], item[1], false, `base-${index}`));
+    function readSavedState() {
       let saved = null;
       try {
         saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       } catch (error) {
         saved = null;
       }
+      return saved && typeof saved === "object" ? saved : null;
+    }
 
+    function clampNumber(value, min, max, fallback) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return fallback;
+      return Math.min(max, Math.max(min, number));
+    }
+
+    function loadSettings(saved) {
+      const raw = saved && saved.settings ? saved.settings : {};
+      return {
+        levelDurationMs: clampNumber(raw.levelDurationMs, 20000, 900000, DEFAULT_SETTINGS.levelDurationMs),
+        refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
+        refillMinMs: clampNumber(raw.refillMinMs, 100, 10000, DEFAULT_SETTINGS.refillMinMs),
+        refillMaxMs: clampNumber(raw.refillMaxMs, 100, 15000, DEFAULT_SETTINGS.refillMaxMs),
+        pauseRefillWhileSelected: raw.pauseRefillWhileSelected !== false,
+        recycleMastered: raw.recycleMastered !== false,
+        mlRecentHistory: Math.round(clampNumber(raw.mlRecentHistory, 0, 100, DEFAULT_SETTINGS.mlRecentHistory)),
+        mlAvoidanceWeight: clampNumber(raw.mlAvoidanceWeight, 0, 1, DEFAULT_SETTINGS.mlAvoidanceWeight)
+      };
+    }
+
+    function normalizeSettings(settings) {
+      const normalized = loadSettings({ settings });
+      if (normalized.refillMaxMs < normalized.refillMinMs) {
+        normalized.refillMaxMs = normalized.refillMinMs;
+      }
+      return normalized;
+    }
+
+    function loadWords(saved) {
+      const base = starterWords.map((item, index) => createWord(item[0], item[1], false, `base-${index}`));
       if (!saved || !Array.isArray(saved.words)) return base;
 
-      const byId = new Map(base.map(word => [word.id, word]));
-      saved.words.forEach(savedWord => {
-        const existing = byId.get(savedWord.id);
-        if (existing) {
-          Object.assign(existing, {
-            seen: savedWord.seen || 0,
-            correct: savedWord.correct || 0,
-            mistakes: savedWord.mistakes || 0,
-            streak: savedWord.streak || 0,
-            mastered: Boolean(savedWord.mastered),
-            lastMs: savedWord.lastMs || 0,
-            reviewLevel: savedWord.reviewLevel || 0,
-            nextReviewAt: savedWord.nextReviewAt || 0,
-            lastReviewedAt: savedWord.lastReviewedAt || 0
-          });
-        } else if (savedWord.custom && savedWord.en && savedWord.zh) {
-          byId.set(savedWord.id, {
-            ...createWord(savedWord.en, savedWord.zh, true, savedWord.id),
-            seen: savedWord.seen || 0,
-            correct: savedWord.correct || 0,
-            mistakes: savedWord.mistakes || 0,
-            streak: savedWord.streak || 0,
-            mastered: Boolean(savedWord.mastered),
-            lastMs: savedWord.lastMs || 0,
-            reviewLevel: savedWord.reviewLevel || 0,
-            nextReviewAt: savedWord.nextReviewAt || 0,
-            lastReviewedAt: savedWord.lastReviewedAt || 0
-          });
-        }
-      });
-      return Array.from(byId.values());
+      return saved.words
+        .filter(savedWord => savedWord && savedWord.en && savedWord.zh)
+        .map(savedWord => ({
+          ...createWord(savedWord.en, savedWord.zh, Boolean(savedWord.custom), savedWord.id),
+          seen: savedWord.seen || 0,
+          correct: savedWord.correct || 0,
+          mistakes: savedWord.mistakes || 0,
+          streak: savedWord.streak || 0,
+          mastered: Boolean(savedWord.mastered),
+          lastMs: savedWord.lastMs || 0,
+          reviewLevel: savedWord.reviewLevel || 0,
+          nextReviewAt: savedWord.nextReviewAt || 0,
+          lastReviewedAt: savedWord.lastReviewedAt || 0,
+          draws: savedWord.draws || 0,
+          lastDrawRound: savedWord.lastDrawRound || 0,
+          drawProbability: savedWord.drawProbability || 1
+        }));
     }
 
     function saveWords() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         words: state.words,
+        settings: state.settings,
+        drawHistory: state.drawHistory,
+        mode: state.mode,
         savedAt: new Date().toISOString()
       }));
     }
@@ -1172,12 +1330,16 @@
     }
 
     function weakness(word) {
+      const drawPressure = Math.max(0, 4 - (word.draws || 0)) * 2;
+      const spacingPressure = word.lastDrawRound ? Math.min(6, Math.max(0, state.round - word.lastDrawRound)) : 4;
       return word.mistakes * 6
         + Math.max(0, 2 - word.streak) * 3
         + (word.seen ? 0 : 3)
         + (word.lastMs > 4200 ? 2 : 0)
         + (isDueForReview(word) ? 8 : 0)
-        + Math.min(6, reviewUrgency(word));
+        + Math.min(6, reviewUrgency(word))
+        + drawPressure
+        + spacingPressure;
     }
 
     function applyReviewSuccess(word) {
@@ -1386,16 +1548,16 @@
     }
 
     function renderCustomList() {
-      const custom = state.words.filter(word => word.custom);
-      els.customList.innerHTML = custom.length
-        ? custom.map(word => `
+      els.customList.innerHTML = state.words.length
+        ? state.words.map(word => `
           <div class="custom-row">
             <b title="${word.en}">${word.en}</b>
             <span title="${word.zh}">${word.zh}</span>
+            <span title="抽取概率 ${Number(word.drawProbability || 1).toFixed(2)}">抽 ${word.draws || 0}</span>
             <button class="link-button" type="button" data-delete="${word.id}">删除</button>
           </div>
         `).join("")
-        : `<div class="custom-row"><b>还没有自定义词</b><span>从上方录入</span><span></span></div>`;
+        : `<div class="custom-row"><b>还没有单词</b><span>请从上方录入</span><span></span><span></span></div>`;
 
       els.customList.querySelectorAll("[data-delete]").forEach(button => {
         button.addEventListener("click", () => {
@@ -1416,6 +1578,7 @@
     const REFILL_TRIGGER_COUNT = 2;
     const WRONG_REPLAY_MIN_MS = 4200;
     const WRONG_REPLAY_MAX_MS = 6200;
+    const SELECTED_REFILL_RETRY_MS = 180;
     const TIMER_TICK_MS = 250;
     const REVIEW_INTERVALS = [
       5 * 60 * 1000,
@@ -1471,11 +1634,14 @@
 
     function buildWordQueue() {
       const now = Date.now();
-      const eligible = state.words.filter(word => !word.mastered || isDueForReview(word, now));
+      let eligible = state.words.filter(word => !word.mastered || isDueForReview(word, now));
+      if (!eligible.length && state.settings.recycleMastered) {
+        eligible = [...state.words];
+      }
       if (!eligible.length) return [];
 
       if (state.mode === "all") {
-        return [...eligible].sort((a, b) => a.id.localeCompare(b.id));
+        return buildSequentialWordQueue(eligible);
       }
 
       const due = [...eligible]
@@ -1487,12 +1653,87 @@
         .sort((a, b) => weakness(b) - weakness(a));
 
       if (state.mode === "weak") {
-        return Array.from(new Map([...due, ...weak, ...eligible].map(word => [word.id, word])).values());
+        const weakPool = Array.from(new Map([...due, ...weak].map(word => [word.id, word])).values());
+        return buildAdaptiveWordQueue(weakPool.length ? weakPool : eligible, now);
       }
 
       const unseen = eligible.filter(word => word.seen === 0);
-      const rest = shuffle(eligible);
-      return Array.from(new Map([...due, ...weak, ...unseen, ...rest].map(word => [word.id, word])).values());
+      const pool = Array.from(new Map([...due, ...weak, ...unseen, ...eligible].map(word => [word.id, word])).values());
+      return buildAdaptiveWordQueue(pool, now);
+    }
+
+    function buildSequentialWordQueue(words) {
+      const ordered = [...words].sort((a, b) => a.id.localeCompare(b.id));
+      if (!state.drawHistory.length) return ordered;
+      const lastId = state.drawHistory[state.drawHistory.length - 1];
+      const lastIndex = ordered.findIndex(word => word.id === lastId);
+      if (lastIndex < 0) return ordered;
+      return [...ordered.slice(lastIndex + 1), ...ordered.slice(0, lastIndex + 1)];
+    }
+
+    function buildAdaptiveWordQueue(words, now = Date.now()) {
+      let candidatePool = [...words];
+      const selected = [];
+      while (candidatePool.length) {
+        const next = selectAdaptiveWord(candidatePool, selected, now);
+        if (!next) break;
+        selected.push(next);
+        candidatePool = candidatePool.filter(word => word.id !== next.id);
+      }
+      return selected;
+    }
+
+    function selectAdaptiveWord(candidatePool, alreadySelected, now) {
+      const valid = candidatePool.filter(word => !alreadySelected.some(selected => selected.id === word.id));
+      if (!valid.length) return null;
+      if (valid.length === 1) return valid[0];
+
+      const drawCounts = valid.map(word => word.draws || 0);
+      const minDraws = Math.min(...drawCounts);
+      const maxDraws = Math.max(...drawCounts);
+      if (maxDraws - minDraws >= 3) {
+        return shuffle(valid.filter(word => (word.draws || 0) === minDraws))[0];
+      }
+
+      const averageDraws = drawCounts.reduce((sum, count) => sum + count, 0) / drawCounts.length;
+      const balancedPool = valid.filter(word => (word.draws || 0) <= averageDraws);
+      const pool = balancedPool.length >= 2 ? balancedPool : valid;
+      return weightedRandomWord(pool, now);
+    }
+
+    function weightedRandomWord(words, now) {
+      const weights = words.map(word => {
+        const weight = adaptiveWordWeight(word, now);
+        word.drawProbability = weight;
+        return weight;
+      });
+      const total = weights.reduce((sum, weight) => sum + weight, 0);
+      if (total <= 0) return words[0];
+      let cursor = Math.random() * total;
+      for (let index = 0; index < words.length; index += 1) {
+        cursor -= weights[index];
+        if (cursor <= 0) return words[index];
+      }
+      return words[words.length - 1];
+    }
+
+    function adaptiveWordWeight(word, now) {
+      const totalDraws = state.words.reduce((sum, item) => sum + (item.draws || 0), 0);
+      const averageDraws = state.words.length ? totalDraws / state.words.length : 0;
+      const drawCount = word.draws || 0;
+      const recentHistory = state.settings.mlRecentHistory
+        ? state.drawHistory.slice(-state.settings.mlRecentHistory)
+        : [];
+      const recentCount = recentHistory.filter(id => id === word.id).length;
+      const recentFrequency = recentHistory.length ? recentCount / recentHistory.length : 0;
+      const recentReduction = Math.max(0.05, 1 - recentFrequency * state.settings.mlAvoidanceWeight);
+      const lastDrawn = recentHistory[recentHistory.length - 1] === word.id ? 0.2 : 1;
+      const lowFrequencyBoost = drawCount < averageDraws ? 1 + Math.min(2, averageDraws - drawCount) : 1;
+      const highFrequencyReduction = drawCount > averageDraws + 1 ? 0.72 : 1;
+      const reviewBoost = isDueForReview(word, now) ? 2 : 1;
+      const weakBoost = 1 + Math.min(3, weakness(word) / 10);
+      const masteredReduction = word.mastered && !isDueForReview(word, now) ? 0.55 : 1;
+      return Math.max(0.01, recentReduction * lastDrawn * lowFrequencyBoost * highFrequencyReduction * reviewBoost * weakBoost * masteredReduction);
     }
 
     function slotKey(side, index) {
@@ -1541,7 +1782,7 @@
     }
 
     function refillDelayFor() {
-      return randomBetween(REFILL_MIN_MS, REFILL_MAX_MS);
+      return randomBetween(state.settings.refillMinMs, state.settings.refillMaxMs);
     }
 
     function renderRound() {
@@ -1549,14 +1790,21 @@
       state.selected = null;
       state.locked = false;
       state.completedThisRun = 0;
+      state.roundComplete = false;
       state.wrongQueue = [];
       state.pendingRefillSlots = [];
       state.clearedSinceLastRefill = 0;
       state.refillPipelineActive = false;
+
+      if (!state.words.length) {
+        showEmptyLibraryPrompt();
+        return;
+      }
+
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
       state.roundStartedAt = performance.now();
-      state.levelDurationMs = LEVEL_BASE_MS + randomBetween(-LEVEL_VARIANCE_MS, LEVEL_VARIANCE_MS);
+      state.levelDurationMs = state.settings.levelDurationMs;
       state.levelEndsAt = performance.now() + state.levelDurationMs;
 
       if (!state.sessionTotal) {
@@ -1566,7 +1814,11 @@
 
       const initialWords = [];
       while (initialWords.length < SLOT_COUNT && state.wordQueue.length) {
-        initialWords.push(takeNextWord());
+        const nextWord = takeNextWord();
+        if (nextWord) {
+          markWordDrawn(nextWord);
+          initialWords.push(nextWord);
+        }
       }
 
       const leftWords = shuffle(initialWords);
@@ -1585,11 +1837,16 @@
     }
 
     function renderSlots() {
+      const selectedBeforeRender = getSelectionSnapshot();
+      const renderedCards = new Map();
       els.matchGrid.innerHTML = "";
       [...state.leftSlots, ...state.rightSlots].forEach(slot => {
-        els.matchGrid.appendChild(makeCard(slot));
+        const card = makeCard(slot);
+        renderedCards.set(selectionKey(slot.side, slot.index), card);
+        els.matchGrid.appendChild(card);
         slot.entering = false;
       });
+      restoreSelectionAfterRender(selectedBeforeRender, renderedCards);
     }
 
     function makeCard(slot) {
@@ -1613,9 +1870,37 @@
       return side === "left" ? state.leftSlots[index] : state.rightSlots[index];
     }
 
+    function selectionKey(side, index) {
+      return `${side}:${index}`;
+    }
+
+    function getSelectionSnapshot() {
+      if (!state.selected || !state.selected.slot || !state.selected.slot.word) return null;
+      return {
+        side: state.selected.side,
+        index: state.selected.index,
+        wordId: state.selected.slot.word.id
+      };
+    }
+
+    function restoreSelectionAfterRender(snapshot, renderedCards) {
+      if (!snapshot) return;
+      const slot = getSlot(snapshot.side, snapshot.index);
+      const card = renderedCards.get(selectionKey(snapshot.side, snapshot.index));
+      if (slot && slot.word && slot.word.id === snapshot.wordId && card && !card.disabled) {
+        state.selected = { card, side: snapshot.side, index: snapshot.index, slot };
+        card.classList.add("selected");
+        return;
+      }
+      state.selected = null;
+    }
+
     function selectCard(card, side, index) {
       if (state.locked || card.disabled || isLevelOver()) return;
       clearWrong();
+      if (state.selected && !isSelectionStillValid()) {
+        clearSelection();
+      }
       const slot = getSlot(side, index);
       if (!slot || !slot.word) return;
 
@@ -1650,6 +1935,29 @@
         markCorrect(first, second);
       } else {
         markWrong(first, second);
+      }
+    }
+
+    function isSelectionStillValid() {
+      if (!state.selected) return true;
+      const slot = getSlot(state.selected.side, state.selected.index);
+      return document.body.contains(state.selected.card)
+        && slot
+        && slot.word
+        && state.selected.slot
+        && state.selected.slot.word
+        && slot.word.id === state.selected.slot.word.id
+        && state.selected.card.dataset.id === slot.word.id;
+    }
+
+    function clearSelection(message = "") {
+      if (state.selected && state.selected.card) {
+        state.selected.card.classList.remove("selected");
+      }
+      state.selected = null;
+      if (message) {
+        els.feedback.className = "feedback";
+        els.feedback.textContent = message;
       }
     }
 
@@ -1691,6 +1999,10 @@
           return;
         }
         els.feedback.className = "feedback";
+        if (!hasWordsWaiting()) {
+          els.feedback.textContent = "继续完成剩下的配对。";
+          return;
+        }
         queueRefillSlot(cleared.leftIndex, cleared.rightIndex);
         maybeScheduleBatchRefill();
       }, CORRECT_ANIM_MS);
@@ -1732,9 +2044,10 @@
       if (!pending.length) return;
       if (state.refillPipelineActive) return;
 
-      const shouldWaitForBatch = !force && state.clearedSinceLastRefill < REFILL_TRIGGER_COUNT && activeSlotPairs() > 2;
+      const refillTriggerCount = state.settings.refillTriggerCount;
+      const shouldWaitForBatch = !force && state.clearedSinceLastRefill < refillTriggerCount && activeSlotPairs() > 2;
       if (shouldWaitForBatch) {
-        const left = REFILL_TRIGGER_COUNT - state.clearedSinceLastRefill;
+        const left = refillTriggerCount - state.clearedSinceLastRefill;
         els.feedback.textContent = `继续，再消掉 ${left} 组后补入新词。`;
         return;
       }
@@ -1755,6 +2068,11 @@
         state.refillKeys.delete(key);
         if (els.completionView.classList.contains("show") || isLevelOver()) {
           state.refillPipelineActive = false;
+          return;
+        }
+        if (state.settings.pauseRefillWhileSelected && (state.selected || state.locked)) {
+          state.refillPipelineActive = false;
+          scheduleSlotRefill(leftIndex, rightIndex, SELECTED_REFILL_RETRY_MS);
           return;
         }
         if (state.leftSlots[leftIndex].word || state.rightSlots[rightIndex].word) {
@@ -1799,9 +2117,21 @@
     function refillSlotPair(leftIndex, rightIndex) {
       const nextWord = takeNextWord();
       if (!nextWord) return false;
+      markWordDrawn(nextWord);
       state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord, true);
       state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord, true);
       return true;
+    }
+
+    function markWordDrawn(word) {
+      word.draws = (word.draws || 0) + 1;
+      word.lastDrawRound = state.round;
+      state.drawHistory.push(word.id);
+      const maxHistory = Math.max(100, state.settings.mlRecentHistory * 3);
+      if (state.drawHistory.length > maxHistory) {
+        state.drawHistory = state.drawHistory.slice(-maxHistory);
+      }
+      saveWords();
     }
 
     function markWrong(first, second) {
@@ -1845,40 +2175,72 @@
       return state.leftSlots.filter(slot => slot.word).length;
     }
 
+    function hasWordsWaiting() {
+      return state.wordQueue.length > 0 || state.wrongQueue.length > 0;
+    }
+
     function isStreamComplete() {
-      return !state.wordQueue.length
-        && !state.wrongQueue.length
+      return !hasWordsWaiting()
         && !state.refillTimers.length
-        && !state.pendingRefillSlots.length
         && activeSlotPairs() === 0;
     }
 
     function showCompletion(allDone, reason = "queue") {
       clearLevelTimers();
+      clearSelection();
+      state.roundComplete = reason !== "timeout";
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
+      els.completionBadge.textContent = "✓";
+      els.continueBtn.textContent = "继续";
       const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
       els.completionTitle.textContent = allDone ? "全部过关" : reason === "timeout" ? "时间到" : "这一关完成";
       els.completionText.textContent = allDone
         ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
         : reason === "timeout"
           ? `这一关配对 ${state.completedThisRun || 0} 组。继续后会重新洗牌，并优先出现不熟的词。`
-          : `本关队列已清空。错词已经回滚练过，还有 ${remaining} 个词没有稳定。`;
+          : remaining
+            ? `本关队列已清空。错词已经回滚练过，还有 ${remaining} 个词没有稳定。`
+            : "本关完成。所有词都稳定了，继续后会进入循环复习。";
       els.feedback.className = "feedback good";
       els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续进入下一关。";
       saveWords();
       renderStats();
     }
 
+    function showEmptyLibraryPrompt() {
+      clearLevelTimers();
+      state.wordQueue = [];
+      state.wrongQueue = [];
+      state.leftSlots = [];
+      state.rightSlots = [];
+      state.sessionTotal = 0;
+      state.completedThisRun = 0;
+      state.roundComplete = false;
+      els.practiceView.classList.add("hidden");
+      els.completionView.classList.add("show");
+      els.completionBadge.textContent = "+";
+      els.completionTitle.textContent = "还没有单词";
+      els.completionText.textContent = "请先进入词库添加单词。添加后就可以开始配对练习。";
+      els.continueBtn.textContent = "去添加单词";
+      els.feedback.className = "feedback";
+      els.feedback.textContent = "词库为空，请先补充单词。";
+      renderStats();
+    }
+
     function renderStats() {
       const mastered = state.words.filter(word => word.mastered && !isDueForReview(word)).length;
       const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
-      const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
+      const targetTotal = currentRoundTotal();
+      const pct = state.roundComplete
+        ? 100
+        : targetTotal
+          ? Math.min(100, Math.round((state.completedThisRun || 0) / targetTotal * 100))
+          : 0;
       els.progressFill.style.width = `${pct}%`;
       const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
       els.topCount.textContent = formatTime(timeLeft);
       els.topCount.classList.toggle("time-low", timeLeft <= 15000);
-      const targetTotal = Math.max(state.sessionTotal || 0, (state.completedThisRun || 0) + state.wordQueue.length + state.wrongQueue.length + activeSlotPairs());
       els.roundLabel.textContent = `第 ${state.round} 关 · ${state.completedThisRun || 0}/${targetTotal}`;
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
@@ -1896,6 +2258,13 @@
         : `<div class="weak-row"><b>暂时没有弱项</b><span>完成</span></div>`;
 
       renderCustomList();
+    }
+
+    function currentRoundTotal() {
+      return Math.max(
+        state.sessionTotal || 0,
+        (state.completedThisRun || 0) + state.wordQueue.length + state.wrongQueue.length + activeSlotPairs()
+      );
     }
 
     function normalizePair(line) {
@@ -1943,7 +2312,11 @@
         word.reviewLevel = 0;
         word.nextReviewAt = 0;
         word.lastReviewedAt = 0;
+        word.draws = 0;
+        word.lastDrawRound = 0;
+        word.drawProbability = 1;
       });
+      state.drawHistory = [];
       state.round = 1;
       state.score = 0;
       state.mistakes = 0;
@@ -1959,17 +2332,49 @@
       state.mode = next;
       els.modeBtn.textContent = `模式：${labels[next]}`;
       state.round += 1;
+      saveWords();
       renderRound();
     }
 
     function openLibrary() {
       els.libraryModal.classList.add("open");
       els.newEnglish.focus();
+      syncOptionsUI();
       renderStats();
     }
 
     function closeLibrary() {
       els.libraryModal.classList.remove("open");
+    }
+
+    function syncOptionsUI() {
+      els.levelSeconds.value = Math.round(state.settings.levelDurationMs / 1000);
+      els.refillTrigger.value = state.settings.refillTriggerCount;
+      els.refillMinSeconds.value = (state.settings.refillMinMs / 1000).toFixed(1);
+      els.refillMaxSeconds.value = (state.settings.refillMaxMs / 1000).toFixed(1);
+      els.mlRecentHistory.value = state.settings.mlRecentHistory;
+      els.mlAvoidanceWeight.value = state.settings.mlAvoidanceWeight.toFixed(1);
+      els.pauseRefillWhileSelected.checked = state.settings.pauseRefillWhileSelected;
+      els.recycleMastered.checked = state.settings.recycleMastered;
+    }
+
+    function saveOptionsFromUI() {
+      const nextSettings = normalizeSettings({
+        levelDurationMs: Number(els.levelSeconds.value) * 1000,
+        refillTriggerCount: Number(els.refillTrigger.value),
+        refillMinMs: Number(els.refillMinSeconds.value) * 1000,
+        refillMaxMs: Number(els.refillMaxSeconds.value) * 1000,
+        pauseRefillWhileSelected: els.pauseRefillWhileSelected.checked,
+        recycleMastered: els.recycleMastered.checked,
+        mlRecentHistory: Number(els.mlRecentHistory.value),
+        mlAvoidanceWeight: Number(els.mlAvoidanceWeight.value)
+      });
+      state.settings = nextSettings;
+      syncOptionsUI();
+      saveWords();
+      els.feedback.className = "feedback good";
+      els.feedback.textContent = "练习选项已保存，下一关生效。";
+      renderStats();
     }
 
     function isIOSDevice() {
@@ -2080,6 +2485,7 @@
     document.getElementById("resetRail").addEventListener("click", resetProgress);
     document.getElementById("resetMobile").addEventListener("click", resetProgress);
     document.getElementById("quitBtn").addEventListener("click", resetProgress);
+    els.saveOptionsBtn.addEventListener("click", saveOptionsFromUI);
 
     document.getElementById("addOneBtn").addEventListener("click", () => {
       const added = addWords([[els.newEnglish.value.trim(), els.newChinese.value.trim()]]);
@@ -2102,8 +2508,9 @@
     });
 
     document.getElementById("clearCustomBtn").addEventListener("click", () => {
-      if (!confirm("只清空自定义词，保留原始最终单词列表。确定吗？")) return;
-      state.words = state.words.filter(word => !word.custom);
+      if (!confirm("将清空当前词库里的全部单词。清空后可以重新添加，确定吗？")) return;
+      state.words = [];
+      state.drawHistory = [];
       saveWords();
       renderRound();
     });
@@ -2115,6 +2522,10 @@
     }
 
     els.continueBtn.addEventListener("click", () => {
+      if (!state.words.length) {
+        openLibrary();
+        return;
+      }
       state.round += 1;
       renderRound();
     });
@@ -2141,7 +2552,15 @@
 
     initInstallNudge();
     registerServiceWorker();
-    state.words = loadWords();
+    const savedState = readSavedState();
+    state.settings = normalizeSettings(loadSettings(savedState));
+    state.words = loadWords(savedState);
+    state.drawHistory = Array.isArray(savedState && savedState.drawHistory) ? savedState.drawHistory : [];
+    if (savedState && ["adaptive", "weak", "all"].includes(savedState.mode)) {
+      state.mode = savedState.mode;
+    }
+    els.modeBtn.textContent = `模式：${{ adaptive: "自适应", weak: "只练弱项", all: "全量顺序" }[state.mode]}`;
+    syncOptionsUI();
     renderRound();
   </script>
 </body>
