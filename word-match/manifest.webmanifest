@@ -2,6 +2,7 @@
   "name": "Word Snap",
   "short_name": "Word Snap",
   "description": "A fast vocabulary matching practice app.",
+  "lang": "en",
   "start_url": "./vocabulary-match.html",
   "scope": "./",
   "display": "standalone",

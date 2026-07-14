@@ -1,69 +1,87 @@
 # Word Snap
 
-Word Snap 是一个静态单页单词配对练习网页，通过“中文释义 ↔ 英文单词”的配对方式帮助复习词汇。它可以直接部署到 GitHub Pages，单词、设置、抽取历史和练习进度都会保存在浏览器本地。
+Word Snap is a static single-page vocabulary matching practice app. Match pairs (default: Chinese meaning ↔ English word), review with adaptive prioritization, and keep everything offline in the browser.
 
-- 在线体验：[https://guojiz.github.io/word-match/vocabulary-match.html](https://guojiz.github.io/word-match/vocabulary-match.html)
-- 源码目录：[https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match](https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match)
-- 更新日志：[CHANGELOG.md](./CHANGELOG.md)
+- Live: [https://guojiz.github.io/word-match/vocabulary-match.html](https://guojiz.github.io/word-match/vocabulary-match.html)
+- Source: [https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match](https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match)
+- Changelog: [CHANGELOG.md](./CHANGELOG.md)
 
-## 适合谁
+## Who it is for
 
-- 想用小游戏方式复习英文单词的人；
-- 想快速导入自己的词表并反复练习的人；
-- 想让不熟的词、错过的词、反应慢的词更多出现的人；
-- 想要一个不用登录、可以直接打开的轻量词汇练习工具的人。
+- People who want game-like English (or bilingual) vocabulary review;
+- Anyone who wants to import a custom word list and drill it repeatedly;
+- Learners who want weak, missed, and slow words to appear more often;
+- Users who want a login-free, open-and-play practice tool.
 
-## 功能特点
+## Features
 
-- 10 格流式配对面板：左侧 5 个中文，右侧 5 个英文。
-- 支持键盘快捷键 `1` 到 `0`。
-- 点击后即时判断配对，不需要额外提交按钮。
-- 配对正确后会闪烁、消失，并从词队列中补入新词。
-- 配对错误会震动提示，并自动恢复。
-- 自适应复习：错词、慢词、不稳定词、到期复习词会更早出现。
-- 每个词都会记录抽取次数、最近抽取关卡和当前抽取概率。
-- 支持单个添加和批量添加单词。
-- 默认词和自定义词都可以删除或清空。
-- 词库为空时会提示先添加单词。
-- 支持自定义练习选项：每关时间、补词批量、补词延迟、最近历史窗口、防重复强度、选中时暂停补词、掌握后循环复习。
-- 支持 PWA 基础能力：manifest、图标、service worker、移动端添加到主屏幕。
+- 10-slot streaming match board: 5 cards on the left, 5 on the right.
+- Keyboard shortcuts `1`–`0`.
+- Instant match feedback (no submit step).
+- Correct pairs flash and clear; new words refill from the queue.
+- Wrong pairs shake and roll back into practice.
+- Adaptive review: mistakes, slow answers, unstable words, and due reviews come first.
+- Per-word draw tracking: `draws`, `lastDrawRound`, `drawProbability`.
+- Single and bulk word import; every word can be deleted or cleared.
+- Empty-library prompt when there is nothing to practice.
+- Practice options: level timer, refill batch size, refill delay, recent-history window, anti-repeat strength, pause refill while selected, recycle mastered words.
+- Configurable **language-pair labels** (display only — see below).
+- UI language: **English / 中文** toggle with browser detection + local preference.
+- PWA basics: manifest, icons, service worker, Add to Home Screen.
 
-## 自适应抽取逻辑
+## UI language
 
-Word Snap 的抽取逻辑不是纯随机。它会尽量避免短时间内反复抽到同一个词，同时让练得少、做错过、反应慢或到期复习的词更容易出现。
+- Default: browser language (`navigator.language`). If it starts with `en`, the UI is English; otherwise Chinese.
+- Preference is stored under `word_snap_lang` on this device only. It does **not** share the main site key `guojiz.lang`.
+- Toggle with **EN / 中** in the side rail (desktop) or bottom nav (mobile).
+- Switching language updates all visible chrome (nav, stats, library modal, options, install nudge, completion copy). It does not restart the current level.
 
-每个词会保存这些变量：
+## Language pairs (word labels)
 
-- `draws`：这个词被抽到面板上的次数。
-- `lastDrawRound`：这个词最近一次出现在哪一关。
-- `drawProbability`：当前队列构建时使用的抽取权重。
+In **Library → Practice options → Language pair** you can rename the two column labels, for example:
 
-构建新队列时，Word Snap 会：
+- English ↔ 中文 (default)
+- English ↔ 日本語
+- English ↔ Español
+- 中文 ↔ English
+- Custom names for side A and side B
 
-- 优先考虑到期复习、薄弱、反应慢、做错过的词；
-- 降低最近历史中频繁出现的词；
-- 提高抽取次数低于平均值的词；
-- 降低抽取次数高于平均值的词；
-- 在全部词稳定后继续循环复习，避免出现空队列；
-- 用户已经选中卡片时暂停补词，避免新词刷新打断当前选择。
+**Important (Option 2):** only the **labels** change. Internal fields remain `en` / `zh`, and matching logic is unchanged. The left column always shows the `zh` field content; the right column always shows the `en` field content. Choosing “中文 → English” as labels does **not** flip the board. Built-in starter words are English ↔ Chinese only. Full field rename (`en`/`zh` → `a`/`b`) is on the roadmap (Option 1).
 
-## 使用方式
+## Adaptive draw logic
 
-本地打开：
+Word Snap is not pure random. It reduces immediate repeats while boosting under-practiced, mistaken, slow, or due words.
+
+Each word stores:
+
+- `draws` — times drawn onto the board
+- `lastDrawRound` — last level it appeared
+- `drawProbability` — weight used when building the queue
+
+When building a queue it:
+
+- prioritizes due, weak, slow, and mistaken words;
+- down-weights recent history;
+- boosts words below average draws;
+- reduces words above average draws;
+- can recycle mastered words so the queue never empties;
+- pauses refill while a card is selected so new cards do not interrupt choice.
+
+## How to use
+
+Local:
 
 ```text
 index.html
 ```
 
-线上使用：
+Online: open the [live URL](https://guojiz.github.io/word-match/vocabulary-match.html).
 
-打开 [在线体验地址](https://guojiz.github.io/word-match/vocabulary-match.html)。
+On iPhone/iPad: Safari → Share → **Add to Home Screen**. The PWA name is **Word Snap**. After updates, if you still see an old Chinese-only UI, fully quit Safari and reopen so the new service worker (`word-snap-v9+`) can replace the cache.
 
-iPhone 或 iPad 用户可以用 Safari 打开在线地址，点击分享按钮，选择“添加到主屏幕”，之后就能像 App 一样启动。
+## Bulk import format
 
-## 批量导入格式
-
-在词库的“批量录入”里，每行一个词：
+In Library → Bulk input, one pair per line:
 
 ```text
 apple,苹果
@@ -71,24 +89,78 @@ banana,香蕉
 UNESCO = 联合国教科文组织
 ```
 
-逗号和等号都支持。
+Comma and `=` are both supported. First field maps to the internal `en` side; second maps to `zh`.
+
+## Data
+
+No account, no server upload. Words, settings, and progress stay in the current browser.
+
+Clearing site data, switching device/browser, or private mode can wipe local state. Back up your word list if you need it long-term.
+
+## Known limits
+
+- Board orientation is fixed: left = `zh` content, right = `en` content; language-pair presets only rename labels.
+- Starter vocabulary is English ↔ Chinese.
+- Language preference is per-device / per-browser.
+
+---
+
+# 中文说明
+
+Word Snap 是一个静态单页单词配对练习网页，通过配对（默认：中文释义 ↔ 英文单词）帮助复习词汇。可部署到 GitHub Pages；单词、设置与进度保存在浏览器本地。
+
+- 在线体验：[https://guojiz.github.io/word-match/vocabulary-match.html](https://guojiz.github.io/word-match/vocabulary-match.html)
+- 源码：[https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match](https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match)
+- 更新日志：[CHANGELOG.md](./CHANGELOG.md)
+
+## 适合谁
+
+- 想用小游戏方式复习英文/双语词汇的人；
+- 想导入自己的词表并反复练习的人；
+- 想让不熟、错过、反应慢的词更多出现的人；
+- 想要不登录、打开即用的轻量工具的人。
+
+## 功能特点
+
+- 10 格流式配对：左 5、右 5；快捷键 `1`–`0`；即时判定。
+- 自适应复习、抽取统计、单条/批量加词、可清空词库。
+- 练习选项：每关时间、补词批量与延迟、历史窗口、防重复强度、选中暂停补词、掌握后循环。
+- **界面中英切换**；**语言对标签**可配置（见下）。
+- PWA：manifest、图标、service worker、添加到主屏幕。
+
+## 语言切换
+
+- 默认按浏览器语言：`navigator.language` 以 `en` 开头则英文，否则中文。
+- 偏好存于 `word_snap_lang`，**不与**主站 `guojiz.lang` 共享。
+- 侧栏 / 底栏 **EN / 中** 切换；切换会刷新可见文案，但不会重开当前关卡。
+
+## 多语言词对用法
+
+在 **词库 → 练习选项 → 语言对** 可改两侧列标题，例如 English↔中文、English↔日本語、自定义等。
+
+**注意（方案 Option 2）：** 只改显示标签，内部字段仍是 `en`/`zh`，匹配逻辑不变。左列始终显示 `zh` 字段内容，右列始终显示 `en` 字段内容；选「中文→English」只换标签、不翻边。内置词库仅英↔中。全量字段重构（Option 1）在后续路线图。
+
+## 使用方式
+
+本地打开 `index.html`，或使用线上地址。iPhone 用 Safari「添加到主屏幕」；若仍见旧版中文缓存，可强关 Safari 再开以激活新 SW（`word-snap-v9+`）。
+
+## 批量导入
+
+每行一对，逗号或等号均可：
+
+```text
+apple,苹果
+UNESCO = 联合国教科文组织
+```
+
+第一段写入内部 `en` 侧，第二段写入 `zh` 侧。
 
 ## 数据说明
 
-Word Snap 不需要登录账号，也不会把你的单词表上传到服务器。单词、设置和练习记录默认保存在当前浏览器本地。
+无需登录，不上传服务器。清理站点数据或换设备可能导致丢失，请自行备份词表。
 
-清理浏览器数据、更换设备、更换浏览器或使用无痕模式，可能导致本地记录丢失。需要长期保存时，建议自行备份单词表。
+## 已知限制
 
-## 贡献与合作
-
-欢迎提交 Issue、PR 或改进建议，尤其是：
-
-- 新的自适应抽取策略
-- 更好的移动端体验
-- 导入 / 导出格式
-- 词库样例
-- 复习统计和学习反馈
-
-## 许可
-
-MIT License。详见 [LICENSE](./LICENSE)。
+- 面板方向固定（左 `zh`、右 `en`），语言对只改标签；
+- 内置词库仅英↔中；
+- 语言偏好按设备/浏览器存储。

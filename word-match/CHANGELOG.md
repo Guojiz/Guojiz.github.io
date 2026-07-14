@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-07-07
+
+### Added
+
+- Bilingual UI (English / 中文) with `data-en` / `data-zh` static attributes, `t()` for dynamic copy, and an **EN / 中** toggle in the rail and mobile nav.
+- Locale preference key `word_snap_lang` (browser detect on first visit; not shared with main-site `guojiz.lang`).
+- English metadata: `html lang="en"`, meta description, manifest `"lang": "en"`.
+- Configurable **language-pair labels** in practice options (presets + custom); renames column labels and bulk placeholder only — matching fields stay `en` / `zh`.
+
+### Changed
+
+- Service worker cache bumped to `word-snap-v9` so installed PWAs pick up the bilingual shell.
+- README rewritten with English primary section and a Chinese section; documents language toggle and language-pair usage.
+
 ## 2026-07-06
 
 ### Added

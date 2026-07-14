@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
   <title>Word Snap</title>
+  <meta name="description" content="A fast bilingual vocabulary matching practice app with adaptive review, custom word lists, and PWA install." />
   <meta name="theme-color" content="#131f24" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Word Snap" />
@@ -920,71 +921,91 @@
         padding: 0 16px 16px;
       }
     }
+
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .lang-toggle .lang-opt {
+      opacity: .45;
+    }
+    .lang-toggle .lang-opt.on {
+      opacity: 1;
+      color: var(--green);
+    }
+    .lang-toggle .sep {
+      opacity: .35;
+    }
+    .lang-pair-custom {
+      grid-column: 1 / -1;
+    }
   </style>
 </head>
 <body>
   <div class="app">
-    <aside class="rail" aria-label="练习导航">
+    <aside class="rail" aria-label="练习导航" data-en-aria="Practice navigation" data-zh-aria="练习导航">
       <div class="logo" aria-hidden="true">W</div>
-      <button class="rail-btn active" type="button">练习</button>
-      <button class="rail-btn" type="button" id="openLibraryRail">词库</button>
-      <button class="rail-btn" type="button" id="resetRail">重置</button>
+      <button class="rail-btn active" type="button" data-en="Practice" data-zh="练习">练习</button>
+      <button class="rail-btn" type="button" id="openLibraryRail" data-en="Library" data-zh="词库">词库</button>
+      <button class="rail-btn" type="button" id="resetRail" data-en="Reset" data-zh="重置">重置</button>
       <a class="rail-btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <button class="rail-btn lang-toggle" type="button" id="langToggleRail" aria-label="切换语言" data-en-aria="Switch language" data-zh-aria="切换语言"><span class="lang-opt" data-lang="en">EN</span><span class="sep">/</span><span class="lang-opt" data-lang="zh">中</span></button>
     </aside>
 
     <main class="main">
-      <nav class="mobile-nav" aria-label="窄屏导航">
-        <button class="rail-btn active" type="button">练习</button>
-        <button class="rail-btn" type="button" id="openLibraryMobile">词库</button>
-        <button class="rail-btn" type="button" id="resetMobile">重置</button>
-        <a class="rail-btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <nav class="mobile-nav" aria-label="窄屏导航" data-en-aria="Mobile navigation" data-zh-aria="窄屏导航">
+        <button class="rail-btn active" type="button" data-en="Practice" data-zh="练习">练习</button>
+        <button class="rail-btn" type="button" id="openLibraryMobile" data-en="Library" data-zh="词库">词库</button>
+        <button class="rail-btn" type="button" id="resetMobile" data-en="Reset" data-zh="重置">重置</button>
+        <button class="rail-btn lang-toggle" type="button" id="langToggleMobile" aria-label="切换语言" data-en-aria="Switch language" data-zh-aria="切换语言"><span class="lang-opt" data-lang="en">EN</span><span class="sep">/</span><span class="lang-opt" data-lang="zh">中</span></button>
       </nav>
 
-      <section class="lesson" aria-label="单词配对练习">
+      <section class="lesson" aria-label="单词配对练习" data-en-aria="Vocabulary matching practice" data-zh-aria="单词配对练习">
         <div class="lesson-top">
-          <button class="icon-button" type="button" id="quitBtn" aria-label="重新开始">×</button>
-          <div class="progress" aria-label="本关进度"><div class="progress-fill" id="progressFill"></div></div>
+          <button class="icon-button" type="button" id="quitBtn" aria-label="重新开始" data-en-aria="Start over" data-zh-aria="重新开始">×</button>
+          <div class="progress" aria-label="本关进度" data-en-aria="Level progress" data-zh-aria="本关进度"><div class="progress-fill" id="progressFill"></div></div>
           <div class="top-count" id="topCount">10</div>
         </div>
 
         <div class="prompt" id="practiceView">
           <div class="prompt-kicker" id="roundLabel">第 1 轮</div>
-          <h1>选择配对</h1>
+          <h1 data-en="Match the pairs" data-zh="选择配对">选择配对</h1>
           <div class="match-grid" id="matchGrid"></div>
         </div>
 
         <div class="completion" id="completionView">
           <div class="completion-badge">✓</div>
-          <h2 id="completionTitle">这一轮结束</h2>
-          <p id="completionText">下一轮会优先出现你不熟的词。</p>
-          <button class="duo-button" type="button" id="continueBtn">继续</button>
+          <h2 id="completionTitle" data-en="Round complete" data-zh="这一轮结束">这一轮结束</h2>
+          <p id="completionText" data-en="Next round prioritizes words you don't know well." data-zh="下一轮会优先出现你不熟的词。">下一轮会优先出现你不熟的词。</p>
+          <button class="duo-button" type="button" id="continueBtn" data-en="Continue" data-zh="继续">继续</button>
         </div>
 
       </section>
 
-      <aside class="panel" aria-label="练习状态">
+      <aside class="panel" aria-label="练习状态" data-en-aria="Practice status" data-zh-aria="练习状态">
         <div class="panel-head">
-          <h2>单词训练</h2>
-          <p>自适应分配：错词、慢词、只答对一次的词会优先出现。</p>
+          <h2 data-en="Word training" data-zh="单词训练">单词训练</h2>
+          <p data-en="Adaptive: missed, slow, and once-correct words show up first." data-zh="自适应分配：错词、慢词、只答对一次的词会优先出现。">自适应分配：错词、慢词、只答对一次的词会优先出现。</p>
         </div>
         <div class="stats">
-          <div class="stat"><strong id="score">0</strong><span>正确配对</span></div>
-          <div class="stat"><strong id="mistakes">0</strong><span>错选</span></div>
-          <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
-          <div class="stat"><strong id="remaining">0</strong><span>未掌握</span></div>
+          <div class="stat"><strong id="score">0</strong><span data-en="Correct" data-zh="正确配对">正确配对</span></div>
+          <div class="stat"><strong id="mistakes">0</strong><span data-en="Mistakes" data-zh="错选">错选</span></div>
+          <div class="stat"><strong id="streak">0</strong><span data-en="Streak" data-zh="连对">连对</span></div>
+          <div class="stat"><strong id="remaining">0</strong><span data-en="Unmastered" data-zh="未掌握">未掌握</span></div>
         </div>
         <div class="weak-list" id="weakList"></div>
         <div class="panel-actions">
-          <button class="small-button" type="button" id="openLibrary">词库</button>
+          <button class="small-button" type="button" id="openLibrary" data-en="Library" data-zh="词库">词库</button>
           <button class="small-button" type="button" id="modeBtn">模式：自适应</button>
-          <button class="small-button" type="button" id="resetProgress">清空进度</button>
+          <button class="small-button" type="button" id="resetProgress" data-en="Clear progress" data-zh="清空进度">清空进度</button>
         </div>
       </aside>
     </main>
   </div>
 
   <div class="install-nudge" id="installNudge" role="dialog" aria-live="polite" aria-labelledby="installTitle" aria-describedby="installText">
-    <button class="install-close" type="button" id="closeInstallNudge" aria-label="关闭安装提醒">×</button>
+    <button class="install-close" type="button" id="closeInstallNudge" aria-label="关闭安装提醒" data-en-aria="Close install prompt" data-zh-aria="关闭安装提醒">×</button>
     <div class="install-nudge-body">
       <div class="install-icon" aria-hidden="true">W</div>
       <div class="install-copy">
@@ -993,7 +1014,7 @@
       </div>
     </div>
     <div class="install-actions">
-      <button class="install-small" type="button" id="hideInstallNudge">不再提示</button>
+      <button class="install-small" type="button" id="hideInstallNudge" data-en="Don't remind me" data-zh="不再提示">不再提示</button>
       <button class="install-small primary" type="button" id="installAction">知道了</button>
     </div>
   </div>
@@ -1002,83 +1023,95 @@
     <div class="modal-card">
       <div class="modal-top">
         <div>
-          <h2 id="libraryTitle">词库</h2>
+          <h2 id="libraryTitle" data-en="Library" data-zh="词库">词库</h2>
           <p id="librarySummary">在这里添加、删除或清空单词。修改只保存在当前浏览器里。</p>
         </div>
-        <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭">×</button>
+        <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭" data-en-aria="Close" data-zh-aria="关闭">×</button>
       </div>
 
       <section class="modal-section">
         <div class="form-grid">
           <label>
-            英文
-            <input id="newEnglish" autocomplete="off" placeholder="example" />
+            <span id="sideLabelA">英文</span>
+            <input id="newEnglish" autocomplete="off" placeholder="example" data-en-ph="example" data-zh-ph="example" />
           </label>
           <label>
-            中文
-            <input id="newChinese" autocomplete="off" placeholder="例子" />
+            <span id="sideLabelB">中文</span>
+            <input id="newChinese" autocomplete="off" placeholder="例子" data-en-ph="example" data-zh-ph="例子" />
           </label>
         </div>
         <div class="form-actions">
-          <button class="duo-button secondary" type="button" id="addOneBtn">添加一个</button>
+          <button class="duo-button secondary" type="button" id="addOneBtn" data-en="Add one" data-zh="添加一个">添加一个</button>
         </div>
       </section>
 
       <section class="modal-section">
         <label>
-          批量录入
-          <textarea id="bulkInput" placeholder="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织"></textarea>
+          <span data-en="Bulk input" data-zh="批量录入">批量录入</span>
+          <textarea id="bulkInput" placeholder="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织" data-en-ph="One per line: literature,文学&#10;Or: UNESCO = 联合国教科文组织" data-zh-ph="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织"></textarea>
         </label>
         <div class="form-actions">
-          <button class="duo-button secondary" type="button" id="addBulkBtn">批量添加</button>
-          <button class="duo-button warning" type="button" id="clearCustomBtn">清空全部词</button>
+          <button class="duo-button secondary" type="button" id="addBulkBtn" data-en="Bulk add" data-zh="批量添加">批量添加</button>
+          <button class="duo-button warning" type="button" id="clearCustomBtn" data-en="Clear all words" data-zh="清空全部词">清空全部词</button>
         </div>
       </section>
 
       <section class="modal-section">
-        <h2>练习选项</h2>
+        <h2 data-en="Practice options" data-zh="练习选项">练习选项</h2>
         <div class="option-grid">
           <label>
-            每关时间（秒）
+            <span data-en="Language pair" data-zh="语言对">语言对</span>
+            <select id="langPairSelect"></select>
+          </label>
+          <label class="lang-pair-custom" id="langPairCustomRow" hidden>
+            <span data-en="Side A" data-zh="左侧">左侧</span>
+            <input id="langPairA" type="text" autocomplete="off" />
+          </label>
+          <label class="lang-pair-custom" id="langPairCustomRow2" hidden>
+            <span data-en="Side B" data-zh="右侧">右侧</span>
+            <input id="langPairB" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span data-en="Level time (sec)" data-zh="每关时间（秒）">每关时间（秒）</span>
             <input id="levelSeconds" type="number" min="20" max="900" step="5" />
           </label>
           <label>
-            消掉几组后补词
+            <span data-en="Refill after N clears" data-zh="消掉几组后补词">消掉几组后补词</span>
             <input id="refillTrigger" type="number" min="1" max="5" step="1" />
           </label>
           <label>
-            补词最短延迟（秒）
+            <span data-en="Refill min delay (sec)" data-zh="补词最短延迟（秒）">补词最短延迟（秒）</span>
             <input id="refillMinSeconds" type="number" min="0.1" max="10" step="0.1" />
           </label>
           <label>
-            补词最长延迟（秒）
+            <span data-en="Refill max delay (sec)" data-zh="补词最长延迟（秒）">补词最长延迟（秒）</span>
             <input id="refillMaxSeconds" type="number" min="0.1" max="15" step="0.1" />
           </label>
           <label>
-            自适应最近历史
+            <span data-en="Adaptive recent history" data-zh="自适应最近历史">自适应最近历史</span>
             <input id="mlRecentHistory" type="number" min="0" max="100" step="1" />
           </label>
           <label>
-            自适应防重复强度
+            <span data-en="Adaptive anti-repeat strength" data-zh="自适应防重复强度">自适应防重复强度</span>
             <input id="mlAvoidanceWeight" type="number" min="0" max="1" step="0.1" />
           </label>
         </div>
         <label class="check-row">
           <input id="pauseRefillWhileSelected" type="checkbox" />
-          <span>选中卡片时暂停补词，不打断当前选择</span>
+          <span data-en="Pause refill while a card is selected" data-zh="选中卡片时暂停补词，不打断当前选择">选中卡片时暂停补词，不打断当前选择</span>
         </label>
         <label class="check-row">
           <input id="recycleMastered" type="checkbox" />
-          <span>全部掌握后继续循环练习，不让队列空掉</span>
+          <span data-en="Keep cycling after all mastered" data-zh="全部掌握后继续循环练习，不让队列空掉">全部掌握后继续循环练习，不让队列空掉</span>
         </label>
         <div class="form-actions">
-          <button class="duo-button secondary" type="button" id="saveOptionsBtn">保存选项</button>
+          <button class="duo-button secondary" type="button" id="saveOptionsBtn" data-en="Save options" data-zh="保存选项">保存选项</button>
         </div>
       </section>
 
       <section class="modal-section">
-        <h2>词库列表</h2>
-        <p>这里显示当前词库里的全部单词。清空后可以重新录入。</p>
+        <h2 data-en="Word list" data-zh="词库列表">词库列表</h2>
+        <p data-en="All words in your library. You can re-add after clearing." data-zh="这里显示当前词库里的全部单词。清空后可以重新录入。">这里显示当前词库里的全部单词。清空后可以重新录入。</p>
         <div class="custom-list" id="customList"></div>
       </section>
     </div>
@@ -1087,6 +1120,231 @@
   <script>
     const STORAGE_KEY = "duo_like_word_match_v1";
     const INSTALL_NUDGE_KEY = "word_snap_install_nudge_hidden_v1";
+
+    // ---- i18n ----
+    const LOCALE_KEY = "word_snap_lang";
+    const I18N = {
+      en: {
+        nav: { practice: "Practice", library: "Library", reset: "Reset", github: "GitHub" },
+        aria: {
+          practiceNav: "Practice navigation", mobileNav: "Mobile navigation",
+          lesson: "Vocabulary matching practice", restart: "Start over",
+          levelProgress: "Level progress", practiceStatus: "Practice status",
+          closeInstall: "Close install prompt", close: "Close",
+          langToggle: "Switch language"
+        },
+        lesson: {
+          roundN: "Round {n}", roundLevel: "Level {n} · {done}/{total}",
+          choosePair: "Match the pairs", continueBtn: "Continue",
+          emptyTitle: "No words yet", emptyText: "Open the Library to add words first, then start matching.",
+          emptyAddBtn: "Add words"
+        },
+        stats: {
+          trainingTitle: "Word training",
+          trainingBlurb: "Adaptive: missed, slow, and once-correct words show up first.",
+          correct: "Correct", mistakes: "Mistakes", streak: "Streak", unmastered: "Unmastered",
+          modeBtn: "Mode: {label}", modeAdaptive: "Adaptive", modeWeak: "Weak only", modeAll: "All in order",
+          clearProgress: "Clear progress"
+        },
+        library: {
+          title: "Library",
+          summaryInitial: "Add, delete, or clear words here. Changes stay in this browser only.",
+          summary: "{n} words total, {m} custom.",
+          addOne: "Add one", bulkLabel: "Bulk input",
+          bulkPlaceholder: "One per line: word_in_{a},word_in_{b}&#10;Or: UNESCO = meaning",
+          addBulk: "Bulk add", clearAll: "Clear all words",
+          optionsTitle: "Practice options",
+          optLevelSeconds: "Level time (sec)", optRefillTrigger: "Refill after N clears",
+          optRefillMin: "Refill min delay (sec)", optRefillMax: "Refill max delay (sec)",
+          optMlRecent: "Adaptive recent history", optMlAvoidance: "Adaptive anti-repeat strength",
+          optPauseRefill: "Pause refill while a card is selected",
+          optRecycleMastered: "Keep cycling after all mastered",
+          saveOptions: "Save options",
+          listTitle: "Word list",
+          listBlurb: "All words in your library. You can re-add after clearing.",
+          deleteBtn: "Delete", drawCount: "Drawn {n}", drawProb: "Draw chance {p}",
+          emptyListA: "No words yet", emptyListB: "Add some above",
+          langPairLabel: "Language pair", custom: "Custom", sideA: "Side A", sideB: "Side B"
+        },
+        weak: { wrongN: "Missed {n}", toConsolidate: "Review", noWeak: "No weak words", done: "Done" },
+        feedback: {
+          pickPair: "Pick one card from each side.", pickMatch: "Now pick its match.",
+          correct: "Matched!", allDoneCheck: "All matched. Now check.",
+          wrong: "Wrong: {a} = {b}", timeChallenge: "Timed challenge: {t}. Correct answers refill fast; wrong words roll back.",
+          pickOtherSide: "Pick the match on the other side.", switchedSameSide: "Switched to another card on the same side.",
+          finishRest: "Finish the remaining pairs.", libraryComplete: "Library complete!",
+          nextLevel: "Continue to the next level.",
+          wrongWithReplay: "Wrong: {a} = {b}. It will roll back and reappear.",
+          optionsSaved: "Options saved. Takes effect next level.",
+          addedOne: "New word added to next round.", addedN: "Added {n} new words.",
+          emptyLib: "Library is empty. Add some words first.",
+          continueNext: "Continue to the next set."
+        },
+        confirm: { clearAllConfirm: "This will clear all words in your library. You can re-add them later. Continue?" },
+        timeouts: {
+          allPass: "All passed!", timeUp: "Time's up!", levelComplete: "Level complete!", roundOver: "Round complete!",
+          allDoneText: "Every word has been answered correctly in a row. Clear progress to start over, or add new words.",
+          remainingUnstable: "{n} words still shaky. Next round prioritizes missed, slow, or once-correct words.",
+          queueCleared: "Queue cleared. Wrong words rolled back for practice; {n} still shaky.",
+          allStable: "Level done. All words are stable; you'll cycle through review next.",
+          levelMatched: "Matched {n} pairs this level. Next reshuffles and prioritizes unfamiliar words.",
+          nextRoundPriority: "Next round prioritizes words you don't know well."
+        },
+        install: {
+          titleInstall: "Install Word Snap",
+          textInstall: "Install to open from your home screen. Your words and progress stay on this device.",
+          actionInstall: "Install",
+          titleAddHome: "Add to Home Screen",
+          textAddHome: "In Safari, tap the Share button, then \"Add to Home Screen\" to open it like an app.",
+          titleSaveDesktop: "Save to desktop",
+          textSaveDesktop: "This works as a web app. When your browser shows an install prompt, add it to your desktop or home screen.",
+          actionGotIt: "Got it", noRemind: "Don't remind me", closeInstall: "Close install prompt"
+        },
+        langToggle: { en: "EN", zh: "中" }
+      },
+      zh: {
+        nav: { practice: "练习", library: "词库", reset: "重置", github: "GitHub" },
+        aria: {
+          practiceNav: "练习导航", mobileNav: "窄屏导航",
+          lesson: "单词配对练习", restart: "重新开始",
+          levelProgress: "本关进度", practiceStatus: "练习状态",
+          closeInstall: "关闭安装提醒", close: "关闭",
+          langToggle: "切换语言"
+        },
+        lesson: {
+          roundN: "第 {n} 轮", roundLevel: "第 {n} 关 · {done}/{total}",
+          choosePair: "选择配对", continueBtn: "继续",
+          emptyTitle: "还没有单词", emptyText: "请先进入词库添加单词。添加后就可以开始配对练习。",
+          emptyAddBtn: "去添加单词"
+        },
+        stats: {
+          trainingTitle: "单词训练",
+          trainingBlurb: "自适应分配：错词、慢词、只答对一次的词会优先出现。",
+          correct: "正确配对", mistakes: "错选", streak: "连对", unmastered: "未掌握",
+          modeBtn: "模式：{label}", modeAdaptive: "自适应", modeWeak: "只练弱项", modeAll: "全量顺序",
+          clearProgress: "清空进度"
+        },
+        library: {
+          title: "词库",
+          summaryInitial: "在这里添加、删除或清空单词。修改只保存在当前浏览器里。",
+          summary: "当前共 {n} 个词，其中自定义 {m} 个。",
+          addOne: "添加一个", bulkLabel: "批量录入",
+          bulkPlaceholder: "每行一个：{a}词,{b}词&#10;也可以：UNESCO = 含义",
+          addBulk: "批量添加", clearAll: "清空全部词",
+          optionsTitle: "练习选项",
+          optLevelSeconds: "每关时间（秒）", optRefillTrigger: "消掉几组后补词",
+          optRefillMin: "补词最短延迟（秒）", optRefillMax: "补词最长延迟（秒）",
+          optMlRecent: "自适应最近历史", optMlAvoidance: "自适应防重复强度",
+          optPauseRefill: "选中卡片时暂停补词，不打断当前选择",
+          optRecycleMastered: "全部掌握后继续循环练习，不让队列空掉",
+          saveOptions: "保存选项",
+          listTitle: "词库列表",
+          listBlurb: "这里显示当前词库里的全部单词。清空后可以重新录入。",
+          deleteBtn: "删除", drawCount: "抽 {n}", drawProb: "抽取概率 {p}",
+          emptyListA: "还没有单词", emptyListB: "请从上方录入",
+          langPairLabel: "语言对", custom: "自定义", sideA: "左侧", sideB: "右侧"
+        },
+        weak: { wrongN: "错 {n}", toConsolidate: "待巩固", noWeak: "暂时没有弱项", done: "完成" },
+        feedback: {
+          pickPair: "选择一个中文和一个英文。", pickMatch: "再选它的配对。",
+          correct: "配对成功。", allDoneCheck: "全部配完了。现在检查。",
+          wrong: "不对：{a} = {b}", timeChallenge: "限时挑战：{t}。答对快速补位，错词会回滚。",
+          pickOtherSide: "再选另一侧的配对。", switchedSameSide: "已换选同侧卡片。",
+          finishRest: "继续完成剩下的配对。", libraryComplete: "很好，词库已完成。",
+          nextLevel: "继续进入下一关。",
+          wrongWithReplay: "不对：{a} = {b}。错词会回滚再出现。",
+          optionsSaved: "练习选项已保存，下一关生效。",
+          addedOne: "新词已加入下一轮。", addedN: "已加入 {n} 个新词。",
+          emptyLib: "词库为空，请先补充单词。",
+          continueNext: "继续就会进入下一组。"
+        },
+        confirm: { clearAllConfirm: "将清空当前词库里的全部单词。清空后可以重新添加，确定吗？" },
+        timeouts: {
+          allPass: "全部过关", timeUp: "时间到", levelComplete: "这一关完成", roundOver: "这一轮结束",
+          allDoneText: "所有词都连续答对过。可以清空进度再来一次，或者录入新词。",
+          remainingUnstable: "还有 {n} 个词没有稳定。下一轮会优先出现错过、慢过或只答对一次的词。",
+          queueCleared: "本关队列已清空。错词已经回滚练过，还有 {n} 个词没有稳定。",
+          allStable: "本关完成。所有词都稳定了，继续后会进入循环复习。",
+          levelMatched: "这一关配对 {n} 组。继续后会重新洗牌，并优先出现不熟的词。",
+          nextRoundPriority: "下一轮会优先出现你不熟的词。"
+        },
+        install: {
+          titleInstall: "安装 Word Snap",
+          textInstall: "安装后可以从主屏幕直接打开，单词和练习进度仍然保存在这台设备里。",
+          actionInstall: "安装",
+          titleAddHome: "添加到主屏幕",
+          textAddHome: "Safari 用户可以点底部分享按钮，再选择“添加到主屏幕”，下次就能像 App 一样打开。",
+          titleSaveDesktop: "保存到桌面",
+          textSaveDesktop: "这个练习可以作为网页 App 使用。浏览器出现安装入口时，可以把它放到桌面或主屏幕。",
+          actionGotIt: "知道了", noRemind: "不再提示", closeInstall: "关闭安装提醒"
+        },
+        langToggle: { en: "EN", zh: "中" }
+      }
+    };
+
+    function detectLang() {
+      try {
+        const stored = localStorage.getItem(LOCALE_KEY);
+        if (stored === "en" || stored === "zh") return stored;
+      } catch (e) {}
+      const nav = (navigator.language || "zh").toLowerCase();
+      return nav.startsWith("en") ? "en" : "zh";
+    }
+    let currentLang = detectLang();
+
+    function t(key, vars) {
+      const parts = key.split(".");
+      let val = I18N[currentLang];
+      for (const p of parts) { val = val && val[p]; }
+      if (val == null) { val = I18N.zh; for (const p of parts) { val = val && val[p]; } }
+      if (val == null) return key;
+      return vars ? String(val).replace(/\{(\w+)\}/g, (_, k) => (vars[k] != null ? vars[k] : "")) : val;
+    }
+
+    function applyStaticI18n() {
+      document.documentElement.lang = currentLang;
+      document.querySelectorAll("[data-en]").forEach(el => {
+        const v = el.getAttribute("data-" + currentLang);
+        if (v != null) el.innerHTML = v;
+      });
+      document.querySelectorAll("[data-en-aria]").forEach(el => {
+        const v = el.getAttribute("data-" + currentLang + "-aria");
+        if (v != null) el.setAttribute("aria-label", v);
+      });
+      document.querySelectorAll("[data-en-ph]").forEach(el => {
+        const v = el.getAttribute("data-" + currentLang + "-ph");
+        if (v != null) el.setAttribute("placeholder", v);
+      });
+      document.querySelectorAll(".lang-toggle .lang-opt").forEach(opt => {
+        opt.classList.toggle("on", opt.getAttribute("data-lang") === currentLang);
+      });
+    }
+
+    function modeLabel(mode) {
+      return mode === "weak" ? t("stats.modeWeak") : mode === "all" ? t("stats.modeAll") : t("stats.modeAdaptive");
+    }
+
+    function setLang(lang) {
+      currentLang = lang === "en" ? "en" : "zh";
+      try { localStorage.setItem(LOCALE_KEY, currentLang); } catch (e) {}
+      applyStaticI18n();
+      // Re-render dynamic UI only — do not call renderRound() (would reset the active level).
+      if (typeof syncOptionsUI === "function") syncOptionsUI();
+      if (typeof setInstallNudgeCopy === "function") setInstallNudgeCopy();
+      if (typeof renderStats === "function") renderStats();
+      els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
+      if (els.completionView && els.completionView.classList.contains("show")) {
+        if (!state.words.length) {
+          els.completionBadge.textContent = "+";
+          els.completionTitle.textContent = t("lesson.emptyTitle");
+          els.completionText.textContent = t("lesson.emptyText");
+          els.continueBtn.textContent = t("lesson.emptyAddBtn");
+        } else {
+          els.continueBtn.textContent = t("lesson.continueBtn");
+        }
+      }
+    }
+
     const DEFAULT_SETTINGS = {
       levelDurationMs: 120000,
       refillTriggerCount: 2,
@@ -1095,8 +1353,15 @@
       pauseRefillWhileSelected: true,
       recycleMastered: true,
       mlRecentHistory: 20,
-      mlAvoidanceWeight: 0.8
+      mlAvoidanceWeight: 0.8,
+      langPair: { a: "English", b: "中文" }
     };
+    const LANG_PAIR_PRESETS = [
+      { a: "English", b: "中文" },
+      { a: "English", b: "日本語" },
+      { a: "English", b: "Español" },
+      { a: "中文", b: "English" }
+    ];
     let deferredInstallPrompt = null;
 
     const starterWords = [
@@ -1160,7 +1425,14 @@
       installText: document.getElementById("installText"),
       installAction: document.getElementById("installAction"),
       closeInstallNudge: document.getElementById("closeInstallNudge"),
-      hideInstallNudge: document.getElementById("hideInstallNudge")
+      hideInstallNudge: document.getElementById("hideInstallNudge"),
+      sideLabelA: document.getElementById("sideLabelA"),
+      sideLabelB: document.getElementById("sideLabelB"),
+      langPairSelect: document.getElementById("langPairSelect"),
+      langPairA: document.getElementById("langPairA"),
+      langPairB: document.getElementById("langPairB"),
+      langPairCustomRow: document.getElementById("langPairCustomRow"),
+      langPairCustomRow2: document.getElementById("langPairCustomRow2")
     };
 
     const state = {
@@ -1241,8 +1513,15 @@
         pauseRefillWhileSelected: raw.pauseRefillWhileSelected !== false,
         recycleMastered: raw.recycleMastered !== false,
         mlRecentHistory: Math.round(clampNumber(raw.mlRecentHistory, 0, 100, DEFAULT_SETTINGS.mlRecentHistory)),
-        mlAvoidanceWeight: clampNumber(raw.mlAvoidanceWeight, 0, 1, DEFAULT_SETTINGS.mlAvoidanceWeight)
+        mlAvoidanceWeight: clampNumber(raw.mlAvoidanceWeight, 0, 1, DEFAULT_SETTINGS.mlAvoidanceWeight),
+        langPair: normalizeLangPair(raw.langPair)
       };
+    }
+
+    function normalizeLangPair(raw) {
+      const a = raw && typeof raw.a === "string" && raw.a.trim() ? raw.a.trim() : DEFAULT_SETTINGS.langPair.a;
+      const b = raw && typeof raw.b === "string" && raw.b.trim() ? raw.b.trim() : DEFAULT_SETTINGS.langPair.b;
+      return { a, b };
     }
 
     function normalizeSettings(settings) {
@@ -1373,9 +1652,9 @@
 
       els.practiceView.classList.remove("hidden");
       els.completionView.classList.remove("show");
-      els.roundLabel.textContent = `第 ${state.round} 轮`;
+      els.roundLabel.textContent = t("lesson.roundN", { n: state.round });
       els.feedback.className = "feedback";
-      els.feedback.textContent = "选择一个中文和一个英文。";
+      els.feedback.textContent = t("feedback.pickPair");
       if (els.checkBtn) els.checkBtn.disabled = true;
       els.matchGrid.innerHTML = "";
 
@@ -1410,7 +1689,7 @@
         state.selected = { card, word, type };
         card.classList.add("selected");
         els.feedback.className = "feedback";
-        els.feedback.textContent = "再选它的配对。";
+        els.feedback.textContent = t("feedback.pickMatch");
         return;
       }
 
@@ -1418,7 +1697,7 @@
         card.classList.remove("selected");
         state.selected = null;
         els.feedback.className = "feedback";
-        els.feedback.textContent = "选择一个中文和一个英文。";
+        els.feedback.textContent = t("feedback.pickPair");
         return;
       }
 
@@ -1455,7 +1734,7 @@
 
       const finished = state.solvedIds.size === state.activePairs.length;
       els.feedback.className = finished ? "feedback good" : "feedback";
-      els.feedback.textContent = finished ? "全部配完了。现在检查。" : "配对成功。";
+      els.feedback.textContent = finished ? t("feedback.allDoneCheck") : t("feedback.correct");
       if (els.checkBtn) els.checkBtn.disabled = !finished;
     }
 
@@ -1476,7 +1755,7 @@
       second.card.classList.add("wrong");
 
       els.feedback.className = "feedback bad";
-      els.feedback.textContent = `不对：${first.word.en} = ${first.word.zh}`;
+      els.feedback.textContent = t("feedback.wrong", { a: first.word.en, b: first.word.zh });
     }
 
     function clearWrong() {
@@ -1488,12 +1767,12 @@
       els.completionView.classList.add("show");
       if (els.checkBtn) els.checkBtn.disabled = true;
       const remaining = state.words.filter(word => !word.mastered).length;
-      els.completionTitle.textContent = allDone ? "全部过关" : "这一轮结束";
+      els.completionTitle.textContent = allDone ? t("timeouts.allPass") : t("timeouts.roundOver");
       els.completionText.textContent = allDone
-        ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
-        : `还有 ${remaining} 个词没有稳定。下一轮会优先出现错过、慢过或只答对一次的词。`;
+        ? t("timeouts.allDoneText")
+        : t("timeouts.remainingUnstable", { n: remaining });
       els.feedback.className = "feedback good";
-      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续就会进入下一组。";
+      els.feedback.textContent = allDone ? t("feedback.libraryComplete") : t("feedback.continueNext");
       saveWords();
       renderStats();
     }
@@ -1508,7 +1787,7 @@
       els.mistakes.textContent = state.mistakes;
       els.streak.textContent = state.streak;
       els.remaining.textContent = remaining;
-      els.librarySummary.textContent = `当前共 ${state.words.length} 个词，其中自定义 ${state.words.filter(word => word.custom).length} 个。`;
+      els.librarySummary.textContent = t("library.summary", { n: state.words.length, m: state.words.filter(word => word.custom).length });
 
       const weak = state.words
         .filter(word => !word.mastered)
@@ -1516,8 +1795,8 @@
         .slice(0, 6);
 
       els.weakList.innerHTML = weak.length
-        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? "错 " + word.mistakes : "待巩固"}</span></div>`).join("")
-        : `<div class="weak-row"><b>暂时没有弱项</b><span>完成</span></div>`;
+        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? t("weak.wrongN", { n: word.mistakes }) : t("weak.toConsolidate")}</span></div>`).join("")
+        : `<div class="weak-row"><b>${t("weak.noWeak")}</b><span>${t("weak.done")}</span></div>`;
 
       renderCustomList();
     }
@@ -1528,11 +1807,11 @@
           <div class="custom-row">
             <b title="${word.en}">${word.en}</b>
             <span title="${word.zh}">${word.zh}</span>
-            <span title="抽取概率 ${Number(word.drawProbability || 1).toFixed(2)}">抽 ${word.draws || 0}</span>
-            <button class="link-button" type="button" data-delete="${word.id}">删除</button>
+            <span title="${t("library.drawProb", { p: Number(word.drawProbability || 1).toFixed(2) })}">${t("library.drawCount", { n: word.draws || 0 })}</span>
+            <button class="link-button" type="button" data-delete="${word.id}">${t("library.deleteBtn")}</button>
           </div>
         `).join("")
-        : `<div class="custom-row"><b>还没有单词</b><span>请从上方录入</span><span></span><span></span></div>`;
+        : `<div class="custom-row"><b>${t("library.emptyListA")}</b><span>${t("library.emptyListB")}</span><span></span><span></span></div>`;
 
       els.customList.querySelectorAll("[data-delete]").forEach(button => {
         button.addEventListener("click", () => {
@@ -1803,9 +2082,9 @@
 
       els.practiceView.classList.remove("hidden");
       els.completionView.classList.remove("show");
-      els.roundLabel.textContent = `第 ${state.round} 关 · 0/${state.sessionTotal}`;
+      els.roundLabel.textContent = t("lesson.roundLevel", { n: state.round, done: 0, total: state.sessionTotal });
       els.feedback.className = "feedback";
-      els.feedback.textContent = `限时挑战：${formatTime(state.levelDurationMs)}。答对快速补位，错词会回滚。`;
+      els.feedback.textContent = t("feedback.timeChallenge", { t: formatTime(state.levelDurationMs) });
       startLevelTimer();
       renderSlots();
       renderStats();
@@ -1883,7 +2162,7 @@
         state.selected = { card, side, index, slot };
         card.classList.add("selected");
         els.feedback.className = "feedback";
-        els.feedback.textContent = "再选另一侧的配对。";
+        els.feedback.textContent = t("feedback.pickOtherSide");
         return;
       }
 
@@ -1891,7 +2170,7 @@
         card.classList.remove("selected");
         state.selected = null;
         els.feedback.className = "feedback";
-        els.feedback.textContent = "选择一个中文和一个英文。";
+        els.feedback.textContent = t("feedback.pickPair");
         return;
       }
 
@@ -1900,7 +2179,7 @@
         state.selected = { card, side, index, slot };
         card.classList.add("selected");
         els.feedback.className = "feedback";
-        els.feedback.textContent = "已换选同侧卡片。";
+        els.feedback.textContent = t("feedback.switchedSameSide");
         return;
       }
 
@@ -1957,7 +2236,7 @@
       first.card.classList.add("correct");
       second.card.classList.add("correct");
       els.feedback.className = "feedback good";
-      els.feedback.textContent = "配对成功。";
+      els.feedback.textContent = t("feedback.correct");
       saveWords();
       renderStats();
 
@@ -1975,7 +2254,7 @@
         }
         els.feedback.className = "feedback";
         if (!hasWordsWaiting()) {
-          els.feedback.textContent = "继续完成剩下的配对。";
+          els.feedback.textContent = t("feedback.finishRest");
           return;
         }
         queueRefillSlot(cleared.leftIndex, cleared.rightIndex);
@@ -2126,7 +2405,7 @@
       first.card.classList.add("wrong");
       second.card.classList.add("wrong");
       els.feedback.className = "feedback bad";
-      els.feedback.textContent = `不对：${first.slot.word.en} = ${first.slot.word.zh}。错词会回滚再出现。`;
+      els.feedback.textContent = t("feedback.wrongWithReplay", { a: first.slot.word.en, b: first.slot.word.zh });
       saveWords();
       renderStats();
 
@@ -2135,7 +2414,7 @@
         second.card.classList.remove("wrong");
         state.locked = false;
         els.feedback.className = "feedback";
-        els.feedback.textContent = "选择一个中文和一个英文。";
+        els.feedback.textContent = t("feedback.pickPair");
       }, WRONG_ANIM_MS);
     }
 
@@ -2164,18 +2443,18 @@
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "✓";
-      els.continueBtn.textContent = "继续";
+      els.continueBtn.textContent = t("lesson.continueBtn");
       const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
-      els.completionTitle.textContent = allDone ? "全部过关" : reason === "timeout" ? "时间到" : "这一关完成";
+      els.completionTitle.textContent = allDone ? t("timeouts.allPass") : reason === "timeout" ? t("timeouts.timeUp") : t("timeouts.levelComplete");
       els.completionText.textContent = allDone
-        ? "所有词都连续答对过。可以清空进度再来一次，或者录入新词。"
+        ? t("timeouts.allDoneText")
         : reason === "timeout"
-          ? `这一关配对 ${state.completedThisRun || 0} 组。继续后会重新洗牌，并优先出现不熟的词。`
+          ? t("timeouts.levelMatched", { n: state.completedThisRun || 0 })
           : remaining
-            ? `本关队列已清空。错词已经回滚练过，还有 ${remaining} 个词没有稳定。`
-            : "本关完成。所有词都稳定了，继续后会进入循环复习。";
+            ? t("timeouts.queueCleared", { n: remaining })
+            : t("timeouts.allStable");
       els.feedback.className = "feedback good";
-      els.feedback.textContent = allDone ? "很好，词库已完成。" : "继续进入下一关。";
+      els.feedback.textContent = allDone ? t("feedback.libraryComplete") : t("feedback.nextLevel");
       saveWords();
       renderStats();
     }
@@ -2192,11 +2471,11 @@
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "+";
-      els.completionTitle.textContent = "还没有单词";
-      els.completionText.textContent = "请先进入词库添加单词。添加后就可以开始配对练习。";
-      els.continueBtn.textContent = "去添加单词";
+      els.completionTitle.textContent = t("lesson.emptyTitle");
+      els.completionText.textContent = t("lesson.emptyText");
+      els.continueBtn.textContent = t("lesson.emptyAddBtn");
       els.feedback.className = "feedback";
-      els.feedback.textContent = "词库为空，请先补充单词。";
+      els.feedback.textContent = t("feedback.emptyLib");
       renderStats();
     }
 
@@ -2213,12 +2492,12 @@
       const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
       els.topCount.textContent = formatTime(timeLeft);
       els.topCount.classList.toggle("time-low", timeLeft <= 15000);
-      els.roundLabel.textContent = `第 ${state.round} 关 · ${state.completedThisRun || 0}/${targetTotal}`;
+      els.roundLabel.textContent = t("lesson.roundLevel", { n: state.round, done: state.completedThisRun || 0, total: targetTotal });
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
       els.streak.textContent = state.streak;
       els.remaining.textContent = remaining;
-      els.librarySummary.textContent = `当前共 ${state.words.length} 个词，其中自定义 ${state.words.filter(word => word.custom).length} 个。`;
+      els.librarySummary.textContent = t("library.summary", { n: state.words.length, m: state.words.filter(word => word.custom).length });
 
       const weak = state.words
         .filter(word => !word.mastered)
@@ -2226,8 +2505,8 @@
         .slice(0, 6);
 
       els.weakList.innerHTML = weak.length
-        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? "错 " + word.mistakes : "待巩固"}</span></div>`).join("")
-        : `<div class="weak-row"><b>暂时没有弱项</b><span>完成</span></div>`;
+        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? t("weak.wrongN", { n: word.mistakes }) : t("weak.toConsolidate")}</span></div>`).join("")
+        : `<div class="weak-row"><b>${t("weak.noWeak")}</b><span>${t("weak.done")}</span></div>`;
 
       renderCustomList();
     }
@@ -2299,10 +2578,9 @@
 
     function toggleMode() {
       const modes = ["adaptive", "weak", "all"];
-      const labels = { adaptive: "自适应", weak: "只练弱项", all: "全量顺序" };
       const next = modes[(modes.indexOf(state.mode) + 1) % modes.length];
       state.mode = next;
-      els.modeBtn.textContent = `模式：${labels[next]}`;
+      els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(next) });
       state.round += 1;
       saveWords();
       renderRound();
@@ -2319,6 +2597,32 @@
       els.libraryModal.classList.remove("open");
     }
 
+    function applyLangPairLabels(pair) {
+      const p = pair || state.settings.langPair;
+      if (els.sideLabelA) els.sideLabelA.textContent = p.a;
+      if (els.sideLabelB) els.sideLabelB.textContent = p.b;
+      if (els.bulkInput) {
+        els.bulkInput.placeholder = t("library.bulkPlaceholder", { a: p.a, b: p.b });
+      }
+    }
+
+    function syncLangPairUI() {
+      const select = els.langPairSelect;
+      if (!select) return;
+      const pair = state.settings.langPair;
+      const isCustom = !LANG_PAIR_PRESETS.some(p => p.a === pair.a && p.b === pair.b);
+      select.innerHTML = LANG_PAIR_PRESETS.map((p, i) =>
+        `<option value="${i}">${p.a} ↔ ${p.b}</option>`
+      ).join("") + `<option value="custom">${t("library.custom")}</option>`;
+      select.value = isCustom ? "custom" : String(LANG_PAIR_PRESETS.findIndex(p => p.a === pair.a && p.b === pair.b));
+      const showCustom = select.value === "custom";
+      if (els.langPairCustomRow) els.langPairCustomRow.hidden = !showCustom;
+      if (els.langPairCustomRow2) els.langPairCustomRow2.hidden = !showCustom;
+      els.langPairA.value = pair.a;
+      els.langPairB.value = pair.b;
+      applyLangPairLabels(pair);
+    }
+
     function syncOptionsUI() {
       els.levelSeconds.value = Math.round(state.settings.levelDurationMs / 1000);
       els.refillTrigger.value = state.settings.refillTriggerCount;
@@ -2328,9 +2632,20 @@
       els.mlAvoidanceWeight.value = state.settings.mlAvoidanceWeight.toFixed(1);
       els.pauseRefillWhileSelected.checked = state.settings.pauseRefillWhileSelected;
       els.recycleMastered.checked = state.settings.recycleMastered;
+      syncLangPairUI();
     }
 
     function saveOptionsFromUI() {
+      let langPair = state.settings.langPair;
+      const select = els.langPairSelect;
+      if (select && select.value === "custom") {
+        const a = (els.langPairA.value || "").trim();
+        const b = (els.langPairB.value || "").trim();
+        if (a && b) langPair = { a, b };
+      } else if (select) {
+        const idx = Number(select.value);
+        if (LANG_PAIR_PRESETS[idx]) langPair = { ...LANG_PAIR_PRESETS[idx] };
+      }
       const nextSettings = normalizeSettings({
         levelDurationMs: Number(els.levelSeconds.value) * 1000,
         refillTriggerCount: Number(els.refillTrigger.value),
@@ -2339,13 +2654,14 @@
         pauseRefillWhileSelected: els.pauseRefillWhileSelected.checked,
         recycleMastered: els.recycleMastered.checked,
         mlRecentHistory: Number(els.mlRecentHistory.value),
-        mlAvoidanceWeight: Number(els.mlAvoidanceWeight.value)
+        mlAvoidanceWeight: Number(els.mlAvoidanceWeight.value),
+        langPair
       });
       state.settings = nextSettings;
       syncOptionsUI();
       saveWords();
       els.feedback.className = "feedback good";
-      els.feedback.textContent = "练习选项已保存，下一关生效。";
+      els.feedback.textContent = t("feedback.optionsSaved");
       renderStats();
     }
 
@@ -2381,22 +2697,22 @@
 
     function setInstallNudgeCopy() {
       if (deferredInstallPrompt) {
-        els.installTitle.textContent = "安装 Word Snap";
-        els.installText.textContent = "安装后可以从主屏幕直接打开，单词和练习进度仍然保存在这台设备里。";
-        els.installAction.textContent = "安装";
+        els.installTitle.textContent = t("install.titleInstall");
+        els.installText.textContent = t("install.textInstall");
+        els.installAction.textContent = t("install.actionInstall");
         return;
       }
 
       if (isIOSDevice() || isSafariBrowser()) {
-        els.installTitle.textContent = "添加到主屏幕";
-        els.installText.textContent = "Safari 用户可以点底部分享按钮，再选择“添加到主屏幕”，下次就能像 App 一样打开。";
-        els.installAction.textContent = "知道了";
+        els.installTitle.textContent = t("install.titleAddHome");
+        els.installText.textContent = t("install.textAddHome");
+        els.installAction.textContent = t("install.actionGotIt");
         return;
       }
 
-      els.installTitle.textContent = "保存到桌面";
-      els.installText.textContent = "这个练习可以作为网页 App 使用。浏览器出现安装入口时，可以把它放到桌面或主屏幕。";
-      els.installAction.textContent = "知道了";
+      els.installTitle.textContent = t("install.titleSaveDesktop");
+      els.installText.textContent = t("install.textSaveDesktop");
+      els.installAction.textContent = t("install.actionGotIt");
     }
 
     function showInstallNudge() {
@@ -2458,6 +2774,21 @@
     document.getElementById("resetMobile").addEventListener("click", resetProgress);
     document.getElementById("quitBtn").addEventListener("click", resetProgress);
     els.saveOptionsBtn.addEventListener("click", saveOptionsFromUI);
+    if (els.langPairSelect) {
+      els.langPairSelect.addEventListener("change", () => {
+        const isCustom = els.langPairSelect.value === "custom";
+        if (els.langPairCustomRow) els.langPairCustomRow.hidden = !isCustom;
+        if (els.langPairCustomRow2) els.langPairCustomRow2.hidden = !isCustom;
+        if (!isCustom) {
+          const idx = Number(els.langPairSelect.value);
+          if (LANG_PAIR_PRESETS[idx]) {
+            els.langPairA.value = LANG_PAIR_PRESETS[idx].a;
+            els.langPairB.value = LANG_PAIR_PRESETS[idx].b;
+            applyLangPairLabels(LANG_PAIR_PRESETS[idx]);
+          }
+        }
+      });
+    }
 
     document.getElementById("addOneBtn").addEventListener("click", () => {
       const added = addWords([[els.newEnglish.value.trim(), els.newChinese.value.trim()]]);
@@ -2465,7 +2796,7 @@
         els.newEnglish.value = "";
         els.newChinese.value = "";
         els.feedback.className = "feedback good";
-        els.feedback.textContent = "新词已加入下一轮。";
+        els.feedback.textContent = t("feedback.addedOne");
       }
     });
 
@@ -2475,12 +2806,12 @@
       if (added) {
         els.bulkInput.value = "";
         els.feedback.className = "feedback good";
-        els.feedback.textContent = `已加入 ${added} 个新词。`;
+        els.feedback.textContent = t("feedback.addedN", { n: added });
       }
     });
 
     document.getElementById("clearCustomBtn").addEventListener("click", () => {
-      if (!confirm("将清空当前词库里的全部单词。清空后可以重新添加，确定吗？")) return;
+      if (!confirm(t("confirm.clearAllConfirm"))) return;
       state.words = [];
       state.drawHistory = [];
       saveWords();
@@ -2529,6 +2860,11 @@
       if (event.touches.length > 1) event.preventDefault();
     }, { passive: false });
 
+    document.querySelectorAll(".lang-toggle").forEach(btn => {
+      btn.addEventListener("click", () => setLang(currentLang === "en" ? "zh" : "en"));
+    });
+    applyStaticI18n();
+
     initInstallNudge();
     registerServiceWorker();
     const savedState = readSavedState();
@@ -2538,7 +2874,7 @@
     if (savedState && ["adaptive", "weak", "all"].includes(savedState.mode)) {
       state.mode = savedState.mode;
     }
-    els.modeBtn.textContent = `模式：${{ adaptive: "自适应", weak: "只练弱项", all: "全量顺序" }[state.mode]}`;
+    els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
     syncOptionsUI();
     renderRound();
   </script>
