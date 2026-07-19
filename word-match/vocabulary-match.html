@@ -1492,6 +1492,7 @@
       levelStartedAt: performance.now(),
       levelEndsAt: 0,
       levelDurationMs: 120000,
+      levelTimeLeftMs: null,
       timerId: null,
       refillTimers: [],
       refillKeys: new Set(),
@@ -1963,18 +1964,35 @@
       return `${minutes}:${String(seconds % 60).padStart(2, "0")}`;
     }
 
+    function clearRefillPipeline() {
+      state.refillTimers.forEach(timerId => clearTimeout(timerId));
+      state.refillTimers = [];
+      state.refillKeys.clear();
+      state.refillPipelineActive = false;
+      state.pendingRefillSlots = [];
+      if (state.refillHoldTimer) {
+        clearTimeout(state.refillHoldTimer);
+        state.refillHoldTimer = null;
+      }
+    }
+
     function clearLevelTimers() {
       if (state.timerId) {
         clearInterval(state.timerId);
         state.timerId = null;
       }
-      state.refillTimers.forEach(timerId => clearTimeout(timerId));
-      state.refillTimers = [];
-      state.refillKeys.clear();
-      state.refillPipelineActive = false;
-      if (state.refillHoldTimer) {
-        clearTimeout(state.refillHoldTimer);
-        state.refillHoldTimer = null;
+      clearRefillPipeline();
+    }
+
+    function stopLevelCountdown() {
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+      // Freeze displayed remaining time at the moment work finished.
+      if (state.levelEndsAt > 0) {
+        state.levelTimeLeftMs = Math.max(0, Math.round(state.levelEndsAt - performance.now()));
+        state.levelEndsAt = 0;
       }
     }
 
@@ -1984,7 +2002,12 @@
 
     function startLevelTimer() {
       if (state.timerId) clearInterval(state.timerId);
+      state.levelTimeLeftMs = null;
       state.timerId = setInterval(() => {
+        if (els.completionView.classList.contains("show") || state.roundComplete) {
+          stopLevelCountdown();
+          return;
+        }
         renderStats();
         if (isLevelOver()) {
           handleLevelTimeout();
@@ -2174,6 +2197,7 @@
       state.levelStartedAt = now;
       state.roundStartedAt = now;
       state.lastPairAt = 0;
+      state.levelTimeLeftMs = null;
       state.levelDurationMs = computeLevelDurationMs(state.sessionTotal);
       state.levelEndsAt = now + state.levelDurationMs;
       state.levelTimeIsAdaptive = Boolean(
@@ -2500,10 +2524,8 @@
         paintSlotPair(cleared.leftIndex, cleared.rightIndex);
         state.locked = false;
         renderStats();
-        if (isStreamComplete()) {
-          showCompletion(false);
-          return;
-        }
+        // Board empty + no more words: stop clock immediately even if a refill timer is mid-flight.
+        if (finishLevelIfDone()) return;
         els.feedback.className = "feedback";
         if (!hasWordsWaiting()) {
           els.feedback.textContent = t("feedback.finishRest");
@@ -2621,7 +2643,7 @@
             state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
             state.refillKeys.delete(key);
             state.refillPipelineActive = false;
-            if (isStreamComplete()) showCompletion(false);
+            if (finishLevelIfDone()) return;
           }
           return;
         }
@@ -2632,10 +2654,7 @@
         // Only paint the two new cards — never rebuild the whole board.
         paintSlotPair(leftIndex, rightIndex);
         renderStats();
-        if (isStreamComplete()) {
-          showCompletion(false);
-          return;
-        }
+        if (finishLevelIfDone()) return;
         continueRefillPipeline();
       };
 
@@ -2722,13 +2741,32 @@
       return state.wordQueue.length > 0 || state.wrongQueue.length > 0;
     }
 
+    /** True when there is nothing left to match on the board or in queues. */
+    function isLevelWorkDone() {
+      return !hasWordsWaiting() && activeSlotPairs() === 0;
+    }
+
     function isStreamComplete() {
-      return !hasWordsWaiting()
-        && !state.refillTimers.length
-        && activeSlotPairs() === 0;
+      return isLevelWorkDone() && !state.refillTimers.length;
+    }
+
+    /**
+     * If the level's work is finished (early clear), cancel pending refills,
+     * stop the countdown, and open the completion screen.
+     */
+    function finishLevelIfDone(reason = "queue") {
+      if (!isLevelWorkDone()) return false;
+      if (els.completionView.classList.contains("show")) {
+        stopLevelCountdown();
+        return true;
+      }
+      clearRefillPipeline();
+      showCompletion(false, reason);
+      return true;
     }
 
     function showCompletion(allDone, reason = "queue") {
+      stopLevelCountdown();
       clearLevelTimers();
       clearSelection();
       state.roundComplete = reason !== "timeout";
@@ -2783,9 +2821,17 @@
           ? Math.min(100, Math.round((state.completedThisRun || 0) / targetTotal * 100))
           : 0;
       els.progressFill.style.width = `${pct}%`;
-      const timeLeft = state.levelEndsAt ? state.levelEndsAt - performance.now() : state.levelDurationMs;
+      // Frozen after clear/timeout; otherwise live countdown from levelEndsAt.
+      let timeLeft;
+      if (state.levelTimeLeftMs != null && (state.roundComplete || els.completionView.classList.contains("show") || !state.levelEndsAt)) {
+        timeLeft = state.levelTimeLeftMs;
+      } else if (state.levelEndsAt) {
+        timeLeft = state.levelEndsAt - performance.now();
+      } else {
+        timeLeft = state.levelDurationMs;
+      }
       els.topCount.textContent = formatTime(timeLeft);
-      els.topCount.classList.toggle("time-low", timeLeft <= 15000);
+      els.topCount.classList.toggle("time-low", timeLeft <= 15000 && !state.roundComplete && !els.completionView.classList.contains("show"));
       els.roundLabel.textContent = t("lesson.roundLevel", { n: state.round, done: state.completedThisRun || 0, total: targetTotal });
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
