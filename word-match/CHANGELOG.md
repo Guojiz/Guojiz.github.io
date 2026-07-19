@@ -13,13 +13,14 @@
 - Adaptive timer no longer confuses the **countdown allotment** with **actual completion time**. Pace uses `levelStartedAt` → `lastPairAt` and **completed pair count** (not the prescribed queue size when unfinished/timeout).
 - Incomplete levels still update throughput (`actualWorkMs / completedPairs`); next budget = pace × next queue × (1+tol), with a small extra margin when unfinished.
 - Selection no longer drops when new words refill mid-choice: refill paints **only the two new cells** (no full-grid rebuild), holds the refill timer without releasing its reservation while a card is selected/locked, and resumes after deselect/match.
+- Early clear now stops the countdown: when board and queues are empty, pending refills are cancelled and completion opens instead of ticking out the allotment.
 - Fixed a bug where per-pair reaction resets of `roundStartedAt` corrupted level duration samples.
 - English rail / panel button labels overflowing their boxes (wrap + smaller type).
 - Bulk-input placeholder newlines when set via `t()`.
 
 ### Changed
 
-- Service worker cache bumped to `word-snap-v12`.
+- Service worker cache bumped to `word-snap-v14`.
 - Board layout still uses Fisher–Yates `shuffle()` / `Math.random` for left/right column order.
 
 ## 2026-07-07
