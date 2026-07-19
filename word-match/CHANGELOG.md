@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-07-19
+
+### Added
+
+- Adaptive level timer: next level duration is projected from the previous round’s pace × pairs, with a configurable tolerance (default `0.2` / +20%). Base time is used for the first level or when adaptive is off.
+- Practice options: “Adaptive level time” checkbox and “Time tolerance”.
+- Progress persistence: score, mistakes, streak, round, and last-level pace are saved with words/settings under `localStorage` (`duo_like_word_match_v1`), including when installed as a PWA on the same origin.
+
+### Fixed
+
+- English rail / panel button labels overflowing their boxes (wrap + smaller type).
+- Bulk-input placeholder newlines when set via `t()`.
+
+### Changed
+
+- Service worker cache bumped to `word-snap-v10`.
+
 ## 2026-07-07
 
 ### Added

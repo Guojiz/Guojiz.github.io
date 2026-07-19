@@ -97,7 +97,8 @@
 
     .rail-btn {
       width: 52px;
-      height: 52px;
+      min-height: 52px;
+      height: auto;
       display: grid;
       place-items: center;
       text-decoration: none;
@@ -106,12 +107,17 @@
       color: var(--muted);
       background: transparent;
       cursor: pointer;
-      padding: 0;
-      font-size: 12px;
+      padding: 6px 3px;
+      font-size: 10px;
       font-weight: 800;
       text-transform: uppercase;
       text-align: center;
-      line-height: 1.15;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
       transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
     }
 
@@ -139,9 +145,12 @@
 
     .mobile-nav .rail-btn {
       width: auto;
-      height: 44px;
+      min-height: 44px;
+      height: auto;
+      padding: 6px 4px;
       border-color: var(--line);
       background: #17282e;
+      font-size: 11px;
     }
 
     .lesson {
@@ -409,6 +418,7 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
+      overflow-wrap: anywhere;
     }
 
     .stats {
@@ -441,6 +451,8 @@
       color: var(--muted);
       font-size: 12px;
       font-weight: 800;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .weak-list {
@@ -494,11 +506,15 @@
       color: var(--blue);
       background: var(--bg);
       cursor: pointer;
-      padding: 0 12px;
+      padding: 8px 10px;
+      font-size: 12px;
       font-weight: 900;
       text-transform: uppercase;
       text-align: center;
-      line-height: 1.15;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
     }
 
     .small-button:hover {
@@ -1072,8 +1088,12 @@
             <input id="langPairB" type="text" autocomplete="off" />
           </label>
           <label>
-            <span data-en="Level time (sec)" data-zh="每关时间（秒）">每关时间（秒）</span>
+            <span data-en="Base level time (sec)" data-zh="基础每关时间（秒）">基础每关时间（秒）</span>
             <input id="levelSeconds" type="number" min="20" max="900" step="5" />
+          </label>
+          <label>
+            <span data-en="Time tolerance (e.g. 0.2)" data-zh="时间容错（如 0.2）">时间容错（如 0.2）</span>
+            <input id="levelTimeTolerance" type="number" min="0" max="2" step="0.05" />
           </label>
           <label>
             <span data-en="Refill after N clears" data-zh="消掉几组后补词">消掉几组后补词</span>
@@ -1096,6 +1116,10 @@
             <input id="mlAvoidanceWeight" type="number" min="0" max="1" step="0.1" />
           </label>
         </div>
+        <label class="check-row">
+          <input id="adaptiveLevelTime" type="checkbox" />
+          <span data-en="Adaptive level time from previous round pace (+ tolerance)" data-zh="按上一局速度自适应本关时间（加容错）">按上一局速度自适应本关时间（加容错）</span>
+        </label>
         <label class="check-row">
           <input id="pauseRefillWhileSelected" type="checkbox" />
           <span data-en="Pause refill while a card is selected" data-zh="选中卡片时暂停补词，不打断当前选择">选中卡片时暂停补词，不打断当前选择</span>
@@ -1154,9 +1178,11 @@
           bulkPlaceholder: "One per line: word_in_{a},word_in_{b}\nOr: UNESCO = meaning",
           addBulk: "Bulk add", clearAll: "Clear all words",
           optionsTitle: "Practice options",
-          optLevelSeconds: "Level time (sec)", optRefillTrigger: "Refill after N clears",
+          optLevelSeconds: "Base level time (sec)", optLevelTimeTolerance: "Time tolerance (e.g. 0.2)",
+          optRefillTrigger: "Refill after N clears",
           optRefillMin: "Refill min delay (sec)", optRefillMax: "Refill max delay (sec)",
           optMlRecent: "Adaptive recent history", optMlAvoidance: "Adaptive anti-repeat strength",
+          optAdaptiveLevelTime: "Adaptive level time from previous round pace (+ tolerance)",
           optPauseRefill: "Pause refill while a card is selected",
           optRecycleMastered: "Keep cycling after all mastered",
           saveOptions: "Save options",
@@ -1171,6 +1197,7 @@
           pickPair: "Pick one card from each side.", pickMatch: "Now pick its match.",
           correct: "Matched!", allDoneCheck: "All matched. Now check.",
           wrong: "Wrong: {a} = {b}", timeChallenge: "Timed challenge: {t}. Correct answers refill fast; wrong words roll back.",
+          timeAdaptive: "Timed challenge: {t} (from last round +{tol}% margin).",
           pickOtherSide: "Pick the match on the other side.", switchedSameSide: "Switched to another card on the same side.",
           finishRest: "Finish the remaining pairs.", libraryComplete: "Library complete!",
           nextLevel: "Continue to the next level.",
@@ -1232,9 +1259,11 @@
           bulkPlaceholder: "每行一个：{a}词,{b}词\n也可以：UNESCO = 含义",
           addBulk: "批量添加", clearAll: "清空全部词",
           optionsTitle: "练习选项",
-          optLevelSeconds: "每关时间（秒）", optRefillTrigger: "消掉几组后补词",
+          optLevelSeconds: "基础每关时间（秒）", optLevelTimeTolerance: "时间容错（如 0.2）",
+          optRefillTrigger: "消掉几组后补词",
           optRefillMin: "补词最短延迟（秒）", optRefillMax: "补词最长延迟（秒）",
           optMlRecent: "自适应最近历史", optMlAvoidance: "自适应防重复强度",
+          optAdaptiveLevelTime: "按上一局速度自适应本关时间（加容错）",
           optPauseRefill: "选中卡片时暂停补词，不打断当前选择",
           optRecycleMastered: "全部掌握后继续循环练习，不让队列空掉",
           saveOptions: "保存选项",
@@ -1249,6 +1278,7 @@
           pickPair: "选择一个中文和一个英文。", pickMatch: "再选它的配对。",
           correct: "配对成功。", allDoneCheck: "全部配完了。现在检查。",
           wrong: "不对：{a} = {b}", timeChallenge: "限时挑战：{t}。答对快速补位，错词会回滚。",
+          timeAdaptive: "限时挑战：{t}（按上局速度 +{tol}% 容错）。",
           pickOtherSide: "再选另一侧的配对。", switchedSameSide: "已换选同侧卡片。",
           finishRest: "继续完成剩下的配对。", libraryComplete: "很好，词库已完成。",
           nextLevel: "继续进入下一关。",
@@ -1347,6 +1377,10 @@
 
     const DEFAULT_SETTINGS = {
       levelDurationMs: 120000,
+      adaptiveLevelTime: true,
+      levelTimeTolerance: 0.2,
+      lastLevelMs: 0,
+      lastLevelPairs: 0,
       refillTriggerCount: 2,
       refillMinMs: 520,
       refillMaxMs: 980,
@@ -1412,6 +1446,8 @@
       bulkInput: document.getElementById("bulkInput"),
       customList: document.getElementById("customList"),
       levelSeconds: document.getElementById("levelSeconds"),
+      levelTimeTolerance: document.getElementById("levelTimeTolerance"),
+      adaptiveLevelTime: document.getElementById("adaptiveLevelTime"),
       refillTrigger: document.getElementById("refillTrigger"),
       refillMinSeconds: document.getElementById("refillMinSeconds"),
       refillMaxSeconds: document.getElementById("refillMaxSeconds"),
@@ -1507,6 +1543,10 @@
       const raw = saved && saved.settings ? saved.settings : {};
       return {
         levelDurationMs: clampNumber(raw.levelDurationMs, 20000, 900000, DEFAULT_SETTINGS.levelDurationMs),
+        adaptiveLevelTime: raw.adaptiveLevelTime !== false,
+        levelTimeTolerance: clampNumber(raw.levelTimeTolerance, 0, 2, DEFAULT_SETTINGS.levelTimeTolerance),
+        lastLevelMs: clampNumber(raw.lastLevelMs, 0, 900000, 0),
+        lastLevelPairs: Math.round(clampNumber(raw.lastLevelPairs, 0, 10000, 0)),
         refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
         refillMinMs: clampNumber(raw.refillMinMs, 100, 10000, DEFAULT_SETTINGS.refillMinMs),
         refillMaxMs: clampNumber(raw.refillMaxMs, 100, 15000, DEFAULT_SETTINGS.refillMaxMs),
@@ -1556,13 +1596,44 @@
     }
 
     function saveWords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        words: state.words,
-        settings: state.settings,
-        drawHistory: state.drawHistory,
-        mode: state.mode,
-        savedAt: new Date().toISOString()
-      }));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          words: state.words,
+          settings: state.settings,
+          drawHistory: state.drawHistory,
+          mode: state.mode,
+          round: state.round,
+          score: state.score,
+          mistakes: state.mistakes,
+          streak: state.streak,
+          savedAt: new Date().toISOString()
+        }));
+      } catch (error) {
+        // Private mode / quota — practice still works for this session.
+      }
+    }
+
+    function computeLevelDurationMs(sessionTotal) {
+      const settings = state.settings;
+      const base = settings.levelDurationMs;
+      if (!settings.adaptiveLevelTime) return base;
+      const lastMs = settings.lastLevelMs;
+      const lastPairs = settings.lastLevelPairs;
+      if (!lastMs || !lastPairs) return base;
+      const total = Math.max(1, sessionTotal || lastPairs);
+      const projected = (lastMs / lastPairs) * total;
+      const tolerance = Number.isFinite(settings.levelTimeTolerance) ? settings.levelTimeTolerance : 0.2;
+      const withMargin = projected * (1 + Math.max(0, tolerance));
+      // Keep within UI bounds; never shorter than 20s or longer than 15 min.
+      return Math.round(clampNumber(withMargin, 20000, 900000, base));
+    }
+
+    function recordLevelPace() {
+      const pairs = Math.max(0, state.completedThisRun || 0);
+      if (pairs < 1) return;
+      const elapsed = Math.max(1, Math.round(performance.now() - state.roundStartedAt));
+      state.settings.lastLevelMs = elapsed;
+      state.settings.lastLevelPairs = pairs;
     }
 
     function shuffle(list) {
@@ -2058,8 +2129,13 @@
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
       state.roundStartedAt = performance.now();
-      state.levelDurationMs = state.settings.levelDurationMs;
+      state.levelDurationMs = computeLevelDurationMs(state.sessionTotal);
       state.levelEndsAt = performance.now() + state.levelDurationMs;
+      state.levelTimeIsAdaptive = Boolean(
+        state.settings.adaptiveLevelTime
+        && state.settings.lastLevelMs > 0
+        && state.settings.lastLevelPairs > 0
+      );
 
       if (!state.sessionTotal) {
         showCompletion(true);
@@ -2084,7 +2160,13 @@
       els.completionView.classList.remove("show");
       els.roundLabel.textContent = t("lesson.roundLevel", { n: state.round, done: 0, total: state.sessionTotal });
       els.feedback.className = "feedback";
-      els.feedback.textContent = t("feedback.timeChallenge", { t: formatTime(state.levelDurationMs) });
+      const timeLabel = formatTime(state.levelDurationMs);
+      if (state.levelTimeIsAdaptive) {
+        const tolPct = Math.round((state.settings.levelTimeTolerance || 0) * 100);
+        els.feedback.textContent = t("feedback.timeAdaptive", { t: timeLabel, tol: tolPct });
+      } else {
+        els.feedback.textContent = t("feedback.timeChallenge", { t: timeLabel });
+      }
       startLevelTimer();
       renderSlots();
       renderStats();
@@ -2440,6 +2522,8 @@
       clearLevelTimers();
       clearSelection();
       state.roundComplete = reason !== "timeout";
+      // Always record pace when the user finished at least one pair (complete or timeout).
+      recordLevelPace();
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "✓";
@@ -2572,6 +2656,8 @@
       state.score = 0;
       state.mistakes = 0;
       state.streak = 0;
+      state.settings.lastLevelMs = 0;
+      state.settings.lastLevelPairs = 0;
       saveWords();
       renderRound();
     }
@@ -2625,6 +2711,12 @@
 
     function syncOptionsUI() {
       els.levelSeconds.value = Math.round(state.settings.levelDurationMs / 1000);
+      if (els.levelTimeTolerance) {
+        els.levelTimeTolerance.value = Number(state.settings.levelTimeTolerance).toFixed(2);
+      }
+      if (els.adaptiveLevelTime) {
+        els.adaptiveLevelTime.checked = state.settings.adaptiveLevelTime !== false;
+      }
       els.refillTrigger.value = state.settings.refillTriggerCount;
       els.refillMinSeconds.value = (state.settings.refillMinMs / 1000).toFixed(1);
       els.refillMaxSeconds.value = (state.settings.refillMaxMs / 1000).toFixed(1);
@@ -2648,6 +2740,10 @@
       }
       const nextSettings = normalizeSettings({
         levelDurationMs: Number(els.levelSeconds.value) * 1000,
+        adaptiveLevelTime: els.adaptiveLevelTime ? els.adaptiveLevelTime.checked : true,
+        levelTimeTolerance: els.levelTimeTolerance ? Number(els.levelTimeTolerance.value) : 0.2,
+        lastLevelMs: state.settings.lastLevelMs,
+        lastLevelPairs: state.settings.lastLevelPairs,
         refillTriggerCount: Number(els.refillTrigger.value),
         refillMinMs: Number(els.refillMinSeconds.value) * 1000,
         refillMaxMs: Number(els.refillMaxSeconds.value) * 1000,
@@ -2830,6 +2926,7 @@
         return;
       }
       state.round += 1;
+      saveWords();
       renderRound();
     });
 
@@ -2873,6 +2970,20 @@
     state.drawHistory = Array.isArray(savedState && savedState.drawHistory) ? savedState.drawHistory : [];
     if (savedState && ["adaptive", "weak", "all"].includes(savedState.mode)) {
       state.mode = savedState.mode;
+    }
+    if (savedState) {
+      if (Number.isFinite(Number(savedState.round)) && Number(savedState.round) >= 1) {
+        state.round = Math.round(Number(savedState.round));
+      }
+      if (Number.isFinite(Number(savedState.score)) && Number(savedState.score) >= 0) {
+        state.score = Math.round(Number(savedState.score));
+      }
+      if (Number.isFinite(Number(savedState.mistakes)) && Number(savedState.mistakes) >= 0) {
+        state.mistakes = Math.round(Number(savedState.mistakes));
+      }
+      if (Number.isFinite(Number(savedState.streak)) && Number(savedState.streak) >= 0) {
+        state.streak = Math.round(Number(savedState.streak));
+      }
     }
     els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
     syncOptionsUI();
