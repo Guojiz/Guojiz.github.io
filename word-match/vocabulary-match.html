@@ -1496,7 +1496,7 @@
       timerId: null,
       refillTimers: [],
       refillKeys: new Set(),
-      pendingRefillSlots: [],
+      pendingRefillCount: 0,
       clearedSinceLastRefill: 0,
       refillPipelineActive: false,
       refillHoldTimer: null,
@@ -1969,7 +1969,7 @@
       state.refillTimers = [];
       state.refillKeys.clear();
       state.refillPipelineActive = false;
-      state.pendingRefillSlots = [];
+      state.pendingRefillCount = 0;
       if (state.refillHoldTimer) {
         clearTimeout(state.refillHoldTimer);
         state.refillHoldTimer = null;
@@ -2182,7 +2182,7 @@
       state.completedThisRun = 0;
       state.roundComplete = false;
       state.wrongQueue = [];
-      state.pendingRefillSlots = [];
+      state.pendingRefillCount = 0;
       state.clearedSinceLastRefill = 0;
       state.refillPipelineActive = false;
 
@@ -2531,7 +2531,7 @@
           els.feedback.textContent = t("feedback.finishRest");
           return;
         }
-        queueRefillSlot(cleared.leftIndex, cleared.rightIndex);
+        queueRefillCredit();
         maybeScheduleBatchRefill();
       }, CORRECT_ANIM_MS);
     }
@@ -2545,32 +2545,77 @@
       return { leftIndex: leftTarget.index, rightIndex: rightTarget.index };
     }
 
-    function slotPairKey(leftIndex, rightIndex) {
-      return `${leftIndex}:${rightIndex}`;
+    function emptySlotIndexes(side) {
+      const slots = side === "left" ? state.leftSlots : state.rightSlots;
+      const out = [];
+      for (let i = 0; i < slots.length; i += 1) {
+        if (!slots[i].word) out.push(i);
+      }
+      return out;
     }
 
-    function queueRefillSlot(leftIndex, rightIndex) {
-      const key = slotPairKey(leftIndex, rightIndex);
-      if (!state.pendingRefillSlots.some(slot => slot.key === key)) {
-        state.pendingRefillSlots.push({ leftIndex, rightIndex, key });
-      }
+    function pickRandomIndex(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function canPlaceRefill() {
+      return emptySlotIndexes("left").length > 0 && emptySlotIndexes("right").length > 0;
+    }
+
+    /** Owe one new word on the board (not tied to the just-cleared cell pair). */
+    function queueRefillCredit() {
+      state.pendingRefillCount += 1;
       state.clearedSinceLastRefill += 1;
     }
 
-    function pendingOpenSlots() {
-      return state.pendingRefillSlots.filter(slot => {
-        return !state.refillKeys.has(slot.key)
-          && state.leftSlots[slot.leftIndex]
-          && state.rightSlots[slot.rightIndex]
-          && !state.leftSlots[slot.leftIndex].word
-          && !state.rightSlots[slot.rightIndex].word;
-      });
+    /**
+     * Place one word on a random empty left cell and a random empty right cell.
+     * Positions are independent — never "the two holes from the last match" as a free pair.
+     */
+    function refillOneWordRandomPositions() {
+      const emptyLeft = emptySlotIndexes("left");
+      const emptyRight = emptySlotIndexes("right");
+      if (!emptyLeft.length || !emptyRight.length) return false;
+      const nextWord = takeNextWord();
+      if (!nextWord) return false;
+      markWordDrawn(nextWord);
+      const li = pickRandomIndex(emptyLeft);
+      const ri = pickRandomIndex(emptyRight);
+      state.leftSlots[li] = makeSlot("left", li, nextWord, true);
+      state.rightSlots[ri] = makeSlot("right", ri, nextWord, true);
+      return true;
+    }
+
+    /**
+     * Independently reshuffle occupied cards on one side so a freshly filled
+     * pair is not left sitting in known matching positions.
+     */
+    function scrambleOccupiedSide(side) {
+      const slots = side === "left" ? state.leftSlots : state.rightSlots;
+      const words = [];
+      for (let i = 0; i < slots.length; i += 1) {
+        if (slots[i].word) words.push(slots[i].word);
+      }
+      if (words.length <= 1) return;
+      const order = shuffle(words);
+      let k = 0;
+      for (let i = 0; i < slots.length; i += 1) {
+        if (slots[i].word) {
+          slots[i] = makeSlot(side, i, order[k], false);
+          k += 1;
+        }
+      }
+    }
+
+    function scrambleBoardPositions() {
+      scrambleOccupiedSide("left");
+      scrambleOccupiedSide("right");
     }
 
     function maybeScheduleBatchRefill(force = false) {
-      const pending = pendingOpenSlots();
-      if (!pending.length) return;
+      if (state.pendingRefillCount <= 0) return;
       if (state.refillPipelineActive) return;
+      if (!canPlaceRefill()) return;
 
       // Do not even arm a timer while the user is mid-choice; arm after they finish.
       if (shouldHoldRefill()) {
@@ -2584,8 +2629,7 @@
         return;
       }
 
-      const slot = pending[0];
-      scheduleSlotRefill(slot.leftIndex, slot.rightIndex, refillDelayFor());
+      scheduleWordRefill(refillDelayFor());
       state.clearedSinceLastRefill = 0;
     }
 
@@ -2603,14 +2647,14 @@
       }, SELECTED_REFILL_RETRY_MS);
     }
 
-    function scheduleSlotRefill(leftIndex, rightIndex, delayMs) {
-      const key = slotPairKey(leftIndex, rightIndex);
-      if (state.refillKeys.has(key)) return;
-      state.refillKeys.add(key);
+    function scheduleWordRefill(delayMs) {
+      if (state.refillPipelineActive) return;
+      if (state.pendingRefillCount <= 0) return;
       state.refillPipelineActive = true;
+      const key = `refill-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      state.refillKeys.add(key);
 
       const run = () => {
-        // Drop this timer handle; key stays reserved until we fill or cancel.
         state.refillTimers = state.refillTimers.filter(id => id !== timerId);
 
         if (els.completionView.classList.contains("show") || isLevelOver()) {
@@ -2619,28 +2663,27 @@
           return;
         }
 
-        // Hold WITHOUT releasing the key / pipeline — avoids a second timer
-        // racing in via continueRefillPipeline while the first is "paused".
+        // Hold WITHOUT releasing the pipeline — avoids a second timer racing in.
         if (shouldHoldRefill()) {
           const retryId = setTimeout(run, SELECTED_REFILL_RETRY_MS);
           state.refillTimers.push(retryId);
           return;
         }
 
-        if (state.leftSlots[leftIndex].word || state.rightSlots[rightIndex].word) {
+        if (state.pendingRefillCount <= 0 || !canPlaceRefill()) {
           state.refillKeys.delete(key);
           state.refillPipelineActive = false;
+          if (finishLevelIfDone()) return;
           continueRefillPipeline();
           return;
         }
 
-        if (!refillSlotPair(leftIndex, rightIndex)) {
+        if (!refillOneWordRandomPositions()) {
           if (state.wordQueue.length || state.wrongQueue.length) {
-            // Keep reservation; retry after normal delay.
             const retryId = setTimeout(run, refillDelayFor());
             state.refillTimers.push(retryId);
           } else {
-            state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
+            state.pendingRefillCount = 0;
             state.refillKeys.delete(key);
             state.refillPipelineActive = false;
             if (finishLevelIfDone()) return;
@@ -2648,11 +2691,14 @@
           return;
         }
 
-        state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
+        state.pendingRefillCount = Math.max(0, state.pendingRefillCount - 1);
+        // Critical: after placing, scramble BOTH sides independently so the new
+        // word is not a free match at the two just-emptied cells.
+        scrambleBoardPositions();
         state.refillKeys.delete(key);
         state.refillPipelineActive = false;
-        // Only paint the two new cards — never rebuild the whole board.
-        paintSlotPair(leftIndex, rightIndex);
+        // Full repaint after scramble (positions of many cards change).
+        renderSlots();
         renderStats();
         if (finishLevelIfDone()) return;
         continueRefillPipeline();
@@ -2667,18 +2713,9 @@
         armRefillHoldWatcher();
         return;
       }
-      if (pendingOpenSlots().length) {
+      if (state.pendingRefillCount > 0 && canPlaceRefill()) {
         maybeScheduleBatchRefill(true);
       }
-    }
-
-    function refillSlotPair(leftIndex, rightIndex) {
-      const nextWord = takeNextWord();
-      if (!nextWord) return false;
-      markWordDrawn(nextWord);
-      state.leftSlots[leftIndex] = makeSlot("left", leftIndex, nextWord, true);
-      state.rightSlots[rightIndex] = makeSlot("right", rightIndex, nextWord, true);
-      return true;
     }
 
     function markWordDrawn(word) {
