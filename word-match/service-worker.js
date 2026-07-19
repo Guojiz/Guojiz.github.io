@@ -1,4 +1,4 @@
-const CACHE_NAME = "word-snap-v11";
+const CACHE_NAME = "word-snap-v12";
 const APP_SHELL = [
   "./",
   "./index.html",

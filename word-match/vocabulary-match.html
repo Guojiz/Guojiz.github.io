@@ -1383,6 +1383,7 @@
       lastMsPerPair: 0,
       lastLevelMs: 0,
       lastLevelPairs: 0,
+      lastLevelComplete: false,
       refillTriggerCount: 2,
       refillMinMs: 520,
       refillMaxMs: 980,
@@ -1554,6 +1555,7 @@
         lastMsPerPair: clampNumber(raw.lastMsPerPair, 0, 600000, 0),
         lastLevelMs: clampNumber(raw.lastLevelMs, 0, 900000, 0),
         lastLevelPairs: Math.round(clampNumber(raw.lastLevelPairs, 0, 10000, 0)),
+        lastLevelComplete: raw.lastLevelComplete === true,
         refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
         refillMinMs: clampNumber(raw.refillMinMs, 100, 10000, DEFAULT_SETTINGS.refillMinMs),
         refillMaxMs: clampNumber(raw.refillMaxMs, 100, 15000, DEFAULT_SETTINGS.refillMaxMs),
@@ -1643,25 +1645,32 @@
     }
 
     /**
-     * Record pace only from real work time (start → last correct pair).
-     * The countdown allotment (levelDurationMs / leftover timer) is never treated as "completion time".
-     * - Successful queue clear: sample actual clear speed.
-     * - Timeout: do not sample (cutoff is the fixed limit, not a true clear).
+     * Record pace from real work only (levelStartedAt → last correct pair).
+     * Never uses the countdown allotment as "completion time".
+     *
+     * Incomplete / timeout: completed pairs may be << sessionTotal. Still sample
+     * throughput as actualWorkMs / completedPairs, then next budget =
+     * msPerPair × nextQueueSize × (1+tol). Extra margin when unfinished.
      */
     function recordLevelPace(reason) {
-      if (reason === "timeout") return;
       const pairs = Math.max(0, state.completedThisRun || 0);
       if (pairs < 1) return;
-      // Use levelStartedAt (full level), never roundStartedAt (per-pair reaction window).
       const endAt = state.lastPairAt > 0 ? state.lastPairAt : performance.now();
-      const actualClearMs = Math.max(1, Math.round(endAt - state.levelStartedAt));
-      const sample = actualClearMs / pairs;
+      const actualWorkMs = Math.max(1, Math.round(endAt - state.levelStartedAt));
+      // Throughput from pairs actually finished — not "prescribed word count".
+      const sample = actualWorkMs / pairs;
       const prev = resolveMsPerPair(state.settings);
-      // Light EMA so one slow/fast level does not swing the budget wildly.
-      const blended = prev > 0 ? prev * 0.35 + sample * 0.65 : sample;
+      let blended = prev > 0 ? prev * 0.35 + sample * 0.65 : sample;
+      // Timed out or cleared fewer than the level queue: need more budget next time.
+      const prescribed = Math.max(1, state.sessionTotal || pairs);
+      const unfinished = reason === "timeout" || pairs < prescribed;
+      if (unfinished) {
+        blended *= 1.08;
+      }
       state.settings.lastMsPerPair = Math.round(blended);
       state.settings.lastLevelMs = Math.round(blended * pairs);
       state.settings.lastLevelPairs = pairs;
+      state.settings.lastLevelComplete = !unfinished;
     }
 
     function shuffle(list) {
@@ -2240,38 +2249,101 @@
       return `${side}:${index}`;
     }
 
+    function selectedWordId(sel = state.selected) {
+      if (!sel) return "";
+      if (sel.wordId) return sel.wordId;
+      if (sel.slot && sel.slot.word) return sel.slot.word.id;
+      return "";
+    }
+
     function getSelectionSnapshot() {
-      if (!state.selected || !state.selected.slot || !state.selected.slot.word) return null;
+      if (!state.selected) return null;
+      const wordId = selectedWordId();
+      if (!wordId) return null;
       return {
         side: state.selected.side,
         index: state.selected.index,
-        wordId: state.selected.slot.word.id
+        wordId
       };
+    }
+
+    function findCardForSelection(side, index, wordId, renderedCards) {
+      if (renderedCards) {
+        const byIndex = renderedCards.get(selectionKey(side, index));
+        if (byIndex && byIndex.dataset.id === wordId && !byIndex.disabled) return byIndex;
+      }
+      return els.matchGrid.querySelector(
+        `.match-card[data-side="${side}"][data-index="${index}"][data-id="${CSS.escape(wordId)}"]`
+      ) || els.matchGrid.querySelector(
+        `.match-card[data-side="${side}"][data-id="${CSS.escape(wordId)}"]`
+      );
+    }
+
+    /**
+     * Re-bind selection to current DOM/slot by wordId after refills re-render the grid.
+     * Returns true if the selected word is still on the board.
+     */
+    function rebindSelection(renderedCards) {
+      if (!state.selected) return false;
+      const side = state.selected.side;
+      let index = state.selected.index;
+      const wordId = selectedWordId();
+      if (!wordId) {
+        state.selected = null;
+        return false;
+      }
+      let slot = getSlot(side, index);
+      if (!slot || !slot.word || slot.word.id !== wordId) {
+        const pool = side === "left" ? state.leftSlots : state.rightSlots;
+        const found = pool.findIndex(s => s.word && s.word.id === wordId);
+        if (found < 0) {
+          if (state.selected.card) state.selected.card.classList.remove("selected");
+          state.selected = null;
+          return false;
+        }
+        index = found;
+        slot = pool[found];
+      }
+      const card = findCardForSelection(side, index, wordId, renderedCards);
+      if (!card || card.disabled) {
+        if (state.selected.card) state.selected.card.classList.remove("selected");
+        state.selected = null;
+        return false;
+      }
+      if (state.selected.card && state.selected.card !== card) {
+        state.selected.card.classList.remove("selected");
+      }
+      state.selected = { card, side, index, slot, wordId };
+      card.classList.add("selected");
+      return true;
     }
 
     function restoreSelectionAfterRender(snapshot, renderedCards) {
       if (!snapshot) return;
-      const slot = getSlot(snapshot.side, snapshot.index);
-      const card = renderedCards.get(selectionKey(snapshot.side, snapshot.index));
-      if (slot && slot.word && slot.word.id === snapshot.wordId && card && !card.disabled) {
-        state.selected = { card, side: snapshot.side, index: snapshot.index, slot };
-        card.classList.add("selected");
-        return;
+      state.selected = {
+        card: null,
+        side: snapshot.side,
+        index: snapshot.index,
+        slot: getSlot(snapshot.side, snapshot.index),
+        wordId: snapshot.wordId
+      };
+      if (!rebindSelection(renderedCards)) {
+        state.selected = null;
       }
-      state.selected = null;
     }
 
     function selectCard(card, side, index) {
       if (state.locked || card.disabled || isLevelOver()) return;
       clearWrong();
-      if (state.selected && !isSelectionStillValid()) {
+      // DOM may have been recreated by refill — rebind instead of dropping selection.
+      if (state.selected && !rebindSelection()) {
         clearSelection();
       }
       const slot = getSlot(side, index);
       if (!slot || !slot.word) return;
 
       if (!state.selected) {
-        state.selected = { card, side, index, slot };
+        state.selected = { card, side, index, slot, wordId: slot.word.id };
         card.classList.add("selected");
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickOtherSide");
@@ -2287,8 +2359,8 @@
       }
 
       if (state.selected.side === side) {
-        state.selected.card.classList.remove("selected");
-        state.selected = { card, side, index, slot };
+        if (state.selected.card) state.selected.card.classList.remove("selected");
+        state.selected = { card, side, index, slot, wordId: slot.word.id };
         card.classList.add("selected");
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.switchedSameSide");
@@ -2296,8 +2368,9 @@
       }
 
       const first = state.selected;
-      const second = { card, side, index, slot };
-      if (first.slot.word.id === second.slot.word.id) {
+      const second = { card, side, index, slot, wordId: slot.word.id };
+      const firstId = selectedWordId(first);
+      if (firstId && firstId === second.wordId) {
         markCorrect(first, second);
       } else {
         markWrong(first, second);
@@ -2306,14 +2379,7 @@
 
     function isSelectionStillValid() {
       if (!state.selected) return true;
-      const slot = getSlot(state.selected.side, state.selected.index);
-      return document.body.contains(state.selected.card)
-        && slot
-        && slot.word
-        && state.selected.slot
-        && state.selected.slot.word
-        && slot.word.id === state.selected.slot.word.id
-        && state.selected.card.dataset.id === slot.word.id;
+      return rebindSelection();
     }
 
     function clearSelection(message = "") {
@@ -2327,9 +2393,16 @@
       }
     }
 
+    function hasActiveSelection() {
+      return Boolean(state.selected && selectedWordId());
+    }
+
     function markCorrect(first, second) {
       if (isLevelOver()) return;
-      const word = first.slot.word;
+      const word = (first.slot && first.slot.word)
+        || getSlot(first.side, first.index)?.word
+        || (second.slot && second.slot.word);
+      if (!word) return;
       const elapsed = Math.round(performance.now() - state.roundStartedAt);
       word.seen += 1;
       word.correct += 1;
@@ -2435,7 +2508,11 @@
           state.refillPipelineActive = false;
           return;
         }
-        if (state.settings.pauseRefillWhileSelected && (state.selected || state.locked)) {
+        // Always pause refill while a card is selected or animating — new cards
+        // must not invalidate an in-progress pair choice (selection is wordId-based,
+        // but full re-render still risks UX glitches if we fill mid-choice).
+        const pauseForSelection = state.settings.pauseRefillWhileSelected !== false;
+        if (pauseForSelection && (hasActiveSelection() || state.locked)) {
           state.refillPipelineActive = false;
           scheduleSlotRefill(leftIndex, rightIndex, SELECTED_REFILL_RETRY_MS);
           return;
@@ -2463,6 +2540,8 @@
         state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
         state.refillPipelineActive = false;
         renderSlots();
+        // Ensure highlight survives re-render after new words appear.
+        rebindSelection();
         renderStats();
         if (isStreamComplete()) {
           showCompletion(false);
@@ -2501,31 +2580,35 @@
 
     function markWrong(first, second) {
       if (isLevelOver()) return;
-      first.slot.word.mistakes += 1;
-      second.slot.word.mistakes += 1;
-      first.slot.word.streak = 0;
-      second.slot.word.streak = 0;
-      applyReviewFailure(first.slot.word);
-      applyReviewFailure(second.slot.word);
-      queueWrongReplay(first.slot.word);
-      queueWrongReplay(second.slot.word);
+      const firstWord = (first.slot && first.slot.word) || getSlot(first.side, first.index)?.word;
+      const secondWord = (second.slot && second.slot.word) || getSlot(second.side, second.index)?.word;
+      if (!firstWord || !secondWord) return;
+      firstWord.mistakes += 1;
+      secondWord.mistakes += 1;
+      firstWord.streak = 0;
+      secondWord.streak = 0;
+      applyReviewFailure(firstWord);
+      applyReviewFailure(secondWord);
+      queueWrongReplay(firstWord);
+      queueWrongReplay(secondWord);
 
       state.mistakes += 1;
       state.streak = 0;
       state.selected = null;
       state.locked = true;
 
-      first.card.classList.remove("selected");
-      first.card.classList.add("wrong");
-      second.card.classList.add("wrong");
+      if (first.card) {
+        first.card.classList.remove("selected");
+        first.card.classList.add("wrong");
+      }
+      if (second.card) second.card.classList.add("wrong");
       els.feedback.className = "feedback bad";
-      els.feedback.textContent = t("feedback.wrongWithReplay", { a: first.slot.word.en, b: first.slot.word.zh });
+      els.feedback.textContent = t("feedback.wrongWithReplay", { a: firstWord.en, b: firstWord.zh });
       saveWords();
       renderStats();
 
       setTimeout(() => {
-        first.card.classList.remove("wrong");
-        second.card.classList.remove("wrong");
+        document.querySelectorAll(".match-card.wrong").forEach(card => card.classList.remove("wrong"));
         state.locked = false;
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickPair");
@@ -2691,6 +2774,7 @@
       state.settings.lastLevelMs = 0;
       state.settings.lastLevelPairs = 0;
       state.settings.lastMsPerPair = 0;
+      state.settings.lastLevelComplete = false;
       saveWords();
       renderRound();
     }
@@ -2778,6 +2862,7 @@
         lastMsPerPair: state.settings.lastMsPerPair,
         lastLevelMs: state.settings.lastLevelMs,
         lastLevelPairs: state.settings.lastLevelPairs,
+        lastLevelComplete: state.settings.lastLevelComplete,
         refillTriggerCount: Number(els.refillTrigger.value),
         refillMinMs: Number(els.refillMinSeconds.value) * 1000,
         refillMaxMs: Number(els.refillMaxSeconds.value) * 1000,
