@@ -1,92 +1,130 @@
-// Project Register — language switching + light motion.
 (function () {
   "use strict";
 
   var STORAGE_KEY = "guojiz.lang";
-  var DEFAULT_LANG = "en"; // English first.
   var LANGS = ["en", "zh"];
+  var currentLang = "en";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function supported(lang) {
-    return LANGS.indexOf(lang) !== -1 ? lang : DEFAULT_LANG;
+    return LANGS.indexOf(lang) !== -1 ? lang : "en";
   }
-  function stored() {
+
+  function readStoredLanguage() {
     try { return supported(localStorage.getItem(STORAGE_KEY)); }
-    catch (e) { return DEFAULT_LANG; }
+    catch (error) { return "en"; }
   }
 
-  function applyLang(lang) {
-    lang = supported(lang);
-    document.documentElement.lang = lang;
+  function saveLanguage(lang) {
+    try { localStorage.setItem(STORAGE_KEY, lang); }
+    catch (error) { /* Language still works for the current page. */ }
+  }
 
-    var nodes = document.querySelectorAll("[data-en]");
-    for (var i = 0; i < nodes.length; i++) {
-      var el = nodes[i];
-      var val = el.getAttribute("data-" + lang);
-      if (val == null) continue;
-      if (el.tagName === "META") {
-        el.setAttribute("content", val);
-      } else if (el.tagName === "TITLE") {
-        document.title = val;
+  function applyLanguage(lang) {
+    currentLang = supported(lang);
+    document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+
+    document.querySelectorAll("[data-en]").forEach(function (element) {
+      var value = element.getAttribute("data-" + currentLang);
+      if (value === null) return;
+
+      if (element.tagName === "META") {
+        element.setAttribute("content", value);
+      } else if (element.tagName === "TITLE") {
+        document.title = value;
       } else {
-        el.innerHTML = val;
+        element.innerHTML = value;
       }
+    });
+
+    document.querySelectorAll(".lang-opt").forEach(function (option) {
+      option.classList.toggle("on", option.getAttribute("data-lang") === currentLang);
+    });
+
+    var toggle = document.querySelector(".lang-toggle");
+    if (toggle) {
+      toggle.setAttribute("aria-label", currentLang === "en" ? "Switch to Chinese" : "切换到英文");
     }
-
-    // Toggle button state.
-    var opts = document.querySelectorAll(".lang-toggle .lang-opt");
-    for (var j = 0; j < opts.length; j++) {
-      opts[j].classList.toggle("on", opts[j].getAttribute("data-lang") === lang);
-    }
   }
 
-  function persist(lang) {
-    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
-  }
-
-  // ---- Language toggle ----
-  var toggle = document.querySelector(".lang-toggle");
-  if (toggle) {
-    toggle.addEventListener("click", function () {
-      var next = stored() === "en" ? "zh" : "en";
-      applyLang(next);
-      persist(next);
-      toggle.focus();
+  var languageToggle = document.querySelector(".lang-toggle");
+  if (languageToggle) {
+    languageToggle.addEventListener("click", function () {
+      var next = currentLang === "en" ? "zh" : "en";
+      applyLanguage(next);
+      saveLanguage(next);
     });
   }
+  applyLanguage(readStoredLanguage());
 
-  // Apply on load (stored preference, else English).
-  applyLang(stored());
-
-  // ---- Motion (respects reduced motion) ----
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (reduce) {
-    document.querySelectorAll("[data-rise]").forEach(function (el) {
-      el.classList.add("rise", "static");
-    });
-    document.querySelectorAll(".entry").forEach(function (el) {
-      el.classList.add("in");
-    });
-    return;
+  var revealItems = document.querySelectorAll("[data-reveal]");
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    revealItems.forEach(function (item) { item.classList.add("is-visible"); });
+  } else {
+    var revealObserver = new IntersectionObserver(function (entries, observer) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    revealItems.forEach(function (item) { revealObserver.observe(item); });
   }
 
-  document.querySelectorAll("[data-rise]").forEach(function (el, i) {
-    el.style.setProperty("--i", i);
-    el.classList.add("rise");
+  var filters = document.querySelectorAll(".filter");
+  var projects = document.querySelectorAll(".project-row");
+  filters.forEach(function (filterButton) {
+    filterButton.setAttribute("aria-pressed", filterButton.classList.contains("is-active") ? "true" : "false");
+    filterButton.addEventListener("click", function () {
+      var selected = filterButton.getAttribute("data-filter");
+
+      filters.forEach(function (button) {
+        var active = button === filterButton;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+
+      projects.forEach(function (project) {
+        var visible = selected === "all" || project.getAttribute("data-category") === selected;
+        project.classList.toggle("is-hidden", !visible);
+        project.setAttribute("aria-hidden", visible ? "false" : "true");
+      });
+    });
   });
 
-  var entries = document.querySelectorAll(".entry");
+  var art = document.querySelector(".hero-art");
+  if (art && !reduceMotion) {
+    art.addEventListener("pointermove", function (event) {
+      var bounds = art.getBoundingClientRect();
+      var x = (event.clientX - bounds.left) / bounds.width - 0.5;
+      var y = (event.clientY - bounds.top) / bounds.height - 0.5;
+      art.style.setProperty("--art-x", (x * 9).toFixed(2) + "px");
+      art.style.setProperty("--art-y", (y * 7).toFixed(2) + "px");
+    });
+    art.addEventListener("pointerleave", function () {
+      art.style.setProperty("--art-x", "0px");
+      art.style.setProperty("--art-y", "0px");
+    });
+  }
+
+  var sections = document.querySelectorAll("main section[id]");
+  var navLinks = document.querySelectorAll(".primary-nav a[href^='#']");
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (records) {
-      records.forEach(function (r) {
-        if (r.isIntersecting) {
-          r.target.classList.add("in");
-          io.unobserve(r.target);
-        }
+    var navObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(function (link) {
+          link.classList.toggle("is-active", link.getAttribute("href") === "#" + entry.target.id);
+        });
       });
-    }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
-    entries.forEach(function (el) { io.observe(el); });
-  } else {
-    entries.forEach(function (el) { el.classList.add("in"); });
+    }, { rootMargin: "-35% 0px -55% 0px", threshold: 0 });
+    sections.forEach(function (section) { navObserver.observe(section); });
+  }
+
+  var backToTop = document.querySelector(".back-to-top");
+  if (backToTop) {
+    backToTop.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    });
   }
 })();

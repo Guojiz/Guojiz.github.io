@@ -1,0 +1,5 @@
+node_modules/
+.vite/
+qa/*.jpg
+qa/*.html
+design-qa.md

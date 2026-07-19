@@ -3,186 +3,207 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" data-en="Guojiz's project register: FastCUA, a Bilibili subtitle extractor, AI learning systems, a Claude Desktop model patch, and a word-practice tool. AGI safety research is pending." data-zh="Guojiz 的项目登记册：FastCUA、B站字幕提取工具、AI 学习系统、Claude Desktop 模型补丁和单词练习工具。AGI safety research 暂未开放。" content="Guojiz's project register: FastCUA, AI learning systems, a Claude Desktop model patch, and a word-practice tool. AGI safety research is pending.">
-  <meta name="theme-color" content="#e9e7de">
-  <meta property="og:title" content="Guojiz — Project Register">
-  <meta property="og:description" content="Independent learning systems and small AI-era tools by Guojiz.">
+  <meta name="description" data-en="Guojiz builds practical AI-era tools, learner-owned systems, and studies open questions in AI safety." data-zh="Guojiz 制作面向 AI 时代的实用工具与学习系统，并研究 AI safety 中仍未解决的问题。" content="Guojiz builds practical AI-era tools, learner-owned systems, and studies open questions in AI safety.">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta property="og:title" content="Guojiz — Build small. Think beyond the system.">
+  <meta property="og:description" content="Independent builder working on computer use, learning systems, and open questions in AI safety.">
   <meta property="og:type" content="website">
-  <title data-en="Guojiz — Project Register" data-zh="Guojiz — 项目登记册">Guojiz — Project Register</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta property="og:image" content="https://guojiz.github.io/assets/favicon.png">
+  <title data-en="Guojiz — Builder &amp; Researcher" data-zh="Guojiz — 开发者与研究者">Guojiz — Builder &amp; Researcher</title>
+  <link rel="icon" href="./assets/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <div class="frame" aria-hidden="true">
-    <span class="crop tl"></span><span class="crop tr"></span>
-    <span class="crop bl"></span><span class="crop br"></span>
-  </div>
+  <a class="skip-link" href="#main" data-en="Skip to content" data-zh="跳到主要内容">Skip to content</a>
 
-  <div class="ruler" aria-hidden="true">
-    <span class="ruler-mark">◆</span>
-    <span class="ruler-label" data-en="Guojiz — Project Register" data-zh="Guojiz — 项目登记册">Guojiz — Project Register</span>
-    <span class="ruler-coord">N 31° · 2026</span>
-    <span class="ruler-mark">◆</span>
-  </div>
-
-  <header class="masthead">
-    <a class="brand" href="./" aria-label="Guojiz home">
-      <span class="brand-mark">GZ</span>
-      <span class="brand-name" data-en="Guojiz" data-zh="郭己正">Guojiz</span>
-    </a>
-    <div class="masthead-right">
-      <nav aria-label="Primary">
-        <a href="#work" data-en="Work" data-zh="项目">Work</a>
-        <a href="#colophon" data-en="Colophon" data-zh="说明">Colophon</a>
-        <a href="https://github.com/Guojiz">GitHub</a>
-      </nav>
-      <button class="lang-toggle" type="button" aria-label="Switch language">
-        <span class="lang-opt" data-lang="en">EN</span>
-        <span class="lang-sep">/</span>
-        <span class="lang-opt" data-lang="zh">中</span>
-      </button>
-    </div>
+  <header class="site-header" data-header>
+    <a class="wordmark" href="#top" aria-label="Guojiz home">GUOJIZ</a>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a class="is-active" href="#top" data-en="Index" data-zh="首页">Index</a>
+      <a href="#work" data-en="Work" data-zh="项目">Work</a>
+      <a href="#research" data-en="Research" data-zh="研究">Research</a>
+      <a href="https://github.com/Guojiz" target="_blank" rel="noreferrer">GitHub</a>
+    </nav>
+    <button class="lang-toggle" type="button" aria-label="Switch language">
+      <span class="lang-opt" data-lang="en">EN</span>
+      <span aria-hidden="true">/</span>
+      <span class="lang-opt" data-lang="zh">中文</span>
+    </button>
   </header>
 
-  <main>
-    <section class="hero">
-      <p class="eyebrow" data-rise data-en="Independent builder · Learning systems · Small tools" data-zh="独立开发者 · 学习系统 · 小工具">Independent builder · Learning systems · Small tools</p>
-      <h1 class="display" data-rise data-en="Tools &amp; learning&lt;br&gt;systems for the&lt;br&gt;&lt;em&gt;AI era.&lt;/em&gt;" data-zh="为 AI 时代做的&lt;br&gt;工具与&lt;em&gt;学习系统。&lt;/em&gt;">Tools &amp; learning<br>systems for the<br><em>AI era.</em></h1>
-      <p class="lede" data-rise data-en="Guojiz’s project hub — FastCUA, a Bilibili subtitle extractor, learning systems, desktop tweaks, and word practice built for the AI era. AGI safety research is still being revised and isn’t open yet." data-zh="Guojiz 的项目入口。这里收着 FastCUA、B站字幕提取工具、学习系统、桌面小工具和单词练习；AGI safety 研究方向还在整理，暂未开放。">Guojiz’s project hub — FastCUA, a Bilibili subtitle extractor, learning systems, desktop tweaks, and word practice built for the AI era. AGI safety research is still being revised and isn’t open yet.</p>
-      <dl class="hero-meta" data-rise>
-        <div><dt data-en="Role" data-zh="角色">Role</dt><dd data-en="Independent builder" data-zh="独立开发者">Independent builder</dd></div>
-        <div><dt data-en="Focus" data-zh="方向">Focus</dt><dd data-en="AI-era learning &amp; tooling" data-zh="AI 时代学习与工具">AI-era learning &amp; tooling</dd></div>
-        <div><dt data-en="Status" data-zh="状态">Status</dt><dd><span class="dot"></span><span data-en="Open · 1 pending" data-zh="开放 · 1 项待定">Open · 1 pending</span></dd></div>
-      </dl>
-    </section>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <p class="vertical-label vertical-label-left" data-en="Independent builder" data-zh="独立开发者">Independent builder</p>
+      <p class="vertical-label vertical-label-right" data-en="Careful systems thinker" data-zh="谨慎的系统思考者">Careful systems thinker</p>
 
-    <section class="work" id="work" aria-labelledby="work-title">
-      <div class="section-head">
-        <span class="code" data-en="§ Work · 07 entries" data-zh="§ 项目 · 07 条">§ Work · 06 entries</span>
-        <h2 id="work-title" data-en="Selected" data-zh="精选">Selected</h2>
-        <p class="section-note" data-en="Seven things in progress, in register order. Status is live." data-zh="七件正在做的事，按登记顺序排列，状态实时。">Six things in progress, in register order. Status is live.</p>
+      <div class="hero-copy" data-reveal>
+        <p class="kicker"><span data-en="Mirror protocol" data-zh="镜像协议">Mirror protocol</span><b>MP–01</b></p>
+        <h1 id="hero-title" data-en="I build small tools.&lt;br&gt;&lt;span&gt;I study large consequences.&lt;/span&gt;" data-zh="我做小而有用的工具，&lt;br&gt;&lt;span&gt;也研究它们带来的大问题。&lt;/span&gt;">I build small tools.<br><span>I study large consequences.</span></h1>
+        <p class="hero-intro" data-en="Independent builder working on computer use, learner-owned systems, and open questions about AI safety." data-zh="独立开发者，专注计算机操作、学习者自有系统，也研究 AI safety 中仍未解决的问题。">Independent builder working on computer use, learner-owned systems, and open questions about AI safety.</p>
+        <div class="hero-actions">
+          <a class="text-link" href="#work" data-en="Explore the work" data-zh="查看项目">Explore the work</a>
+          <a class="text-link" href="https://x.com/guojizh?s=11" target="_blank" rel="noreferrer" data-en="Follow on X" data-zh="在 X 关注">Follow on X</a>
+        </div>
       </div>
 
-      <ol class="register">
+      <figure class="hero-art" data-reveal aria-labelledby="art-caption">
+        <div class="art-index" aria-hidden="true"><span>H</span><span>01</span></div>
+        <img src="./assets/cubist-mirror.webp" alt="An original cubist double portrait representing reflection between a builder and an intelligent system" width="1003" height="1568">
+        <figcaption id="art-caption" data-en="Builder / system / mirror — an original study in divided perspective." data-zh="开发者 / 系统 / 镜像——关于分裂视角的原创习作。">Builder / system / mirror — an original study in divided perspective.</figcaption>
+      </figure>
 
-        <li class="entry" data-status="open">
-          <span class="coord">W-01</span>
-          <div class="entry-body">
-            <span class="tag" data-en="In development · May have issues" data-zh="仍在开发 · 可能存在问题">In development · May have issues</span>
-            <h3>FastCUA</h3>
-            <p data-en="An open-source, local-first execution runtime for Computer Use agents: structured interface information, vision when needed, a warm control plane, and multi-action execution through MCP." data-zh="面向 Computer Use Agent 的开源、本地优先执行运行时：结构化界面信息优先、视觉按需、常驻控制平面，并通过 MCP 一次执行多步操作。项目尚未完全完成，当前版本可能存在问题。">An open-source, local-first execution runtime for Computer Use agents: structured interface information, vision when needed, a warm control plane, and multi-action execution through MCP. The project is not yet complete and the current version may have issues.</p>
-            <div class="actions">
-              <a class="btn primary" href="./FastCUA/" data-en="Open project" data-zh="打开项目页">Open project</a>
-              <a class="btn" href="https://github.com/Guojiz/FastCUA">GitHub</a>
-            </div>
-          </div>
-          <a class="status" href="./FastCUA/" data-status="open" data-en="In development ↗" data-zh="开发中 ↗">In development ↗</a>
-        </li>
-
-        <li class="entry" data-status="open">
-          <span class="coord">W-02</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Open Source · npm" data-zh="开源 · npm">Open Source · npm</span>
-            <h3>llm-provider-compat</h3>
-            <p data-en="Universal LLM provider compatibility layer — normalizes 51 providers' payload differences into a single dispatch pipeline. Extracted from OpenHanako &amp; OpenCode. Ships with xAI OAuth login and dynamic model version detection." data-zh="通用 LLM 提供商兼容层——将 51 个提供商的 payload 差异归一化为单一分发管线。提取自 OpenHanako 和 OpenCode，附带 xAI OAuth 登录和动态模型版本检测。">Universal LLM provider compatibility layer — normalizes 51 providers' payload differences into a single dispatch pipeline. Extracted from OpenHanako &amp; OpenCode. Ships with xAI OAuth login and dynamic model version detection.</p>
-            <div class="actions">
-              <a class="btn primary" href="https://www.npmjs.com/package/llm-provider-compat" data-en="npm install" data-zh="npm 安装">npm install</a>
-              <a class="btn" href="https://github.com/Guojiz/llm-provider-compat">GitHub</a>
-            </div>
-          </div>
-          <a class="status" href="https://github.com/Guojiz/llm-provider-compat" data-status="open" data-en="Repo ↗" data-zh="仓库 ↗">Repo ↗</a>
-        </li>
-
-        <li class="entry" data-status="open">
-          <span class="coord">W-03</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Learner-owned system" data-zh="学习者自有系统">Learner-owned system</span>
-            <h3>GitLearnOS</h3>
-            <p data-en="A lightweight, learner-owned control layer that organizes real learning, generates targeted questions, and writes verified progress back into subject folders." data-zh="轻量、由学习者掌控的学习控制层：自动整理真实学习材料，针对薄弱点出题，并把验证后的进展写回各学科文件夹。">A lightweight, learner-owned control layer that organizes real learning, generates targeted questions, and writes verified progress back into subject folders.</p>
-            <div class="actions">
-              <a class="btn primary" href="./review-os/" data-en="Open project" data-zh="打开项目页">Open project</a>
-              <a class="btn" href="https://github.com/Guojiz/Repo-as-Review-OS">GitHub</a>
-            </div>
-          </div>
-          <a class="status" href="./review-os/" data-status="open" data-en="Live ↗" data-zh="在线 ↗">Live ↗</a>
-        </li>
-
-        <li class="entry" data-status="open">
-          <span class="coord">W-04</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Claude Desktop" data-zh="Claude Desktop">Claude Desktop</span>
-            <h3>Claude Desktop Tweak Models</h3>
-            <p data-en="A patch tool for Windows Claude Desktop that unlocks custom model ID validation for third-party Anthropic-compatible gateways." data-zh="Windows 版 Claude Desktop 补丁工具，放开第三方 Anthropic 兼容网关的自定义模型 ID 校验。">A patch tool for Windows Claude Desktop that unlocks custom model ID validation for third-party Anthropic-compatible gateways.</p>
-            <div class="actions">
-              <a class="btn primary" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-en="View repo" data-zh="查看仓库">View repo</a>
-              <a class="btn" href="https://docs.bigmodel.cn/cn/guide/develop/claude/introduction" data-en="Zhipu example" data-zh="智谱示例">Zhipu example</a>
-            </div>
-          </div>
-          <a class="status" href="https://github.com/Guojiz/claude-desktop-tweak-models" data-status="open" data-en="Repo ↗" data-zh="仓库 ↗">Repo ↗</a>
-        </li>
-
-        <li class="entry" data-status="open">
-          <span class="coord">W-05</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Practice" data-zh="练习">Practice</span>
-            <h3>Word Match Quest</h3>
-            <p data-en="A Duolingo-paced word-matching practice tool with custom word lists, instant feedback, mistake prioritization, and PWA install." data-zh="仿多邻国节奏的单词配对练习，支持自定义词表、即时反馈、错词优先和 PWA 安装。">A Duolingo-paced word-matching practice tool with custom word lists, instant feedback, mistake prioritization, and PWA install.</p>
-            <div class="actions">
-              <a class="btn primary" href="./word-match/" data-en="Start practice" data-zh="开始练习">Start practice</a>
-              <a class="btn" href="https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match">GitHub</a>
-            </div>
-          </div>
-          <a class="status" href="./word-match/" data-status="open" data-en="Play ↗" data-zh="试玩 ↗">Play ↗</a>
-        </li>
-
-        <li class="entry" data-status="open">
-          <span class="coord">W-06</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Agent Recipe · Bilibili" data-zh="Agent 工作流 · 哔哩哔哩">Agent Recipe · Bilibili</span>
-            <h3>Bilibili Subtitle Extractor</h3>
-            <p data-en="An agent-agnostic workflow for extracting existing Bilibili subtitles through browser or API access. It prioritizes creator and human subtitles, uses AI captions only as a fallback, and turns video captions into clean text." data-zh="面向各类 AI Agent 的 B站字幕提取流程，通过浏览器或 API 读取已有字幕：人工 / UP 主字幕优先，AI 字幕仅作后补，并整理为可读文本。">An agent-agnostic workflow for extracting existing Bilibili subtitles through browser or API access. It prioritizes creator and human subtitles, uses AI captions only as a fallback, and turns video captions into clean text.</p>
-            <div class="actions">
-              <a class="btn primary" href="https://github.com/Guojiz/bilibili-ai-subtitle-extractor" data-en="View repo" data-zh="查看仓库">View repo</a>
-              <a class="btn" href="https://github.com/Guojiz/bilibili-ai-subtitle-extractor/blob/main/SKILL.md" data-en="Read workflow" data-zh="阅读流程">Read workflow</a>
-            </div>
-          </div>
-          <a class="status" href="https://github.com/Guojiz/bilibili-ai-subtitle-extractor" data-status="open" data-en="Repo ↗" data-zh="仓库 ↗">Repo ↗</a>
-        </li>
-
-        <li class="entry" id="agi-safety-status" data-status="closed">
-          <span class="coord">W-07</span>
-          <div class="entry-body">
-            <span class="tag" data-en="Research" data-zh="研究">Research</span>
-            <h3 data-en="AGI Safety Research" data-zh="AGI Safety 研究">AGI Safety Research</h3>
-            <p data-en="The AGI safety research track is being revised and polished. The public page is closed for now and will return once the framework matures." data-zh="AGI safety 研究方向正在整理和打磨中，公开页面暂未开放。等框架成熟后会重新发布。">The AGI safety research track is being revised and polished. The public page is closed for now and will return once the framework matures.</p>
-            <div class="actions">
-              <span class="btn disabled" aria-disabled="true" data-en="Unavailable" data-zh="暂未开放">Unavailable</span>
-            </div>
-          </div>
-          <span class="status" data-status="closed" data-en="Closed" data-zh="已关闭">Closed</span>
-        </li>
-      </ol>
+      <aside class="hero-aside" data-reveal>
+        <p class="aside-copy" data-en="This is a working index, not a finished portrait. Projects stay open; research stays revisable." data-zh="这是持续更新的索引，不是已经完成的自我介绍。项目保持开放，研究允许修改。">This is a working index, not a finished portrait. Projects stay open; research stays revisable.</p>
+        <div class="focus-block">
+          <p class="micro-title" data-en="Current focus" data-zh="当前方向">Current focus</p>
+          <ul>
+            <li data-en="Computer use tooling" data-zh="计算机操作工具">Computer use tooling</li>
+            <li data-en="Learner-owned systems" data-zh="学习者自有系统">Learner-owned systems</li>
+            <li data-en="AI safety · revising" data-zh="AI safety · 整理中">AI safety · revising</li>
+          </ul>
+        </div>
+        <div class="social-rail" aria-label="Social links">
+          <a href="https://github.com/Guojiz" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://x.com/guojizh?s=11" target="_blank" rel="noreferrer">X</a>
+          <a href="https://youtube.com/@guojizh?si=tClUZckXWXJVdpOI" target="_blank" rel="noreferrer">YouTube</a>
+        </div>
+      </aside>
     </section>
 
-    <section class="colophon" id="colophon" aria-labelledby="colophon-title">
-      <div class="section-head">
-        <span class="code" data-en="§ Colophon" data-zh="§ 说明">§ Colophon</span>
-        <h2 id="colophon-title" data-en="Notes" data-zh="备注">Notes</h2>
+    <section class="dual-field" aria-label="Build and research overview">
+      <article class="build-panel" id="work" data-reveal>
+        <div class="panel-label"><span>01</span><span data-en="Things I build" data-zh="我做的东西">Things I build</span></div>
+        <h2 data-en="Useful systems for real work and real learning." data-zh="面向真实工作与真实学习的实用系统。">Useful systems for real work and real learning.</h2>
+
+        <div class="featured-projects">
+          <a class="feature-row" href="./FastCUA/">
+            <span class="feature-number">A</span>
+            <span class="feature-copy">
+              <strong>FastCUA</strong>
+              <small data-en="Local-first computer-use runtime · in development" data-zh="本地优先的计算机操作运行时 · 开发中">Local-first computer-use runtime · in development</small>
+            </span>
+            <span class="feature-action" data-en="Project" data-zh="项目">Project</span>
+          </a>
+          <a class="feature-row" href="https://github.com/Guojiz/llm-provider-compat" target="_blank" rel="noreferrer">
+            <span class="feature-number">B</span>
+            <span class="feature-copy">
+              <strong>llm-provider-compat</strong>
+              <small data-en="One compatibility layer across LLM providers" data-zh="统一不同 LLM 提供商的兼容层">One compatibility layer across LLM providers</small>
+            </span>
+            <span class="feature-action">GitHub</span>
+          </a>
+          <a class="feature-row" href="./review-os/">
+            <span class="feature-number">C</span>
+            <span class="feature-copy">
+              <strong>GitLearnOS</strong>
+              <small data-en="A learner-owned GitHub + AI learning system" data-zh="学习者自有的 GitHub + AI 学习系统">A learner-owned GitHub + AI learning system</small>
+            </span>
+            <span class="feature-action" data-en="Project" data-zh="项目">Project</span>
+          </a>
+        </div>
+
+        <a class="text-link panel-link" href="#archive" data-en="View the full project archive" data-zh="查看完整项目档案">View the full project archive</a>
+      </article>
+
+      <article class="research-panel" id="research" data-reveal>
+        <div class="panel-label"><span>02</span><span data-en="Questions I study" data-zh="我研究的问题">Questions I study</span></div>
+        <div class="research-heading">
+          <h2 data-en="AI safety, in careful development." data-zh="谨慎推进中的 AI safety 研究。">AI safety, in careful development.</h2>
+          <span class="status-chip" data-en="Revising" data-zh="整理中">Revising</span>
+        </div>
+        <p class="research-intro" data-en="This work is not open yet. I am reading, testing the language, and revising the framework before publishing it." data-zh="这部分研究暂未开放。我正在补充阅读、检验表述，并在发布前继续修改框架。">This work is not open yet. I am reading, testing the language, and revising the framework before publishing it.</p>
+
+        <ol class="question-list">
+          <li>
+            <span>01</span>
+            <div>
+              <h3 data-en="Quantification" data-zh="量化一切">Quantification</h3>
+              <p data-en="What changes when a system can quantify everything it can reach?" data-zh="当系统能够量化它所能接入的一切时，会发生什么？">What changes when a system can quantify everything it can reach?</p>
+            </div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>
+              <h3 data-en="Non-sovereignty" data-zh="非主权">Non-sovereignty</h3>
+              <p data-en="How does growing capability become de facto sovereignty?" data-zh="不断增长的能力如何转化为事实主权？">How does growing capability become de facto sovereignty?</p>
+            </div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>
+              <h3 data-en="Mirror deterrence" data-zh="镜像威慑">Mirror deterrence</h3>
+              <p data-en="Can a mirror function deter harm without surrendering human sovereignty?" data-zh="镜像函数能否在不让渡人类主权的前提下形成威慑？">Can a mirror function deter harm without surrendering human sovereignty?</p>
+            </div>
+          </li>
+        </ol>
+        <p class="research-note" data-en="Open questions, not conclusions." data-zh="这些是开放问题，不是结论。">Open questions, not conclusions.</p>
+      </article>
+    </section>
+
+    <section class="archive" id="archive" aria-labelledby="archive-title">
+      <header class="archive-head" data-reveal>
+        <div>
+          <p class="panel-label"><span>03</span><span data-en="Project archive" data-zh="项目档案">Project archive</span></p>
+          <h2 id="archive-title" data-en="Built in public." data-zh="公开地做，持续地改。">Built in public.</h2>
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter projects">
+          <button class="filter is-active" type="button" data-filter="all" data-en="All" data-zh="全部">All</button>
+          <button class="filter" type="button" data-filter="tool" data-en="Tools" data-zh="工具">Tools</button>
+          <button class="filter" type="button" data-filter="learning" data-en="Learning" data-zh="学习">Learning</button>
+          <button class="filter" type="button" data-filter="utility" data-en="Utilities" data-zh="实用">Utilities</button>
+        </div>
+      </header>
+
+      <div class="project-table" data-reveal>
+        <div class="project-table-head" aria-hidden="true">
+          <span data-en="Project" data-zh="项目">Project</span>
+          <span data-en="Field" data-zh="类别">Field</span>
+          <span data-en="What it does" data-zh="作用">What it does</span>
+          <span data-en="Status" data-zh="状态">Status</span>
+        </div>
+
+        <a class="project-row" data-category="tool" href="./FastCUA/">
+          <strong>FastCUA</strong><span data-en="Computer use" data-zh="计算机操作">Computer use</span><span data-en="Structured UI context and multi-action execution." data-zh="结构化界面信息与多步操作执行。">Structured UI context and multi-action execution.</span><em data-en="In development" data-zh="开发中">In development</em>
+        </a>
+        <a class="project-row" data-category="tool" href="https://github.com/Guojiz/llm-provider-compat" target="_blank" rel="noreferrer">
+          <strong>llm-provider-compat</strong><span data-en="LLM tooling" data-zh="LLM 工具">LLM tooling</span><span data-en="Normalize provider differences behind one layer." data-zh="用一层接口统一不同模型提供商。">Normalize provider differences behind one layer.</span><em data-en="Open" data-zh="开放">Open</em>
+        </a>
+        <a class="project-row" data-category="learning" href="./review-os/">
+          <strong>GitLearnOS</strong><span data-en="Learning system" data-zh="学习系统">Learning system</span><span data-en="Organize learning and write verified progress back." data-zh="整理真实学习，并写回验证后的进展。">Organize learning and write verified progress back.</span><em data-en="Open" data-zh="开放">Open</em>
+        </a>
+        <a class="project-row" data-category="tool" href="https://github.com/Guojiz/claude-desktop-tweak-models" target="_blank" rel="noreferrer">
+          <strong>Claude Desktop Tweak Models</strong><span data-en="Desktop tool" data-zh="桌面工具">Desktop tool</span><span data-en="Route custom models through compatible gateways." data-zh="通过兼容网关接入自定义模型。">Route custom models through compatible gateways.</span><em data-en="Open" data-zh="开放">Open</em>
+        </a>
+        <a class="project-row" data-category="learning" href="./word-match/">
+          <strong>Word Match Quest</strong><span data-en="Practice" data-zh="练习">Practice</span><span data-en="Vocabulary matching with immediate feedback." data-zh="带即时反馈的单词配对练习。">Vocabulary matching with immediate feedback.</span><em data-en="Live" data-zh="在线">Live</em>
+        </a>
+        <a class="project-row" data-category="utility" href="https://github.com/Guojiz/bilibili-ai-subtitle-extractor" target="_blank" rel="noreferrer">
+          <strong>Bilibili Subtitle Extractor</strong><span data-en="Utility" data-zh="实用工具">Utility</span><span data-en="Turn existing Bilibili subtitles into clean text." data-zh="把已有 B站字幕整理为干净文本。">Turn existing Bilibili subtitles into clean text.</span><em data-en="Open" data-zh="开放">Open</em>
+        </a>
       </div>
-      <div class="colophon-grid">
-        <p data-en="A static homepage hosted on GitHub Pages. Sub-projects ship independently in their own directories or repos." data-zh="静态主页，托管在 GitHub Pages。子项目各自独立发布在对应目录或仓库。">A static homepage hosted on GitHub Pages. Sub-projects ship independently in their own directories or repos.</p>
-        <p data-en="Design direction: a restrained register — a layout that records what’s being worked on as it is. Coordinates, status, and numbers encode real information, not decoration." data-zh="设计取向：克制的登记册——把“正在做什么”如实登记下来。坐标、状态、编号都编码真实信息，不靠装饰。">Design direction: a restrained register — a layout that records what’s being worked on as it is. Coordinates, status, and numbers encode real information, not decoration.</p>
-        <p data-en="Type: Fraunces / Hanken Grotesk / JetBrains Mono. Accent carries over the site’s original vermilion." data-zh="字体：Fraunces / Hanken Grotesk / JetBrains Mono。强调色沿用站点原有朱砂。">Type: Fraunces / Hanken Grotesk / JetBrains Mono. Accent carries over the site’s original vermilion.</p>
+    </section>
+
+    <section class="closing" aria-labelledby="closing-title">
+      <div class="closing-statement" data-reveal>
+        <p class="panel-label"><span>04</span><span data-en="Working principle" data-zh="工作原则">Working principle</span></p>
+        <h2 id="closing-title" data-en="Use simple tools. Ask difficult questions. Keep the work open to revision." data-zh="用简单的工具，问困难的问题，并让工作始终可以被修改。">Use simple tools. Ask difficult questions. Keep the work open to revision.</h2>
+      </div>
+      <div class="closing-links" data-reveal>
+        <p class="micro-title" data-en="Find me" data-zh="找到我">Find me</p>
+        <a href="https://github.com/Guojiz" target="_blank" rel="noreferrer"><span>GitHub</span><small>@Guojiz</small></a>
+        <a href="https://x.com/guojizh?s=11" target="_blank" rel="noreferrer"><span>X</span><small>@guojizh</small></a>
+        <a href="https://youtube.com/@guojizh?si=tClUZckXWXJVdpOI" target="_blank" rel="noreferrer"><span>YouTube</span><small>@guojizh</small></a>
       </div>
     </section>
   </main>
 
-  <footer>
+  <footer class="site-footer">
     <span data-en="© 2026 Guojiz" data-zh="© 2026 郭己正">© 2026 Guojiz</span>
-    <a href="https://github.com/Guojiz/Guojiz.github.io" data-en="Site repository ↗" data-zh="站点仓库 ↗">Site repository ↗</a>
+    <span data-en="Build small. Think clearly." data-zh="做得小，想得清楚。">Build small. Think clearly.</span>
+    <button class="back-to-top" type="button" data-en="Back to top" data-zh="回到顶部">Back to top</button>
   </footer>
 
   <script src="./main.js" defer></script>

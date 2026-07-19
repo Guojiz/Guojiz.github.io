@@ -1,0 +1,8 @@
+{
+  "name": "guojiz-homepage",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node ./dev-server.mjs"
+  }
+}
