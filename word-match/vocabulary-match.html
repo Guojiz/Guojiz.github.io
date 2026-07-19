@@ -1498,6 +1498,7 @@
       pendingRefillSlots: [],
       clearedSinceLastRefill: 0,
       refillPipelineActive: false,
+      refillHoldTimer: null,
       wordQueue: [],
       leftSlots: [],
       rightSlots: [],
@@ -1971,6 +1972,10 @@
       state.refillTimers = [];
       state.refillKeys.clear();
       state.refillPipelineActive = false;
+      if (state.refillHoldTimer) {
+        clearTimeout(state.refillHoldTimer);
+        state.refillHoldTimer = null;
+      }
     }
 
     function isLevelOver() {
@@ -2224,6 +2229,50 @@
       restoreSelectionAfterRender(selectedBeforeRender, renderedCards);
     }
 
+    /**
+     * Update one slot's DOM only. Avoid wiping the whole grid so an in-progress
+     * selection on another card keeps its node and "selected" class.
+     */
+    function paintSlot(slot) {
+      if (!slot) return null;
+      const next = makeCard(slot);
+      const prev = els.matchGrid.querySelector(
+        `.match-card[data-side="${slot.side}"][data-index="${slot.index}"]`
+      );
+      if (prev) {
+        prev.replaceWith(next);
+      } else {
+        els.matchGrid.appendChild(next);
+      }
+      slot.entering = false;
+
+      const wordId = selectedWordId();
+      if (
+        state.selected
+        && wordId
+        && slot.word
+        && slot.word.id === wordId
+        && state.selected.side === slot.side
+      ) {
+        state.selected = {
+          card: next,
+          side: slot.side,
+          index: slot.index,
+          slot,
+          wordId
+        };
+        next.classList.add("selected");
+      }
+      return next;
+    }
+
+    function paintSlotPair(leftIndex, rightIndex) {
+      paintSlot(state.leftSlots[leftIndex]);
+      paintSlot(state.rightSlots[rightIndex]);
+      // Re-affirm selection on any untouched card (DOM unchanged) or rebound above.
+      rebindSelection();
+    }
+
     function makeCard(slot) {
       const button = document.createElement("button");
       button.type = "button";
@@ -2272,11 +2321,21 @@
         const byIndex = renderedCards.get(selectionKey(side, index));
         if (byIndex && byIndex.dataset.id === wordId && !byIndex.disabled) return byIndex;
       }
-      return els.matchGrid.querySelector(
-        `.match-card[data-side="${side}"][data-index="${index}"][data-id="${CSS.escape(wordId)}"]`
-      ) || els.matchGrid.querySelector(
-        `.match-card[data-side="${side}"][data-id="${CSS.escape(wordId)}"]`
-      );
+      // Avoid CSS.escape / attribute selector issues: walk nodes and match datasets.
+      const cards = els.matchGrid.querySelectorAll(".match-card");
+      let fallback = null;
+      for (const card of cards) {
+        if (card.disabled || card.dataset.side !== side || card.dataset.id !== wordId) continue;
+        if (card.dataset.index === String(index)) return card;
+        if (!fallback) fallback = card;
+      }
+      return fallback;
+    }
+
+    function shouldHoldRefill() {
+      // Hold while animating a match OR while the user has a first card chosen.
+      // Order-sensitive: check every retry tick, never fill "under" an active choice.
+      return Boolean(state.locked || hasActiveSelection());
     }
 
     /**
@@ -2347,6 +2406,8 @@
         card.classList.add("selected");
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickOtherSide");
+        // Freeze any pending refill arming while the first card is held.
+        armRefillHoldWatcher();
         return;
       }
 
@@ -2355,6 +2416,8 @@
         state.selected = null;
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickPair");
+        // Selection cleared — resume refill queue if anything is waiting.
+        maybeScheduleBatchRefill(true);
         return;
       }
 
@@ -2429,11 +2492,13 @@
 
       setTimeout(() => {
         if (els.completionView.classList.contains("show")) return;
-        first.card.classList.add("replacing");
-        second.card.classList.add("replacing");
+        if (first.card) first.card.classList.add("replacing");
+        if (second.card) second.card.classList.add("replacing");
         const cleared = clearMatchedSlots(first, second);
+        // Paint only the two emptied cells — keep all other cards (and any
+        // selection the user already made after unlock) intact.
+        paintSlotPair(cleared.leftIndex, cleared.rightIndex);
         state.locked = false;
-        renderSlots();
         renderStats();
         if (isStreamComplete()) {
           showCompletion(false);
@@ -2485,6 +2550,12 @@
       if (!pending.length) return;
       if (state.refillPipelineActive) return;
 
+      // Do not even arm a timer while the user is mid-choice; arm after they finish.
+      if (shouldHoldRefill()) {
+        armRefillHoldWatcher();
+        return;
+      }
+
       const refillTriggerCount = state.settings.refillTriggerCount;
       const shouldWaitForBatch = !force && state.clearedSinceLastRefill < refillTriggerCount && activeSlotPairs() > 2;
       if (shouldWaitForBatch) {
@@ -2496,28 +2567,46 @@
       state.clearedSinceLastRefill = 0;
     }
 
+    /** Poll until selection/lock clears, then resume the refill queue once. */
+    function armRefillHoldWatcher() {
+      if (state.refillHoldTimer) return;
+      state.refillHoldTimer = setTimeout(function tickHold() {
+        state.refillHoldTimer = null;
+        if (els.completionView.classList.contains("show") || isLevelOver()) return;
+        if (shouldHoldRefill()) {
+          armRefillHoldWatcher();
+          return;
+        }
+        maybeScheduleBatchRefill(true);
+      }, SELECTED_REFILL_RETRY_MS);
+    }
+
     function scheduleSlotRefill(leftIndex, rightIndex, delayMs) {
       const key = slotPairKey(leftIndex, rightIndex);
       if (state.refillKeys.has(key)) return;
       state.refillKeys.add(key);
       state.refillPipelineActive = true;
-      const timerId = setTimeout(() => {
+
+      const run = () => {
+        // Drop this timer handle; key stays reserved until we fill or cancel.
         state.refillTimers = state.refillTimers.filter(id => id !== timerId);
-        state.refillKeys.delete(key);
+
         if (els.completionView.classList.contains("show") || isLevelOver()) {
+          state.refillKeys.delete(key);
           state.refillPipelineActive = false;
           return;
         }
-        // Always pause refill while a card is selected or animating — new cards
-        // must not invalidate an in-progress pair choice (selection is wordId-based,
-        // but full re-render still risks UX glitches if we fill mid-choice).
-        const pauseForSelection = state.settings.pauseRefillWhileSelected !== false;
-        if (pauseForSelection && (hasActiveSelection() || state.locked)) {
-          state.refillPipelineActive = false;
-          scheduleSlotRefill(leftIndex, rightIndex, SELECTED_REFILL_RETRY_MS);
+
+        // Hold WITHOUT releasing the key / pipeline — avoids a second timer
+        // racing in via continueRefillPipeline while the first is "paused".
+        if (shouldHoldRefill()) {
+          const retryId = setTimeout(run, SELECTED_REFILL_RETRY_MS);
+          state.refillTimers.push(retryId);
           return;
         }
+
         if (state.leftSlots[leftIndex].word || state.rightSlots[rightIndex].word) {
+          state.refillKeys.delete(key);
           state.refillPipelineActive = false;
           continueRefillPipeline();
           return;
@@ -2525,34 +2614,40 @@
 
         if (!refillSlotPair(leftIndex, rightIndex)) {
           if (state.wordQueue.length || state.wrongQueue.length) {
-            state.refillPipelineActive = false;
-            scheduleSlotRefill(leftIndex, rightIndex, refillDelayFor());
+            // Keep reservation; retry after normal delay.
+            const retryId = setTimeout(run, refillDelayFor());
+            state.refillTimers.push(retryId);
           } else {
             state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
+            state.refillKeys.delete(key);
             state.refillPipelineActive = false;
-          }
-          if (isStreamComplete()) {
-            showCompletion(false);
+            if (isStreamComplete()) showCompletion(false);
           }
           return;
         }
 
         state.pendingRefillSlots = state.pendingRefillSlots.filter(slot => slot.key !== key);
+        state.refillKeys.delete(key);
         state.refillPipelineActive = false;
-        renderSlots();
-        // Ensure highlight survives re-render after new words appear.
-        rebindSelection();
+        // Only paint the two new cards — never rebuild the whole board.
+        paintSlotPair(leftIndex, rightIndex);
         renderStats();
         if (isStreamComplete()) {
           showCompletion(false);
           return;
         }
         continueRefillPipeline();
-      }, delayMs);
+      };
+
+      const timerId = setTimeout(run, delayMs);
       state.refillTimers.push(timerId);
     }
 
     function continueRefillPipeline() {
+      if (shouldHoldRefill()) {
+        armRefillHoldWatcher();
+        return;
+      }
       if (pendingOpenSlots().length) {
         maybeScheduleBatchRefill(true);
       }

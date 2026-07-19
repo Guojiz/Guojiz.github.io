@@ -12,7 +12,7 @@
 
 - Adaptive timer no longer confuses the **countdown allotment** with **actual completion time**. Pace uses `levelStartedAt` → `lastPairAt` and **completed pair count** (not the prescribed queue size when unfinished/timeout).
 - Incomplete levels still update throughput (`actualWorkMs / completedPairs`); next budget = pace × next queue × (1+tol), with a small extra margin when unfinished.
-- Selection no longer drops when new words refill mid-choice: selection is bound by `wordId`, re-bound after re-render, and refill always pauses while a card is selected.
+- Selection no longer drops when new words refill mid-choice: refill paints **only the two new cells** (no full-grid rebuild), holds the refill timer without releasing its reservation while a card is selected/locked, and resumes after deselect/match.
 - Fixed a bug where per-pair reaction resets of `roundStartedAt` corrupted level duration samples.
 - English rail / panel button labels overflowing their boxes (wrap + smaller type).
 - Bulk-input placeholder newlines when set via `t()`.
