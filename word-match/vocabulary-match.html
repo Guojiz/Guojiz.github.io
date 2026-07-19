@@ -1118,7 +1118,7 @@
         </div>
         <label class="check-row">
           <input id="adaptiveLevelTime" type="checkbox" />
-          <span data-en="Adaptive level time from previous round pace (+ tolerance)" data-zh="按上一局速度自适应本关时间（加容错）">按上一局速度自适应本关时间（加容错）</span>
+          <span data-en="Adaptive level time from last real clear pace (+ tolerance)" data-zh="按上次实际通关配速自适应本关时间（加容错）">按上次实际通关配速自适应本关时间（加容错）</span>
         </label>
         <label class="check-row">
           <input id="pauseRefillWhileSelected" type="checkbox" />
@@ -1182,7 +1182,7 @@
           optRefillTrigger: "Refill after N clears",
           optRefillMin: "Refill min delay (sec)", optRefillMax: "Refill max delay (sec)",
           optMlRecent: "Adaptive recent history", optMlAvoidance: "Adaptive anti-repeat strength",
-          optAdaptiveLevelTime: "Adaptive level time from previous round pace (+ tolerance)",
+          optAdaptiveLevelTime: "Adaptive level time from last real clear pace (+ tolerance)",
           optPauseRefill: "Pause refill while a card is selected",
           optRecycleMastered: "Keep cycling after all mastered",
           saveOptions: "Save options",
@@ -1197,7 +1197,7 @@
           pickPair: "Pick one card from each side.", pickMatch: "Now pick its match.",
           correct: "Matched!", allDoneCheck: "All matched. Now check.",
           wrong: "Wrong: {a} = {b}", timeChallenge: "Timed challenge: {t}. Correct answers refill fast; wrong words roll back.",
-          timeAdaptive: "Timed challenge: {t} (from last round +{tol}% margin).",
+          timeAdaptive: "Timed challenge: {t} (from your last clear pace +{tol}%).",
           pickOtherSide: "Pick the match on the other side.", switchedSameSide: "Switched to another card on the same side.",
           finishRest: "Finish the remaining pairs.", libraryComplete: "Library complete!",
           nextLevel: "Continue to the next level.",
@@ -1263,7 +1263,7 @@
           optRefillTrigger: "消掉几组后补词",
           optRefillMin: "补词最短延迟（秒）", optRefillMax: "补词最长延迟（秒）",
           optMlRecent: "自适应最近历史", optMlAvoidance: "自适应防重复强度",
-          optAdaptiveLevelTime: "按上一局速度自适应本关时间（加容错）",
+          optAdaptiveLevelTime: "按上次实际通关配速自适应本关时间（加容错）",
           optPauseRefill: "选中卡片时暂停补词，不打断当前选择",
           optRecycleMastered: "全部掌握后继续循环练习，不让队列空掉",
           saveOptions: "保存选项",
@@ -1278,7 +1278,7 @@
           pickPair: "选择一个中文和一个英文。", pickMatch: "再选它的配对。",
           correct: "配对成功。", allDoneCheck: "全部配完了。现在检查。",
           wrong: "不对：{a} = {b}", timeChallenge: "限时挑战：{t}。答对快速补位，错词会回滚。",
-          timeAdaptive: "限时挑战：{t}（按上局速度 +{tol}% 容错）。",
+          timeAdaptive: "限时挑战：{t}（按上次实际通关配速 +{tol}%）。",
           pickOtherSide: "再选另一侧的配对。", switchedSameSide: "已换选同侧卡片。",
           finishRest: "继续完成剩下的配对。", libraryComplete: "很好，词库已完成。",
           nextLevel: "继续进入下一关。",
@@ -1379,6 +1379,8 @@
       levelDurationMs: 120000,
       adaptiveLevelTime: true,
       levelTimeTolerance: 0.2,
+      // Pace sample from real clears only (ms per pair). Never the countdown allotment.
+      lastMsPerPair: 0,
       lastLevelMs: 0,
       lastLevelPairs: 0,
       refillTriggerCount: 2,
@@ -1483,7 +1485,10 @@
       score: 0,
       mistakes: 0,
       streak: 0,
+      // Per-pair reaction timer (reset after each correct match).
       roundStartedAt: performance.now(),
+      // Wall-clock start of the current level (never reset mid-level).
+      levelStartedAt: performance.now(),
       levelEndsAt: 0,
       levelDurationMs: 120000,
       timerId: null,
@@ -1498,6 +1503,7 @@
       sessionTotal: 0,
       completedThisRun: 0,
       roundComplete: false,
+      lastPairAt: 0,
       drawHistory: [],
       wrongQueue: []
     };
@@ -1545,6 +1551,7 @@
         levelDurationMs: clampNumber(raw.levelDurationMs, 20000, 900000, DEFAULT_SETTINGS.levelDurationMs),
         adaptiveLevelTime: raw.adaptiveLevelTime !== false,
         levelTimeTolerance: clampNumber(raw.levelTimeTolerance, 0, 2, DEFAULT_SETTINGS.levelTimeTolerance),
+        lastMsPerPair: clampNumber(raw.lastMsPerPair, 0, 600000, 0),
         lastLevelMs: clampNumber(raw.lastLevelMs, 0, 900000, 0),
         lastLevelPairs: Math.round(clampNumber(raw.lastLevelPairs, 0, 10000, 0)),
         refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
@@ -1613,26 +1620,47 @@
       }
     }
 
+    function resolveMsPerPair(settings) {
+      if (settings.lastMsPerPair > 0) return settings.lastMsPerPair;
+      // Migrate older saves that only stored lastLevelMs / lastLevelPairs.
+      if (settings.lastLevelMs > 0 && settings.lastLevelPairs > 0) {
+        return settings.lastLevelMs / settings.lastLevelPairs;
+      }
+      return 0;
+    }
+
     function computeLevelDurationMs(sessionTotal) {
       const settings = state.settings;
       const base = settings.levelDurationMs;
       if (!settings.adaptiveLevelTime) return base;
-      const lastMs = settings.lastLevelMs;
-      const lastPairs = settings.lastLevelPairs;
-      if (!lastMs || !lastPairs) return base;
-      const total = Math.max(1, sessionTotal || lastPairs);
-      const projected = (lastMs / lastPairs) * total;
+      const msPerPair = resolveMsPerPair(settings);
+      if (!(msPerPair > 0)) return base;
+      const total = Math.max(1, sessionTotal || settings.lastLevelPairs || 1);
       const tolerance = Number.isFinite(settings.levelTimeTolerance) ? settings.levelTimeTolerance : 0.2;
-      const withMargin = projected * (1 + Math.max(0, tolerance));
-      // Keep within UI bounds; never shorter than 20s or longer than 15 min.
+      // Project from real clear pace × this queue size — never reuse the previous countdown allotment.
+      const withMargin = msPerPair * total * (1 + Math.max(0, tolerance));
       return Math.round(clampNumber(withMargin, 20000, 900000, base));
     }
 
-    function recordLevelPace() {
+    /**
+     * Record pace only from real work time (start → last correct pair).
+     * The countdown allotment (levelDurationMs / leftover timer) is never treated as "completion time".
+     * - Successful queue clear: sample actual clear speed.
+     * - Timeout: do not sample (cutoff is the fixed limit, not a true clear).
+     */
+    function recordLevelPace(reason) {
+      if (reason === "timeout") return;
       const pairs = Math.max(0, state.completedThisRun || 0);
       if (pairs < 1) return;
-      const elapsed = Math.max(1, Math.round(performance.now() - state.roundStartedAt));
-      state.settings.lastLevelMs = elapsed;
+      // Use levelStartedAt (full level), never roundStartedAt (per-pair reaction window).
+      const endAt = state.lastPairAt > 0 ? state.lastPairAt : performance.now();
+      const actualClearMs = Math.max(1, Math.round(endAt - state.levelStartedAt));
+      const sample = actualClearMs / pairs;
+      const prev = resolveMsPerPair(state.settings);
+      // Light EMA so one slow/fast level does not swing the budget wildly.
+      const blended = prev > 0 ? prev * 0.35 + sample * 0.65 : sample;
+      state.settings.lastMsPerPair = Math.round(blended);
+      state.settings.lastLevelMs = Math.round(blended * pairs);
       state.settings.lastLevelPairs = pairs;
     }
 
@@ -2128,13 +2156,15 @@
 
       state.wordQueue = buildWordQueue();
       state.sessionTotal = state.wordQueue.length;
-      state.roundStartedAt = performance.now();
+      const now = performance.now();
+      state.levelStartedAt = now;
+      state.roundStartedAt = now;
+      state.lastPairAt = 0;
       state.levelDurationMs = computeLevelDurationMs(state.sessionTotal);
-      state.levelEndsAt = performance.now() + state.levelDurationMs;
+      state.levelEndsAt = now + state.levelDurationMs;
       state.levelTimeIsAdaptive = Boolean(
         state.settings.adaptiveLevelTime
-        && state.settings.lastLevelMs > 0
-        && state.settings.lastLevelPairs > 0
+        && resolveMsPerPair(state.settings) > 0
       );
 
       if (!state.sessionTotal) {
@@ -2310,8 +2340,10 @@
       state.score += 1;
       state.streak += 1;
       state.completedThisRun += 1;
+      state.lastPairAt = performance.now();
       state.selected = null;
       state.locked = true;
+      // Reaction timer for the next pair only — does not move levelStartedAt.
       state.roundStartedAt = performance.now();
 
       first.card.classList.remove("selected");
@@ -2522,8 +2554,8 @@
       clearLevelTimers();
       clearSelection();
       state.roundComplete = reason !== "timeout";
-      // Always record pace when the user finished at least one pair (complete or timeout).
-      recordLevelPace();
+      // Sample real clear pace only (not the fixed countdown allotment / timeout cutoff).
+      recordLevelPace(reason);
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "✓";
@@ -2658,6 +2690,7 @@
       state.streak = 0;
       state.settings.lastLevelMs = 0;
       state.settings.lastLevelPairs = 0;
+      state.settings.lastMsPerPair = 0;
       saveWords();
       renderRound();
     }
@@ -2742,6 +2775,7 @@
         levelDurationMs: Number(els.levelSeconds.value) * 1000,
         adaptiveLevelTime: els.adaptiveLevelTime ? els.adaptiveLevelTime.checked : true,
         levelTimeTolerance: els.levelTimeTolerance ? Number(els.levelTimeTolerance.value) : 0.2,
+        lastMsPerPair: state.settings.lastMsPerPair,
         lastLevelMs: state.settings.lastLevelMs,
         lastLevelPairs: state.settings.lastLevelPairs,
         refillTriggerCount: Number(els.refillTrigger.value),

@@ -4,18 +4,20 @@
 
 ### Added
 
-- Adaptive level timer: next level duration is projected from the previous round’s pace × pairs, with a configurable tolerance (default `0.2` / +20%). Base time is used for the first level or when adaptive is off.
+- Adaptive level timer: next level duration is projected from **actual clear pace** (time from level start to the last correct pair) × this queue size, with a configurable tolerance (default `0.2` / +20%). Base time is used for the first level or when adaptive is off.
 - Practice options: “Adaptive level time” checkbox and “Time tolerance”.
 - Progress persistence: score, mistakes, streak, round, and last-level pace are saved with words/settings under `localStorage` (`duo_like_word_match_v1`), including when installed as a PWA on the same origin.
 
 ### Fixed
 
+- Adaptive timer no longer confuses the **countdown allotment** with **actual completion time**. Pace is sampled only on a real queue clear, using `levelStartedAt` → `lastPairAt` (not the leftover timer, and not timeout cutoffs).
+- Fixed a bug where per-pair reaction resets of `roundStartedAt` corrupted level duration samples.
 - English rail / panel button labels overflowing their boxes (wrap + smaller type).
 - Bulk-input placeholder newlines when set via `t()`.
 
 ### Changed
 
-- Service worker cache bumped to `word-snap-v10`.
+- Service worker cache bumped to `word-snap-v11`.
 
 ## 2026-07-07
 
