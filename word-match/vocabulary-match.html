@@ -2219,9 +2219,10 @@
         }
       }
 
-      const leftWords = shuffle(initialWords);
+      // Left = prompts (stable after deal). Right = options (shuffled relative to left).
+      const leftWords = shuffle([...initialWords]);
       state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, leftWords[index] || null));
-      const rightWords = shuffle(initialWords);
+      const rightWords = shuffle([...initialWords]);
       state.rightSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("right", index, rightWords[index] || null));
 
       els.practiceView.classList.remove("hidden");
@@ -2559,7 +2560,8 @@
     }
 
     function canPlaceRefill() {
-      return emptySlotIndexes("left").length > 0 && emptySlotIndexes("right").length > 0;
+      // Right is rebuilt from left; only a free prompt seat is required.
+      return emptySlotIndexes("left").length > 0;
     }
 
     /** Owe one new word on the board (not tied to the just-cleared cell pair). */
@@ -2569,47 +2571,65 @@
     }
 
     /**
-     * Place one word on a random empty left cell and a random empty right cell.
-     * Positions are independent — never "the two holes from the last match" as a free pair.
+     * Board model:
+     * - Left (zh) = prompts. Once a prompt sits in a cell it stays there until matched.
+     *   New prompts only fill empty left cells (never reshuffle left).
+     * - Right (en) = options. After every refill, reshuffle ALL occupied right cells
+     *   so a new pair is never a free match at the two just-cleared holes.
+     *
+     * Shuffling both sides is wrong: it moves prompts around and still fails to
+     * break "same hole pair" when only one empty remains on each side before
+     * a left+right scramble that preserves co-appearance patterns.
+     * Only reshuffling the option column is the correct match-game rule.
      */
-    function refillOneWordRandomPositions() {
+    function refillOneWord() {
       const emptyLeft = emptySlotIndexes("left");
-      const emptyRight = emptySlotIndexes("right");
-      if (!emptyLeft.length || !emptyRight.length) return false;
+      if (!emptyLeft.length) return false;
       const nextWord = takeNextWord();
       if (!nextWord) return false;
       markWordDrawn(nextWord);
+
+      // Prompt stays in the hole it fills — do not later move left cells.
       const li = pickRandomIndex(emptyLeft);
-      const ri = pickRandomIndex(emptyRight);
       state.leftSlots[li] = makeSlot("left", li, nextWord, true);
-      state.rightSlots[ri] = makeSlot("right", ri, nextWord, true);
+
+      // Rebuild the entire right column from the left multiset, fully shuffled.
+      // This guarantees: same words as left, no positional free pairs.
+      rebuildRightOptionsShuffled();
       return true;
     }
 
-    /**
-     * Independently reshuffle occupied cards on one side so a freshly filled
-     * pair is not left sitting in known matching positions.
-     */
-    function scrambleOccupiedSide(side) {
-      const slots = side === "left" ? state.leftSlots : state.rightSlots;
+    /** Right column = shuffle(words currently on the left). Empties stay empty. */
+    function rebuildRightOptionsShuffled() {
       const words = [];
-      for (let i = 0; i < slots.length; i += 1) {
-        if (slots[i].word) words.push(slots[i].word);
+      for (let i = 0; i < state.leftSlots.length; i += 1) {
+        if (state.leftSlots[i].word) words.push(state.leftSlots[i].word);
       }
-      if (words.length <= 1) return;
-      const order = shuffle(words);
+      const order = words.length ? shuffle(words) : [];
+      // Prefer spreading options into currently-empty right slots first so the
+      // board keeps the same number of holes as the left, but in shuffled order
+      // of content across occupied right seats.
+      const rightIndexes = [];
+      for (let i = 0; i < state.rightSlots.length; i += 1) {
+        rightIndexes.push(i);
+      }
+      // Fill every right seat that corresponds to a prompt seat: use all seats
+      // that are either currently occupied OR empty while we still have words.
+      // Simpler invariant: exactly `words.length` right seats get cards; choose
+      // a random subset of seat indexes of that size, then assign shuffled words.
+      const seatCount = order.length;
+      const seats = shuffle(rightIndexes).slice(0, seatCount);
+      seats.sort((a, b) => a - b);
+      const seatSet = new Set(seats);
       let k = 0;
-      for (let i = 0; i < slots.length; i += 1) {
-        if (slots[i].word) {
-          slots[i] = makeSlot(side, i, order[k], false);
+      for (let i = 0; i < state.rightSlots.length; i += 1) {
+        if (seatSet.has(i)) {
+          state.rightSlots[i] = makeSlot("right", i, order[k], true);
           k += 1;
+        } else {
+          state.rightSlots[i] = makeSlot("right", i, null, false);
         }
       }
-    }
-
-    function scrambleBoardPositions() {
-      scrambleOccupiedSide("left");
-      scrambleOccupiedSide("right");
     }
 
     function maybeScheduleBatchRefill(force = false) {
@@ -2678,7 +2698,7 @@
           return;
         }
 
-        if (!refillOneWordRandomPositions()) {
+        if (!refillOneWord()) {
           if (state.wordQueue.length || state.wrongQueue.length) {
             const retryId = setTimeout(run, refillDelayFor());
             state.refillTimers.push(retryId);
@@ -2692,12 +2712,9 @@
         }
 
         state.pendingRefillCount = Math.max(0, state.pendingRefillCount - 1);
-        // Critical: after placing, scramble BOTH sides independently so the new
-        // word is not a free match at the two just-emptied cells.
-        scrambleBoardPositions();
         state.refillKeys.delete(key);
         state.refillPipelineActive = false;
-        // Full repaint after scramble (positions of many cards change).
+        // Left prompts kept their seats; right options fully rebuilt+shuffled.
         renderSlots();
         renderStats();
         if (finishLevelIfDone()) return;
