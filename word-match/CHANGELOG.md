@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-07-20
+
+### Added
+
+- Streak scale tones: piano-informed broken-chord ladder — each correct pair jumps up two scale degrees (thirds), five notes per group, and each new group starts one degree higher (C E G B D → D F A C E → …), starting from middle C (C4) and covering the full diatonic cycle in exactly 40 streaks before wrapping. Timbre is additive piano synthesis (8 sine partials with inharmonicity + hammer noise + natural decay); a miss plays two soft low piano notes.
+
+### Changed
+
+- Refill logic rewritten to copy Duolingo Match Madness exactly (verified against screen recording): each cleared pair's two holes refill fast (~0.45–0.75s) and independently — each hole takes the partner of the oldest unmatched half on the opposite column, or the next fresh word from a single deck. A left card can temporarily have no match on the right until its other half arrives at a later right hole, which makes fixed-seat tapping impossible by design and keeps the board nearly full.
+- Theme palettes now derive card hover, selected, correct, wrong, track, shadow, and scrim colors from the active skin instead of stacking fixed forest-colored surfaces, so each level rotation reads as one palette.
+- Wrong answers no longer queue a replay word; the pair simply stays on the board (Duo behavior).
+- Background surface stays fixed on the default forest palette (`#131f24`); only accent colors (green/blue/red/yellow) rotate after each level.
+- Streak piano tones are optional (Practice options → “连对时播放钢琴音阶”, default on); groups stay at 5 notes, and the last note of each group plays a same-timbre piano flourish (root + octave + soft higher partial) instead of a separate coin SFX.
+- Service worker cache bumped to `word-snap-v32`.
+
 ## 2026-07-19
 
 ### Added
