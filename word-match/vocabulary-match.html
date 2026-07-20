@@ -295,7 +295,7 @@
     }
 
     .match-card.entering {
-      animation: cardEnter 520ms var(--ease) both;
+      animation: cardEnter 900ms var(--ease) both;
     }
 
     .match-card.empty {
@@ -1384,10 +1384,11 @@
       lastLevelMs: 0,
       lastLevelPairs: 0,
       lastLevelComplete: false,
-      refillTriggerCount: 2,
-      refillMinMs: 520,
-      refillMaxMs: 980,
-      pauseRefillWhileSelected: true,
+      refillTriggerCount: 1,
+      // Duo-like: ~2s before a new pair slowly appears in empty seats.
+      refillMinMs: 1900,
+      refillMaxMs: 2300,
+      pauseRefillWhileSelected: false,
       recycleMastered: true,
       mlRecentHistory: 20,
       mlAvoidanceWeight: 0.8,
@@ -1496,8 +1497,7 @@
       timerId: null,
       refillTimers: [],
       refillKeys: new Set(),
-      pendingRefillCount: 0,
-      clearedSinceLastRefill: 0,
+      // Each match schedules its own delayed hole-fill (Duo-like multi-hole).
       refillPipelineActive: false,
       refillHoldTimer: null,
       wordQueue: [],
@@ -1937,9 +1937,9 @@
     const WRONG_ANIM_MS = 520;
     const LEVEL_BASE_MS = 120000;
     const LEVEL_VARIANCE_MS = 15000;
-    const REFILL_MIN_MS = 520;
-    const REFILL_MAX_MS = 980;
-    const REFILL_TRIGGER_COUNT = 2;
+    const REFILL_MIN_MS = 1900;
+    const REFILL_MAX_MS = 2300;
+    const REFILL_TRIGGER_COUNT = 1;
     const WRONG_REPLAY_MIN_MS = 4200;
     const WRONG_REPLAY_MAX_MS = 6200;
     const SELECTED_REFILL_RETRY_MS = 180;
@@ -1969,7 +1969,6 @@
       state.refillTimers = [];
       state.refillKeys.clear();
       state.refillPipelineActive = false;
-      state.pendingRefillCount = 0;
       if (state.refillHoldTimer) {
         clearTimeout(state.refillHoldTimer);
         state.refillHoldTimer = null;
@@ -2182,8 +2181,6 @@
       state.completedThisRun = 0;
       state.roundComplete = false;
       state.wrongQueue = [];
-      state.pendingRefillCount = 0;
-      state.clearedSinceLastRefill = 0;
       state.refillPipelineActive = false;
 
       if (!state.words.length) {
@@ -2357,12 +2354,6 @@
       return fallback;
     }
 
-    function shouldHoldRefill() {
-      // Hold while animating a match OR while the user has a first card chosen.
-      // Order-sensitive: check every retry tick, never fill "under" an active choice.
-      return Boolean(state.locked || hasActiveSelection());
-    }
-
     /**
      * Re-bind selection to current DOM/slot by wordId after refills re-render the grid.
      * Returns true if the selected word is still on the board.
@@ -2431,8 +2422,6 @@
         card.classList.add("selected");
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickOtherSide");
-        // Freeze any pending refill arming while the first card is held.
-        armRefillHoldWatcher();
         return;
       }
 
@@ -2441,8 +2430,6 @@
         state.selected = null;
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickPair");
-        // Selection cleared — resume refill queue if anything is waiting.
-        maybeScheduleBatchRefill(true);
         return;
       }
 
@@ -2532,8 +2519,9 @@
           els.feedback.textContent = t("feedback.finishRest");
           return;
         }
-        queueRefillCredit();
-        maybeScheduleBatchRefill();
+        // Duo-like: keep other cards playable; after ~2s fill only these two holes
+        // with one new word (both sides at once). Multiple holes may be pending.
+        scheduleHoleRefill(cleared.leftIndex, cleared.rightIndex);
       }, CORRECT_ANIM_MS);
     }
 
@@ -2559,180 +2547,73 @@
       return list[Math.floor(Math.random() * list.length)];
     }
 
-    function canPlaceRefill() {
-      // Right is rebuilt from left; only a free prompt seat is required.
-      return emptySlotIndexes("left").length > 0;
-    }
-
-    /** Owe one new word on the board (not tied to the just-cleared cell pair). */
-    function queueRefillCredit() {
-      state.pendingRefillCount += 1;
-      state.clearedSinceLastRefill += 1;
+    /**
+     * Duo-like hole fill:
+     * - Prefer the two seats just cleared (if still empty).
+     * - If those were taken / multi-hole chaos, pick any empty left + any empty right.
+     * - Never reshuffle the rest of the board — only those two cells update.
+     */
+    function resolveRefillSeats(preferredLeft, preferredRight) {
+      let li = preferredLeft;
+      let ri = preferredRight;
+      if (li == null || !state.leftSlots[li] || state.leftSlots[li].word) {
+        const empties = emptySlotIndexes("left");
+        if (!empties.length) return null;
+        li = pickRandomIndex(empties);
+      }
+      if (ri == null || !state.rightSlots[ri] || state.rightSlots[ri].word) {
+        const empties = emptySlotIndexes("right");
+        if (!empties.length) return null;
+        ri = pickRandomIndex(empties);
+      }
+      return { leftIndex: li, rightIndex: ri };
     }
 
     /**
-     * Board model:
-     * - Left (zh) = prompts. Once a prompt sits in a cell it stays there until matched.
-     *   New prompts only fill empty left cells (never reshuffle left).
-     * - Right (en) = options. After every refill, reshuffle ALL occupied right cells
-     *   so a new pair is never a free match at the two just-cleared holes.
-     *
-     * Shuffling both sides is wrong: it moves prompts around and still fails to
-     * break "same hole pair" when only one empty remains on each side before
-     * a left+right scramble that preserves co-appearance patterns.
-     * Only reshuffling the option column is the correct match-game rule.
+     * Schedule one new vocabulary item to appear slowly in two empty seats.
+     * Independent timers per cleared pair → multiple holes can refill at once.
+     * Player may keep matching other cards during the wait (no selection freeze).
      */
-    function refillOneWord() {
-      const emptyLeft = emptySlotIndexes("left");
-      if (!emptyLeft.length) return false;
-      const nextWord = takeNextWord();
-      if (!nextWord) return false;
-      markWordDrawn(nextWord);
-
-      // Prompt stays in the hole it fills — do not later move left cells.
-      const li = pickRandomIndex(emptyLeft);
-      state.leftSlots[li] = makeSlot("left", li, nextWord, true);
-
-      // Rebuild the entire right column from the left multiset, fully shuffled.
-      // This guarantees: same words as left, no positional free pairs.
-      rebuildRightOptionsShuffled();
-      return true;
-    }
-
-    /** Right column = shuffle(words currently on the left). Empties stay empty. */
-    function rebuildRightOptionsShuffled() {
-      const words = [];
-      for (let i = 0; i < state.leftSlots.length; i += 1) {
-        if (state.leftSlots[i].word) words.push(state.leftSlots[i].word);
-      }
-      const order = words.length ? shuffle(words) : [];
-      // Prefer spreading options into currently-empty right slots first so the
-      // board keeps the same number of holes as the left, but in shuffled order
-      // of content across occupied right seats.
-      const rightIndexes = [];
-      for (let i = 0; i < state.rightSlots.length; i += 1) {
-        rightIndexes.push(i);
-      }
-      // Fill every right seat that corresponds to a prompt seat: use all seats
-      // that are either currently occupied OR empty while we still have words.
-      // Simpler invariant: exactly `words.length` right seats get cards; choose
-      // a random subset of seat indexes of that size, then assign shuffled words.
-      const seatCount = order.length;
-      const seats = shuffle(rightIndexes).slice(0, seatCount);
-      seats.sort((a, b) => a - b);
-      const seatSet = new Set(seats);
-      let k = 0;
-      for (let i = 0; i < state.rightSlots.length; i += 1) {
-        if (seatSet.has(i)) {
-          state.rightSlots[i] = makeSlot("right", i, order[k], true);
-          k += 1;
-        } else {
-          state.rightSlots[i] = makeSlot("right", i, null, false);
-        }
-      }
-    }
-
-    function maybeScheduleBatchRefill(force = false) {
-      if (state.pendingRefillCount <= 0) return;
-      if (state.refillPipelineActive) return;
-      if (!canPlaceRefill()) return;
-
-      // Do not even arm a timer while the user is mid-choice; arm after they finish.
-      if (shouldHoldRefill()) {
-        armRefillHoldWatcher();
-        return;
-      }
-
-      const refillTriggerCount = state.settings.refillTriggerCount;
-      const shouldWaitForBatch = !force && state.clearedSinceLastRefill < refillTriggerCount && activeSlotPairs() > 2;
-      if (shouldWaitForBatch) {
-        return;
-      }
-
-      scheduleWordRefill(refillDelayFor());
-      state.clearedSinceLastRefill = 0;
-    }
-
-    /** Poll until selection/lock clears, then resume the refill queue once. */
-    function armRefillHoldWatcher() {
-      if (state.refillHoldTimer) return;
-      state.refillHoldTimer = setTimeout(function tickHold() {
-        state.refillHoldTimer = null;
-        if (els.completionView.classList.contains("show") || isLevelOver()) return;
-        if (shouldHoldRefill()) {
-          armRefillHoldWatcher();
-          return;
-        }
-        maybeScheduleBatchRefill(true);
-      }, SELECTED_REFILL_RETRY_MS);
-    }
-
-    function scheduleWordRefill(delayMs) {
-      if (state.refillPipelineActive) return;
-      if (state.pendingRefillCount <= 0) return;
-      state.refillPipelineActive = true;
-      const key = `refill-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    function scheduleHoleRefill(preferredLeft, preferredRight) {
+      if (!hasWordsWaiting() && !canTakeNextWord()) return;
+      const delayMs = refillDelayFor();
+      const key = `hole-${preferredLeft}-${preferredRight}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
       state.refillKeys.add(key);
 
-      const run = () => {
+      const timerId = setTimeout(() => {
         state.refillTimers = state.refillTimers.filter(id => id !== timerId);
-
-        if (els.completionView.classList.contains("show") || isLevelOver()) {
-          state.refillKeys.delete(key);
-          state.refillPipelineActive = false;
-          return;
-        }
-
-        // Hold WITHOUT releasing the pipeline — avoids a second timer racing in.
-        if (shouldHoldRefill()) {
-          const retryId = setTimeout(run, SELECTED_REFILL_RETRY_MS);
-          state.refillTimers.push(retryId);
-          return;
-        }
-
-        if (state.pendingRefillCount <= 0 || !canPlaceRefill()) {
-          state.refillKeys.delete(key);
-          state.refillPipelineActive = false;
-          if (finishLevelIfDone()) return;
-          continueRefillPipeline();
-          return;
-        }
-
-        if (!refillOneWord()) {
-          if (state.wordQueue.length || state.wrongQueue.length) {
-            const retryId = setTimeout(run, refillDelayFor());
-            state.refillTimers.push(retryId);
-          } else {
-            state.pendingRefillCount = 0;
-            state.refillKeys.delete(key);
-            state.refillPipelineActive = false;
-            if (finishLevelIfDone()) return;
-          }
-          return;
-        }
-
-        state.pendingRefillCount = Math.max(0, state.pendingRefillCount - 1);
         state.refillKeys.delete(key);
-        state.refillPipelineActive = false;
-        // Left prompts kept their seats; right options fully rebuilt+shuffled.
-        renderSlots();
-        renderStats();
-        if (finishLevelIfDone()) return;
-        continueRefillPipeline();
-      };
 
-      const timerId = setTimeout(run, delayMs);
+        if (els.completionView.classList.contains("show") || isLevelOver()) return;
+
+        const seats = resolveRefillSeats(preferredLeft, preferredRight);
+        if (!seats) {
+          finishLevelIfDone();
+          return;
+        }
+
+        const nextWord = takeNextWord();
+        if (!nextWord) {
+          finishLevelIfDone();
+          return;
+        }
+
+        markWordDrawn(nextWord);
+        state.leftSlots[seats.leftIndex] = makeSlot("left", seats.leftIndex, nextWord, true);
+        state.rightSlots[seats.rightIndex] = makeSlot("right", seats.rightIndex, nextWord, true);
+        // Only paint the two new cells — other cards (and selection) stay put.
+        paintSlot(state.leftSlots[seats.leftIndex]);
+        paintSlot(state.rightSlots[seats.rightIndex]);
+        rebindSelection();
+        renderStats();
+        finishLevelIfDone();
+      }, delayMs);
+
       state.refillTimers.push(timerId);
     }
 
-    function continueRefillPipeline() {
-      if (shouldHoldRefill()) {
-        armRefillHoldWatcher();
-        return;
-      }
-      if (state.pendingRefillCount > 0 && canPlaceRefill()) {
-        maybeScheduleBatchRefill(true);
-      }
+    function canTakeNextWord() {
+      return state.wordQueue.length > 0 || state.wrongQueue.some(item => item.availableAt <= performance.now());
     }
 
     function markWordDrawn(word) {

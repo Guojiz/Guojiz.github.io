@@ -14,15 +14,15 @@
 - Incomplete levels still update throughput (`actualWorkMs / completedPairs`); next budget = pace × next queue × (1+tol), with a small extra margin when unfinished.
 - Selection no longer drops when new words refill mid-choice: refill paints **only the two new cells** (no full-grid rebuild), holds the refill timer without releasing its reservation while a card is selected/locked, and resumes after deselect/match.
 - Early clear now stops the countdown: when board and queues are empty, pending refills are cancelled and completion opens instead of ticking out the allotment.
-- **Critical gameplay:** left column is prompts (stable seats); right column is options and is fully rebuilt from the left multiset and reshuffled on every refill. Never leave a free pair in the two just-cleared holes.
+- **Duo-like refill:** after a match, only the two empty seats wait ~2s then one new word appears on both sides with a slow enter animation. Other cards stay put and stay tappable; multiple holes may refill independently. No full-column reshuffle.
 - Fixed a bug where per-pair reaction resets of `roundStartedAt` corrupted level duration samples.
 - English rail / panel button labels overflowing their boxes (wrap + smaller type).
 - Bulk-input placeholder newlines when set via `t()`.
 
 ### Changed
 
-- Service worker cache bumped to `word-snap-v16`.
-- Board layout: left prompts stay put after deal; right options reshuffle on every refill.
+- Service worker cache bumped to `word-snap-v17`.
+- Default refill delay ~1.9–2.3s; board stays full while the queue has words.
 
 ## 2026-07-07
 
