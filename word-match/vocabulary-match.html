@@ -1550,6 +1550,14 @@
 
     function loadSettings(saved) {
       const raw = saved && saved.settings ? saved.settings : {};
+      let refillMinMs = clampNumber(raw.refillMinMs, 100, 10000, DEFAULT_SETTINGS.refillMinMs);
+      let refillMaxMs = clampNumber(raw.refillMaxMs, 100, 15000, DEFAULT_SETTINGS.refillMaxMs);
+      // Migrate legacy ultra-fast refill (~0.5s) to Duo-like ~2s hole appear.
+      if (raw.refillMinMs != null && refillMinMs < 1500) {
+        refillMinMs = DEFAULT_SETTINGS.refillMinMs;
+        refillMaxMs = DEFAULT_SETTINGS.refillMaxMs;
+      }
+      if (refillMaxMs < refillMinMs) refillMaxMs = refillMinMs;
       return {
         levelDurationMs: clampNumber(raw.levelDurationMs, 20000, 900000, DEFAULT_SETTINGS.levelDurationMs),
         adaptiveLevelTime: raw.adaptiveLevelTime !== false,
@@ -1559,9 +1567,9 @@
         lastLevelPairs: Math.round(clampNumber(raw.lastLevelPairs, 0, 10000, 0)),
         lastLevelComplete: raw.lastLevelComplete === true,
         refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
-        refillMinMs: clampNumber(raw.refillMinMs, 100, 10000, DEFAULT_SETTINGS.refillMinMs),
-        refillMaxMs: clampNumber(raw.refillMaxMs, 100, 15000, DEFAULT_SETTINGS.refillMaxMs),
-        pauseRefillWhileSelected: raw.pauseRefillWhileSelected !== false,
+        refillMinMs,
+        refillMaxMs,
+        pauseRefillWhileSelected: raw.pauseRefillWhileSelected === true,
         recycleMastered: raw.recycleMastered !== false,
         mlRecentHistory: Math.round(clampNumber(raw.mlRecentHistory, 0, 100, DEFAULT_SETTINGS.mlRecentHistory)),
         mlAvoidanceWeight: clampNumber(raw.mlAvoidanceWeight, 0, 1, DEFAULT_SETTINGS.mlAvoidanceWeight),
