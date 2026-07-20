@@ -7,6 +7,7 @@
 - Adaptive level timer: next level duration is projected from **actual clear pace** (time from level start to the last correct pair) × this queue size, with a configurable tolerance (default `0.2` / +20%). Base time is used for the first level or when adaptive is off.
 - Practice options: “Adaptive level time” checkbox and “Time tolerance”.
 - Progress persistence: score, mistakes, streak, round, and last-level pace are saved with words/settings under `localStorage` (`duo_like_word_match_v1`), including when installed as a PWA on the same origin.
+- **Color skins:** finishes a level → rotates through 8 soft palettes (bg + accents); preference stored as `themeIndex` / `word_snap_theme_index`.
 
 ### Fixed
 
@@ -21,7 +22,7 @@
 
 ### Changed
 
-- Service worker cache bumped to `word-snap-v17`.
+- Service worker cache bumped to `word-snap-v18`.
 - Default refill delay ~1.9–2.3s; board stays full while the queue has words.
 
 ## 2026-07-07

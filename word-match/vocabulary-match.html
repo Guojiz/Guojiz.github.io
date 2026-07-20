@@ -31,6 +31,22 @@
       --yellow: #ffc800;
       --radius: 12px;
       --ease: cubic-bezier(.2, .8, .2, 1);
+      --theme-shift: 420ms;
+    }
+
+    body,
+    .rail,
+    .panel,
+    .match-card,
+    .duo-button,
+    .progress-fill,
+    .logo,
+    .install-nudge {
+      transition:
+        background-color var(--theme-shift) var(--ease),
+        border-color var(--theme-shift) var(--ease),
+        color var(--theme-shift) var(--ease),
+        box-shadow var(--theme-shift) var(--ease);
     }
 
     * {
@@ -1144,6 +1160,67 @@
   <script>
     const STORAGE_KEY = "duo_like_word_match_v1";
     const INSTALL_NUDGE_KEY = "word_snap_install_nudge_hidden_v1";
+    const THEME_KEY = "word_snap_theme_index";
+
+    // Soft accent themes — full skin (bg + accent) rotates after each finished level.
+    const COLOR_THEMES = [
+      {
+        id: "forest",
+        bg: "#131f24", panel: "#202f36", panel2: "#1a2a30",
+        line: "#37464f", lineStrong: "#52656d", text: "#f1f7fb", muted: "#8fa5af", dim: "#52656d",
+        green: "#58cc02", greenDark: "#46a302", blue: "#1cb0f6", blueDeep: "#1899d6",
+        red: "#ff4b4b", redDeep: "#ea2b2b", yellow: "#ffc800"
+      },
+      {
+        id: "ocean",
+        bg: "#0f1c2e", panel: "#1a2d45", panel2: "#15263a",
+        line: "#2e4a66", lineStrong: "#4a6d8c", text: "#eef6ff", muted: "#8fb0c9", dim: "#4a6d8c",
+        green: "#2dd4bf", greenDark: "#14b8a6", blue: "#38bdf8", blueDeep: "#0ea5e9",
+        red: "#fb7185", redDeep: "#e11d48", yellow: "#fbbf24"
+      },
+      {
+        id: "violet",
+        bg: "#1a1428", panel: "#2a2040", panel2: "#221a35",
+        line: "#3f3358", lineStrong: "#5c4d7a", text: "#f5f0ff", muted: "#a898c4", dim: "#5c4d7a",
+        green: "#a78bfa", greenDark: "#8b5cf6", blue: "#c084fc", blueDeep: "#a855f7",
+        red: "#f472b6", redDeep: "#db2777", yellow: "#fcd34d"
+      },
+      {
+        id: "sunset",
+        bg: "#1f1410", panel: "#332018", panel2: "#2a1a14",
+        line: "#4a3228", lineStrong: "#6b4a3a", text: "#fff7f0", muted: "#c4a090", dim: "#6b4a3a",
+        green: "#fb923c", greenDark: "#ea580c", blue: "#fbbf24", blueDeep: "#f59e0b",
+        red: "#f87171", redDeep: "#dc2626", yellow: "#fde047"
+      },
+      {
+        id: "rose",
+        bg: "#1f1218", panel: "#331f2a", panel2: "#2a1822",
+        line: "#4a3040", lineStrong: "#6b4860", text: "#fff0f5", muted: "#c498b0", dim: "#6b4860",
+        green: "#f472b6", greenDark: "#db2777", blue: "#fb7185", blueDeep: "#e11d48",
+        red: "#fb923c", redDeep: "#ea580c", yellow: "#fcd34d"
+      },
+      {
+        id: "slate",
+        bg: "#12141a", panel: "#1e222c", panel2: "#181b24",
+        line: "#323846", lineStrong: "#4b5563", text: "#f3f4f6", muted: "#9ca3af", dim: "#4b5563",
+        green: "#34d399", greenDark: "#10b981", blue: "#60a5fa", blueDeep: "#3b82f6",
+        red: "#f87171", redDeep: "#ef4444", yellow: "#facc15"
+      },
+      {
+        id: "mint",
+        bg: "#0f1f1c", panel: "#1a322e", panel2: "#142824",
+        line: "#2d4a44", lineStrong: "#3d665c", text: "#ecfdf8", muted: "#8fb8ae", dim: "#3d665c",
+        green: "#4ade80", greenDark: "#22c55e", blue: "#2dd4bf", blueDeep: "#14b8a6",
+        red: "#fb7185", redDeep: "#e11d48", yellow: "#fbbf24"
+      },
+      {
+        id: "amber",
+        bg: "#1a160c", panel: "#2e2818", panel2: "#242014",
+        line: "#453c28", lineStrong: "#635632", text: "#fffbeb", muted: "#b8a878", dim: "#635632",
+        green: "#fbbf24", greenDark: "#d97706", blue: "#f59e0b", blueDeep: "#b45309",
+        red: "#f87171", redDeep: "#dc2626", yellow: "#fde68a"
+      }
+    ];
 
     // ---- i18n ----
     const LOCALE_KEY = "word_snap_lang";
@@ -1384,6 +1461,7 @@
       lastLevelMs: 0,
       lastLevelPairs: 0,
       lastLevelComplete: false,
+      themeIndex: 0,
       refillTriggerCount: 1,
       // Duo-like: ~2s before a new pair slowly appears in empty seats.
       refillMinMs: 1900,
@@ -1566,6 +1644,7 @@
         lastLevelMs: clampNumber(raw.lastLevelMs, 0, 900000, 0),
         lastLevelPairs: Math.round(clampNumber(raw.lastLevelPairs, 0, 10000, 0)),
         lastLevelComplete: raw.lastLevelComplete === true,
+        themeIndex: Math.round(clampNumber(raw.themeIndex, 0, COLOR_THEMES.length - 1, 0)),
         refillTriggerCount: Math.round(clampNumber(raw.refillTriggerCount, 1, 5, DEFAULT_SETTINGS.refillTriggerCount)),
         refillMinMs,
         refillMaxMs,
@@ -1639,6 +1718,41 @@
         return settings.lastLevelMs / settings.lastLevelPairs;
       }
       return 0;
+    }
+
+    function applyTheme(index) {
+      const i = ((Number(index) % COLOR_THEMES.length) + COLOR_THEMES.length) % COLOR_THEMES.length;
+      const theme = COLOR_THEMES[i] || COLOR_THEMES[0];
+      const root = document.documentElement;
+      root.style.setProperty("--bg", theme.bg);
+      root.style.setProperty("--panel", theme.panel);
+      root.style.setProperty("--panel-2", theme.panel2);
+      root.style.setProperty("--line", theme.line);
+      root.style.setProperty("--line-strong", theme.lineStrong);
+      root.style.setProperty("--text", theme.text);
+      root.style.setProperty("--muted", theme.muted);
+      root.style.setProperty("--dim", theme.dim);
+      root.style.setProperty("--green", theme.green);
+      root.style.setProperty("--green-dark", theme.greenDark);
+      root.style.setProperty("--blue", theme.blue);
+      root.style.setProperty("--blue-deep", theme.blueDeep);
+      root.style.setProperty("--red", theme.red);
+      root.style.setProperty("--red-deep", theme.redDeep);
+      root.style.setProperty("--yellow", theme.yellow);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", theme.bg);
+      try { localStorage.setItem(THEME_KEY, String(i)); } catch (e) {}
+      if (state && state.settings) state.settings.themeIndex = i;
+      return i;
+    }
+
+    /** Advance skin after a finished level (complete or timeout). */
+    function advanceThemeAfterLevel() {
+      const cur = state.settings && Number.isFinite(state.settings.themeIndex)
+        ? state.settings.themeIndex
+        : 0;
+      const next = (cur + 1) % COLOR_THEMES.length;
+      applyTheme(next);
     }
 
     function computeLevelDurationMs(sessionTotal) {
@@ -2715,6 +2829,8 @@
       state.roundComplete = reason !== "timeout";
       // Sample real clear pace only (not the fixed countdown allotment / timeout cutoff).
       recordLevelPace(reason);
+      // Each finished level rotates the color skin.
+      advanceThemeAfterLevel();
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "✓";
@@ -2947,6 +3063,7 @@
         lastLevelMs: state.settings.lastLevelMs,
         lastLevelPairs: state.settings.lastLevelPairs,
         lastLevelComplete: state.settings.lastLevelComplete,
+        themeIndex: state.settings.themeIndex,
         refillTriggerCount: Number(els.refillTrigger.value),
         refillMinMs: Number(els.refillMinSeconds.value) * 1000,
         refillMaxMs: Number(els.refillMaxSeconds.value) * 1000,
@@ -3189,6 +3306,15 @@
       }
     }
     els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
+    // Restore last skin (settings first, then dedicated key).
+    let themeIdx = state.settings.themeIndex;
+    try {
+      const storedTheme = localStorage.getItem(THEME_KEY);
+      if (storedTheme != null && Number.isFinite(Number(storedTheme))) {
+        themeIdx = Number(storedTheme);
+      }
+    } catch (e) {}
+    applyTheme(themeIdx);
     syncOptionsUI();
     renderRound();
   </script>
