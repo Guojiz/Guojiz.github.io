@@ -2,8 +2,8 @@
 
 Word Snap is a static single-page vocabulary matching practice app. Match pairs (default: Chinese meaning ↔ English word), review with adaptive prioritization, and keep everything offline in the browser.
 
-- Live: [https://guojiz.github.io/word-match/vocabulary-match.html](https://guojiz.github.io/word-match/vocabulary-match.html)
-- Source: [https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match](https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match)
+- Live: [https://guojiz.github.io/word-snap/vocabulary-match.html](https://guojiz.github.io/word-snap/vocabulary-match.html)
+- Source: [https://github.com/Guojiz/word-snap](https://github.com/Guojiz/word-snap)
 - Changelog: [CHANGELOG.md](./CHANGELOG.md)
 
 ## Who it is for
@@ -75,7 +75,7 @@ Local:
 index.html
 ```
 
-Online: open the [live URL](https://guojiz.github.io/word-match/vocabulary-match.html).
+Online: open the [live URL](https://guojiz.github.io/word-snap/vocabulary-match.html).
 
 On iPhone/iPad: Safari → Share → **Add to Home Screen**. The PWA name is **Word Snap**. After updates, if you still see an old Chinese-only UI, fully quit Safari and reopen so the new service worker (`word-snap-v9+`) can replace the cache.
 
@@ -109,8 +109,8 @@ Clearing site data, switching device/browser, or private mode can wipe local sta
 
 Word Snap 是一个静态单页单词配对练习网页，通过配对（默认：中文释义 ↔ 英文单词）帮助复习词汇。可部署到 GitHub Pages；单词、设置与进度保存在浏览器本地。
 
-- 在线体验：[https://guojiz.github.io/word-match/vocabulary-match.html](https://guojiz.github.io/word-match/vocabulary-match.html)
-- 源码：[https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match](https://github.com/Guojiz/Guojiz.github.io/tree/main/word-match)
+- 在线体验：[https://guojiz.github.io/word-snap/vocabulary-match.html](https://guojiz.github.io/word-snap/vocabulary-match.html)
+- 源码：[https://github.com/Guojiz/word-snap](https://github.com/Guojiz/word-snap)
 - 更新日志：[CHANGELOG.md](./CHANGELOG.md)
 
 ## 适合谁
