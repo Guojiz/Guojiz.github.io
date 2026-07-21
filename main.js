@@ -12,10 +12,10 @@
      no button is rendered. Example:
        "gitlearnos": "https://youtu.be/xxxx" */
   var PROJECT_VIDEOS = {
-    "gitlearnos": "",
-    "word-snap": "",
+    "ai-subtitle-extractor": "",
     "design-master": "",
-    "subtitle-recipe": ""
+    "gitlearnos": "",
+    "word-snap": ""
   };
 
   function supported(lang) {
