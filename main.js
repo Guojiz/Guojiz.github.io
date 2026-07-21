@@ -6,6 +6,18 @@
   var currentLang = "en";
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* Demo videos — one entry per featured project.
+     Paste a video URL (YouTube / Bilibili / etc.) to make a "Watch Demo"
+     link appear in that project's hub cell. Leave the string empty and
+     no button is rendered. Example:
+       "gitlearnos": "https://youtu.be/xxxx" */
+  var PROJECT_VIDEOS = {
+    "gitlearnos": "",
+    "word-snap": "",
+    "design-master": "",
+    "subtitle-recipe": ""
+  };
+
   function supported(lang) {
     return LANGS.indexOf(lang) !== -1 ? lang : "en";
   }
@@ -56,6 +68,21 @@
     });
   }
   applyLanguage(readStoredLanguage());
+
+  document.querySelectorAll(".hub-actions[data-video-key]").forEach(function (slot) {
+    var url = PROJECT_VIDEOS[slot.getAttribute("data-video-key")];
+    if (!url) return;
+
+    var link = document.createElement("a");
+    link.className = "hub-action";
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.setAttribute("data-en", "Watch Demo");
+    link.setAttribute("data-zh", "观看演示");
+    link.textContent = currentLang === "zh" ? "观看演示" : "Watch Demo";
+    slot.insertBefore(link, slot.firstChild);
+  });
 
   var revealItems = document.querySelectorAll("[data-reveal]");
   if (reduceMotion || !("IntersectionObserver" in window)) {
