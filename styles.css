@@ -833,6 +833,8 @@ h1 span { color: var(--blue); }
   transition: color .2s ease, padding .2s ease;
 }
 .closing-links a:hover { padding-left: 10px; color: var(--coral); }
+.closing-links a.bilibili span { color: #fb7299; }
+.closing-links a.bilibili:hover { color: #fb7299; }
 .closing-links small { color: #aeb1bb; font-family: var(--mono); font-size: .62rem; }
 
 .site-footer {
