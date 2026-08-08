@@ -78,110 +78,169 @@
     <section class="project-hub" id="work" aria-labelledby="hub-title">
       <header class="hub-head" data-reveal>
         <div>
-          <p class="panel-label"><span>01</span><span data-en="Featured projects" data-zh="重点项目">Featured projects</span></p>
-          <h2 id="hub-title" data-en="Four projects in active rotation." data-zh="四个正在推进的项目。">Four projects in active rotation.</h2>
+          <p class="panel-label"><span>01</span><span data-en="Projects" data-zh="项目">Projects</span></p>
+          <h2 id="hub-title" data-en="All projects, equally weighted." data-zh="所有项目，平权展示。">All projects, equally weighted.</h2>
         </div>
-        <p class="hub-note" data-en="Projects being prepared for Build Week demonstrations." data-zh="正在准备 Build Week 演示的项目。">Projects being prepared for Build Week demonstrations.</p>
+        <p class="hub-note" data-en="Sort or filter — there is no featured tier." data-zh="可排序、可筛选，不分主次。">Sort or filter — there is no featured tier.</p>
       </header>
 
-      <div class="hub-grid" data-reveal>
-        <article class="hub-cell">
+      <div class="work-controls" data-reveal>
+        <div class="filter-group sort-group" role="group" aria-label="Sort projects">
+          <button class="filter sort is-active" type="button" data-sort="new" data-en="Newest" data-zh="最新">Newest</button>
+          <button class="filter sort" type="button" data-sort="name" data-en="A–Z" data-zh="名称">A–Z</button>
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter projects">
+          <button class="filter is-active" type="button" data-filter="all" data-en="All" data-zh="全部">All</button>
+          <button class="filter" type="button" data-filter="media" data-en="Video &amp; media" data-zh="视频与媒体">Video &amp; media</button>
+          <button class="filter" type="button" data-filter="agent" data-en="Agents &amp; automation" data-zh="智能体与自动化">Agents &amp; automation</button>
+          <button class="filter" type="button" data-filter="learning" data-en="Learning" data-zh="学习">Learning</button>
+          <button class="filter" type="button" data-filter="llm" data-en="Model tooling" data-zh="模型工具">Model tooling</button>
+        </div>
+      </div>
+
+      <div class="hub-grid uniform" id="project-grid" data-reveal>
+        <article class="hub-cell" data-category="media" data-date="2026-08-08" data-name="ai video studio">
           <div class="hub-top">
             <span class="hub-index" aria-hidden="true">01</span>
             <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
           </div>
-          <h3 class="hub-name">AI Subtitle Extractor</h3>
-          <p class="hub-field" data-en="Subtitle tooling" data-zh="字幕工具">Subtitle tooling</p>
-          <p class="hub-desc" data-en="Turn online video links into clean transcripts — human subtitle tracks first, automatic tracks as fallback, translated into your target language by an AI agent. YouTube and Bilibili verified; other sites use generic subtitle discovery only." data-zh="将在线视频链接转换为干净文稿——优先读取人工字幕，自动字幕作为后补，再由 AI Agent 翻译成目标语言。已验证 YouTube 和 Bilibili；其他网站仅使用通用字幕发现。">Turn online video links into clean transcripts — human subtitle tracks first, automatic tracks as fallback, translated into your target language by an AI agent. YouTube and Bilibili verified; other sites use generic subtitle discovery only.</p>
-          <div class="hub-actions" data-video-key="ai-subtitle-extractor">
-            <a class="hub-action" href="./ai-subtitle-extractor/" data-en="Project" data-zh="项目">Project</a>
-            <a class="hub-action" href="https://github.com/Guojiz/ai-subtitle-extractor" target="_blank" rel="noreferrer">GitHub</a>
+          <h3 class="hub-name">AI Video Studio</h3>
+          <p class="hub-field" data-en="Video generation" data-zh="视频生成">Video generation</p>
+          <p class="hub-desc" data-en="One sentence in, finished clip out — an agent skill that runs prompt enhancement → first-frame generation → video generation. Bring your own API keys, no GPU required." data-zh="一句话进，成片出——一个 Agent 技能，串联提示词增强 → 首帧生图 → 视频生成。自带 API key，无需 GPU。">One sentence in, finished clip out — an agent skill that runs prompt enhancement → first-frame generation → video generation. Bring your own API keys, no GPU required.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://github.com/Guojiz/comfyui-minimax-h3-studio" target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </article>
 
-        <article class="hub-cell">
+        <article class="hub-cell" data-category="agent" data-date="2026-08-06" data-name="numen macos">
           <div class="hub-top">
             <span class="hub-index" aria-hidden="true">02</span>
             <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
           </div>
+          <h3 class="hub-name">Numen · macOS</h3>
+          <p class="hub-field" data-en="In-game AI companion" data-zh="游戏 AI 同伴">In-game AI companion</p>
+          <p class="hub-desc" data-en="An AI companion living inside a block game — summon it, talk to it, and it plans and acts on its own: mining, building, farming, fighting, crafting." data-zh="住在 Minecraft 里的 AI 同伴——召唤它、跟它说话，它自己规划并动手：挖矿、建造、种地、战斗、合成。">An AI companion living inside a block game — summon it, talk to it, and it plans and acts on its own: mining, building, farming, fighting, crafting.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://github.com/Guojiz/numen-macos" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="agent" data-date="2026-08-05" data-name="fastcua">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">03</span>
+            <span class="hub-status" data-en="In development" data-zh="开发中">In development</span>
+          </div>
+          <h3 class="hub-name">FastCUA</h3>
+          <p class="hub-field" data-en="Computer use" data-zh="计算机操作">Computer use</p>
+          <p class="hub-desc" data-en="A computer-use tool that exposes structured UI information and supports efficient multi-action execution." data-zh="暴露结构化界面信息、支持高效多步操作执行的计算机操作工具。">A computer-use tool that exposes structured UI information and supports efficient multi-action execution.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="./FastCUA/" data-en="Project" data-zh="项目">Project</a>
+            <a class="hub-action" href="https://github.com/Guojiz/FastCUA" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="learning" data-date="2026-07-30" data-name="gitlearnos">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">04</span>
+            <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
+          </div>
+          <h3 class="hub-name">GitLearnOS</h3>
+          <p class="hub-field" data-en="Learning system" data-zh="学习系统">Learning system</p>
+          <p class="hub-desc" data-en="A learner-owned GitHub + AI learning system that organizes learning from different sources, generates targeted questions, and preserves verified progress." data-zh="学习者自己拥有的 GitHub + AI 学习系统，整理多来源学习内容、生成针对性问题，并保存经验证的进展。">A learner-owned GitHub + AI learning system that organizes learning from different sources, generates targeted questions, and preserves verified progress.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://guojiz.github.io/gitlearnos/" target="_blank" rel="noreferrer" data-en="Live Demo" data-zh="在线体验">Live Demo</a>
+            <a class="hub-action" href="https://github.com/Guojiz/GitLearnOS" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="llm" data-date="2026-07-28" data-name="claude desktop tweak models">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">05</span>
+            <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
+          </div>
+          <h3 class="hub-name">Desktop Tweak Models</h3>
+          <p class="hub-field" data-en="Desktop tool" data-zh="桌面工具">Desktop tool</p>
+          <p class="hub-desc" data-en="A desktop modification that connects desktop assistant workflows to supported third-party model gateways." data-zh="将桌面助手工作流连接到受支持的第三方模型网关的桌面改造。">A desktop modification that connects desktop assistant workflows to supported third-party model gateways.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://github.com/Guojiz/claude-desktop-tweak-models" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="agent" data-date="2026-07-22" data-name="design master">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">06</span>
+            <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
+          </div>
           <h3 class="hub-name">Design Master</h3>
-          <p class="hub-field" data-en="AI designer plugin" data-zh="AI 设计师插件">AI designer plugin</p>
-          <p class="hub-desc" data-en="A unified AI designer plugin that discovers and combines existing design tools, front-end plugins, open-source skills, and inspiration resources for analysis, generation, editing, and quality checking." data-zh="统一发现、组合并调用现有设计工具、前端插件、开源 Skill 和设计灵感资源的 AI 设计师插件，用于分析、生成、编辑和质量检查。">A unified AI designer plugin that discovers and combines existing design tools, front-end plugins, open-source skills, and inspiration resources for analysis, generation, editing, and quality checking.</p>
-          <div class="hub-actions" data-video-key="design-master">
+          <p class="hub-field" data-en="AI design" data-zh="AI 设计">AI design</p>
+          <p class="hub-desc" data-en="A unified AI designer plugin that discovers and combines existing design tools, front-end plugins, open-source skills, and inspiration resources." data-zh="统一发现并组合现有设计工具、前端插件、开源 Skill 与灵感资源的 AI 设计师插件。">A unified AI designer plugin that discovers and combines existing design tools, front-end plugins, open-source skills, and inspiration resources.</p>
+          <div class="hub-actions">
             <a class="hub-action" href="./design-master/" data-en="Project" data-zh="项目">Project</a>
             <a class="hub-action" href="https://github.com/Guojiz/design-master" target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </article>
 
-        <article class="hub-cell">
+        <article class="hub-cell" data-category="media" data-date="2026-07-22" data-name="ai subtitle extractor">
           <div class="hub-top">
-            <span class="hub-index" aria-hidden="true">03</span>
+            <span class="hub-index" aria-hidden="true">07</span>
             <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
           </div>
-          <h3 class="hub-name">GitLearnOS</h3>
-          <p class="hub-field" data-en="Learning system" data-zh="学习系统">Learning system</p>
-          <p class="hub-desc" data-en="A learner-owned GitHub + AI learning system that organizes learning from different sources, generates targeted questions, and preserves verified progress." data-zh="学习者自己拥有的 GitHub + AI 学习系统，用于整理不同来源的学习内容、生成针对性问题，并保存经过验证的学习进展。">A learner-owned GitHub + AI learning system that organizes learning from different sources, generates targeted questions, and preserves verified progress.</p>
-          <div class="hub-actions" data-video-key="gitlearnos">
-            <a class="hub-action" href="./gitlearnos/" data-en="Project" data-zh="项目">Project</a>
-            <a class="hub-action" href="https://github.com/Guojiz/GitLearnOS" target="_blank" rel="noreferrer">GitHub</a>
+          <h3 class="hub-name">AI Subtitle Extractor</h3>
+          <p class="hub-field" data-en="Subtitle tooling" data-zh="字幕工具">Subtitle tooling</p>
+          <p class="hub-desc" data-en="Turn online video links into clean transcripts — human subtitle tracks first, automatic tracks as fallback, translated into your target language by an AI agent." data-zh="将在线视频链接转换为干净文稿——优先人工字幕，自动字幕作后补，再由 AI Agent 翻译成目标语言。">Turn online video links into clean transcripts — human subtitle tracks first, automatic tracks as fallback, translated into your target language by an AI agent.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="./ai-subtitle-extractor/" data-en="Project" data-zh="项目">Project</a>
+            <a class="hub-action" href="https://github.com/Guojiz/ai-subtitle-extractor" target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </article>
 
-        <article class="hub-cell">
+        <article class="hub-cell" data-category="learning" data-date="2026-07-21" data-name="word snap">
           <div class="hub-top">
-            <span class="hub-index" aria-hidden="true">04</span>
+            <span class="hub-index" aria-hidden="true">08</span>
             <span class="hub-status" data-en="Live" data-zh="在线">Live</span>
           </div>
           <h3 class="hub-name">Word Snap</h3>
           <p class="hub-field" data-en="Vocabulary practice" data-zh="词汇练习">Vocabulary practice</p>
           <p class="hub-desc" data-en="A bilingual vocabulary matching app with immediate feedback, custom word lists, adaptive review, and PWA installation." data-zh="支持即时反馈、自定义词表、自适应复习和 PWA 安装的双语单词匹配应用。">A bilingual vocabulary matching app with immediate feedback, custom word lists, adaptive review, and PWA installation.</p>
-          <div class="hub-actions" data-video-key="word-snap">
+          <div class="hub-actions">
             <a class="hub-action" href="./word-snap/" data-en="Live Demo" data-zh="在线体验">Live Demo</a>
             <a class="hub-action" href="https://github.com/Guojiz/word-snap" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="llm" data-date="2026-07-14" data-name="llm provider compat">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">09</span>
+            <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
+          </div>
+          <h3 class="hub-name">Provider Compat</h3>
+          <p class="hub-field" data-en="Model tooling" data-zh="模型工具">Model tooling</p>
+          <p class="hub-desc" data-en="A universal compatibility layer that normalizes provider-specific payload differences behind one interface." data-zh="用一层接口统一不同模型提供商差异的通用兼容层。">A universal compatibility layer that normalizes provider-specific payload differences behind one interface.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://github.com/Guojiz/llm-provider-compat" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <article class="hub-cell" data-category="llm" data-date="2026-05-10" data-name="context proxy mcp">
+          <div class="hub-top">
+            <span class="hub-index" aria-hidden="true">10</span>
+            <span class="hub-status" data-en="Open" data-zh="开放">Open</span>
+          </div>
+          <h3 class="hub-name">Context Proxy MCP</h3>
+          <p class="hub-field" data-en="Context management" data-zh="上下文管理">Context management</p>
+          <p class="hub-desc" data-en="Offloads context management to a lightweight model, so an expensive reasoning model can focus on reasoning." data-zh="把上下文管理交给轻量模型，让昂贵的推理模型专注推理。">Offloads context management to a lightweight model, so an expensive reasoning model can focus on reasoning.</p>
+          <div class="hub-actions">
+            <a class="hub-action" href="https://github.com/Guojiz/Context-Proxy-MCP" target="_blank" rel="noreferrer">GitHub</a>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="dual-field" aria-label="Build and research overview">
-      <article class="build-panel" data-reveal>
-        <div class="panel-label"><span>02</span><span data-en="Things I build" data-zh="我做的东西">Things I build</span></div>
-        <h2 data-en="Useful systems for real work and real learning." data-zh="面向真实工作与真实学习的实用系统。">Useful systems for real work and real learning.</h2>
-
-        <div class="featured-projects">
-          <a class="feature-row" href="./FastCUA/">
-            <span class="feature-number">A</span>
-            <span class="feature-copy">
-              <strong>FastCUA</strong>
-              <small data-en="Structured UI information and efficient multi-action execution · in development" data-zh="结构化界面信息与高效多步操作 · 开发中">Structured UI information and efficient multi-action execution · in development</small>
-            </span>
-            <span class="feature-action" data-en="Project" data-zh="项目">Project</span>
-          </a>
-          <a class="feature-row" href="https://github.com/Guojiz/claude-desktop-tweak-models" target="_blank" rel="noreferrer">
-            <span class="feature-number">B</span>
-            <span class="feature-copy">
-              <strong>Claude Desktop Tweak Models</strong>
-              <small data-en="Connect Claude Desktop workflows to supported third-party model gateways" data-zh="将 Claude Desktop 工作流连接到受支持的第三方模型网关">Connect Claude Desktop workflows to supported third-party model gateways</small>
-            </span>
-            <span class="feature-action">GitHub</span>
-          </a>
-          <a class="feature-row" href="https://github.com/Guojiz/llm-provider-compat" target="_blank" rel="noreferrer">
-            <span class="feature-number">C</span>
-            <span class="feature-copy">
-              <strong>llm-provider-compat</strong>
-              <small data-en="One compatibility layer across LLM providers" data-zh="统一不同 LLM 提供商的兼容层">One compatibility layer across LLM providers</small>
-            </span>
-            <span class="feature-action">GitHub</span>
-          </a>
-        </div>
-
-        <a class="text-link panel-link" href="#archive" data-en="View the full project archive" data-zh="查看完整项目档案">View the full project archive</a>
-      </article>
-
-      <article class="research-panel" id="research" data-reveal>
-        <div class="panel-label"><span>03</span><span data-en="Questions I study" data-zh="我研究的问题">Questions I study</span></div>
+    <section class="research-wrap" id="research" aria-labelledby="research-title">
+      <article class="research-panel" data-reveal>
+        <div class="panel-label"><span>02</span><span data-en="Questions I study" data-zh="我研究的问题">Questions I study</span></div>
         <div class="research-heading">
-          <h2 data-en="AI safety, in careful development." data-zh="谨慎推进中的 AI safety 研究。">AI safety, in careful development.</h2>
+          <h2 id="research-title" data-en="AI safety, in careful development." data-zh="谨慎推进中的 AI safety 研究。">AI safety, in careful development.</h2>
           <span class="status-chip" data-en="Revising" data-zh="整理中">Revising</span>
         </div>
         <p class="research-intro" data-en="This work is not open yet. I am reading, testing the language, and revising the framework before publishing it." data-zh="这部分研究暂未开放。我正在补充阅读、检验表述，并在发布前继续修改框架。">This work is not open yet. I am reading, testing the language, and revising the framework before publishing it.</p>
@@ -213,55 +272,9 @@
       </article>
     </section>
 
-    <section class="archive" id="archive" aria-labelledby="archive-title">
-      <header class="archive-head" data-reveal>
-        <div>
-          <p class="panel-label"><span>04</span><span data-en="Project archive" data-zh="项目档案">Project archive</span></p>
-          <h2 id="archive-title" data-en="Built in public." data-zh="公开地做，持续地改。">Built in public.</h2>
-        </div>
-        <div class="filter-group" role="group" aria-label="Filter projects">
-          <button class="filter is-active" type="button" data-filter="all" data-en="All" data-zh="全部">All</button>
-          <button class="filter" type="button" data-filter="tool" data-en="Tools" data-zh="工具">Tools</button>
-          <button class="filter" type="button" data-filter="learning" data-en="Learning" data-zh="学习">Learning</button>
-          <button class="filter" type="button" data-filter="utility" data-en="Utilities" data-zh="实用">Utilities</button>
-        </div>
-      </header>
-
-      <div class="project-table" data-reveal>
-        <div class="project-table-head" aria-hidden="true">
-          <span data-en="Project" data-zh="项目">Project</span>
-          <span data-en="Field" data-zh="类别">Field</span>
-          <span data-en="What it does" data-zh="作用">What it does</span>
-          <span data-en="Status" data-zh="状态">Status</span>
-        </div>
-
-        <a class="project-row" data-category="tool" href="./FastCUA/">
-          <strong>FastCUA</strong><span data-en="Computer use" data-zh="计算机操作">Computer use</span><span data-en="Structured UI information and efficient multi-action execution." data-zh="结构化界面信息与高效多步操作执行。">Structured UI information and efficient multi-action execution.</span><em data-en="In development" data-zh="开发中">In development</em>
-        </a>
-        <a class="project-row" data-category="tool" href="https://github.com/Guojiz/claude-desktop-tweak-models" target="_blank" rel="noreferrer">
-          <strong>Claude Desktop Tweak Models</strong><span data-en="Desktop tool" data-zh="桌面工具">Desktop tool</span><span data-en="Connect Claude Desktop workflows to supported third-party model gateways." data-zh="将 Claude Desktop 工作流连接到受支持的第三方模型网关。">Connect Claude Desktop workflows to supported third-party model gateways.</span><em data-en="Open" data-zh="开放">Open</em>
-        </a>
-        <a class="project-row" data-category="utility" href="https://github.com/Guojiz/ai-subtitle-extractor" target="_blank" rel="noreferrer">
-          <strong>AI Subtitle Extractor</strong><span data-en="Subtitle tooling" data-zh="字幕工具">Subtitle tooling</span><span data-en="Online video links to clean transcripts, AI-agent translated." data-zh="在线视频链接转干净文稿，由 AI Agent 翻译。">Online video links to clean transcripts, AI-agent translated.</span><em data-en="Open" data-zh="开放">Open</em>
-        </a>
-        <a class="project-row" data-category="tool" href="https://github.com/Guojiz/design-master" target="_blank" rel="noreferrer">
-          <strong>Design Master</strong><span data-en="AI design" data-zh="AI 设计">AI design</span><span data-en="Unified AI designer plugin over existing tools, plugins, and skills." data-zh="整合现有工具、插件与 Skill 的统一 AI 设计师插件。">Unified AI designer plugin over existing tools, plugins, and skills.</span><em data-en="Open" data-zh="开放">Open</em>
-        </a>
-        <a class="project-row" data-category="learning" href="./gitlearnos/">
-          <strong>GitLearnOS</strong><span data-en="Learning system" data-zh="学习系统">Learning system</span><span data-en="Learner-owned GitHub + AI learning system with verified progress." data-zh="学习者自有的 GitHub + AI 学习系统，保存经过验证的进展。">Learner-owned GitHub + AI learning system with verified progress.</span><em data-en="Open" data-zh="开放">Open</em>
-        </a>
-        <a class="project-row" data-category="learning" href="./word-snap/">
-          <strong>Word Snap</strong><span data-en="Practice" data-zh="练习">Practice</span><span data-en="Bilingual vocabulary matching with adaptive review and PWA install." data-zh="双语单词匹配练习，支持自适应复习与 PWA 安装。">Bilingual vocabulary matching with adaptive review and PWA install.</span><em data-en="Live" data-zh="在线">Live</em>
-        </a>
-        <a class="project-row" data-category="tool" href="https://github.com/Guojiz/llm-provider-compat" target="_blank" rel="noreferrer">
-          <strong>llm-provider-compat</strong><span data-en="LLM tooling" data-zh="LLM 工具">LLM tooling</span><span data-en="Normalize provider differences behind one layer." data-zh="用一层接口统一不同模型提供商。">Normalize provider differences behind one layer.</span><em data-en="Open" data-zh="开放">Open</em>
-        </a>
-      </div>
-    </section>
-
     <section class="closing" aria-labelledby="closing-title">
       <div class="closing-statement" data-reveal>
-        <p class="panel-label"><span>05</span><span data-en="Working principle" data-zh="工作原则">Working principle</span></p>
+        <p class="panel-label"><span>03</span><span data-en="Working principle" data-zh="工作原则">Working principle</span></p>
         <h2 id="closing-title" data-en="Use simple tools. Ask difficult questions. Keep the work open to revision." data-zh="用简单的工具，问困难的问题，并让工作始终可以被修改。">Use simple tools. Ask difficult questions. Keep the work open to revision.</h2>
       </div>
       <div class="closing-links" data-reveal>

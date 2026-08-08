@@ -98,24 +98,47 @@
     revealItems.forEach(function (item) { revealObserver.observe(item); });
   }
 
-  var filters = document.querySelectorAll(".filter");
-  var projects = document.querySelectorAll(".project-row");
-  filters.forEach(function (filterButton) {
+  /* Unified, equal-weight project grid: category filter + sort (newest / A-Z). */
+  var grid = document.getElementById("project-grid");
+  var cells = grid ? Array.prototype.slice.call(grid.querySelectorAll(".hub-cell")) : [];
+  var activeFilter = "all";
+  var activeSort = "new";
+
+  function applyWorkView() {
+    cells.forEach(function (cell) {
+      var visible = activeFilter === "all" || cell.getAttribute("data-category") === activeFilter;
+      cell.classList.toggle("is-hidden", !visible);
+      cell.setAttribute("aria-hidden", visible ? "false" : "true");
+    });
+    var ordered = cells.slice().sort(function (a, b) {
+      if (activeSort === "name") {
+        return a.getAttribute("data-name").localeCompare(b.getAttribute("data-name"));
+      }
+      return b.getAttribute("data-date").localeCompare(a.getAttribute("data-date"));
+    });
+    ordered.forEach(function (cell) { grid.appendChild(cell); });
+  }
+
+  document.querySelectorAll(".filter[data-filter]").forEach(function (filterButton) {
     filterButton.setAttribute("aria-pressed", filterButton.classList.contains("is-active") ? "true" : "false");
     filterButton.addEventListener("click", function () {
-      var selected = filterButton.getAttribute("data-filter");
-
-      filters.forEach(function (button) {
+      activeFilter = filterButton.getAttribute("data-filter");
+      document.querySelectorAll(".filter[data-filter]").forEach(function (button) {
         var active = button === filterButton;
         button.classList.toggle("is-active", active);
         button.setAttribute("aria-pressed", active ? "true" : "false");
       });
+      applyWorkView();
+    });
+  });
 
-      projects.forEach(function (project) {
-        var visible = selected === "all" || project.getAttribute("data-category") === selected;
-        project.classList.toggle("is-hidden", !visible);
-        project.setAttribute("aria-hidden", visible ? "false" : "true");
+  document.querySelectorAll(".sort[data-sort]").forEach(function (sortButton) {
+    sortButton.addEventListener("click", function () {
+      activeSort = sortButton.getAttribute("data-sort");
+      document.querySelectorAll(".sort[data-sort]").forEach(function (button) {
+        button.classList.toggle("is-active", button === sortButton);
       });
+      applyWorkView();
     });
   });
 

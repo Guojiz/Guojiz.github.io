@@ -513,6 +513,22 @@ h1 span { color: var(--blue); }
   transform: translateY(-2px);
 }
 
+/* Unified, equal-weight project index */
+.work-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 28px;
+  padding: 22px var(--page-pad);
+  border-top: 1px solid var(--ink);
+}
+.work-controls .filter-group { justify-content: flex-start; }
+.hub-grid.uniform { border-top: 0; }
+.hub-grid.uniform .hub-cell .hub-index { background: var(--ink); color: #fff; }
+.hub-cell.is-hidden { display: none; }
+.research-wrap .research-panel { width: 100%; }
+
 .dual-field {
   display: grid;
   grid-template-columns: 1fr 1fr;
