@@ -656,7 +656,7 @@ h1 span { color: var(--blue); }
 
 .project-groups {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border: 1px solid var(--ink);
 }
 
@@ -669,6 +669,7 @@ h1 span { color: var(--blue); }
 .project-group + .project-group { border-left: 1px solid var(--ink); }
 .project-group-creator { --group-accent: #d94331; --group-soft: #ffe7e1; }
 .project-group-learner { --group-accent: #8a6100; --group-soft: #fff0b7; }
+.project-group-gamer { --group-accent: #367153; --group-soft: #dff1e6; }
 
 .project-group > header {
   min-height: 220px;
