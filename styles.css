@@ -328,6 +328,9 @@ h1 span { color: var(--blue); }
 }
 .focus-block li:nth-child(2)::before { border-color: var(--coral); }
 .focus-block li:nth-child(3)::before { border-color: var(--yellow); }
+.focus-block a { color: inherit; text-decoration: none; }
+.focus-block a:hover,
+.focus-block a:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: .2em; }
 
 .social-rail {
   display: flex;
