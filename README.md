@@ -46,7 +46,6 @@ These repositories do not currently ship a standalone product site. They are lis
 - [llm-provider-compat](https://github.com/Guojiz/llm-provider-compat)
 - [ai-subtitle-extractor](https://github.com/Guojiz/ai-subtitle-extractor)
 - [design-master](https://github.com/Guojiz/design-master)
-- [comfyui-minimax-h3-studio](https://github.com/Guojiz/comfyui-minimax-h3-studio) (AI Video Studio)
 
 ## License
 
@@ -97,7 +96,6 @@ GitLearnOS 与 Word Snap 是仍在维护的产品入口。FastCUA 页面作为�
 - [llm-provider-compat](https://github.com/Guojiz/llm-provider-compat)
 - [ai-subtitle-extractor](https://github.com/Guojiz/ai-subtitle-extractor)
 - [design-master](https://github.com/Guojiz/design-master)
-- [comfyui-minimax-h3-studio](https://github.com/Guojiz/comfyui-minimax-h3-studio)（AI Video Studio）
 
 ## 许可证
 
