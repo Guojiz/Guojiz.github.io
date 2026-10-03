@@ -2510,12 +2510,16 @@
     }
 
     /**
-     * One round = up to `roundSize` words, in this order:
+     * One round = up to `roundSize` words, *chosen* by priority:
      *   1. words missed last time (box 0, due)
      *   2. other words due for review, shakiest box first
      *   3. a small batch of new words — only while the "learning" pile is small,
      *      so importing 200 words never floods a round
      *   4. fill with words not yet due: lowest box, least recently seen first
+     * The chosen set is then *played* in random order: if missed words always
+     * came first, their position would give the answer away, and hard words
+     * would bunch up. Nothing is lost on a timeout — unplayed words keep their
+     * schedule and are still due next round.
      */
     function buildWordQueue() {
       const limit = state.settings.roundSize;
@@ -2535,7 +2539,7 @@
       if (state.mode === "weak") {
         const shaky = introduced.filter(word => isLearning(word) && !due.includes(word)).sort(byOldest);
         const weakQueue = [...missed, ...review.filter(isLearning), ...shaky].slice(0, limit);
-        if (weakQueue.length) return weakQueue;
+        if (weakQueue.length) return shuffle(weakQueue);
       }
 
       const queue = [...missed, ...review].slice(0, limit);
@@ -2550,13 +2554,10 @@
         newAllowance = minRound - queue.length - notDue.length;
       }
       const fresh = newWords.slice(0, Math.max(0, Math.min(newAllowance, limit - queue.length)));
-      // Mix the new words in among the reviews instead of one block at the end.
-      const mixed = [...queue.slice(0, missed.length), ...shuffle([...queue.slice(missed.length), ...fresh])];
-
       const fill = notDue
         .sort((a, b) => a.box - b.box || byOldest(a, b))
-        .slice(0, Math.max(0, limit - mixed.length));
-      return [...mixed, ...fill];
+        .slice(0, Math.max(0, limit - queue.length - fresh.length));
+      return shuffle([...queue, ...fresh, ...fill]);
     }
 
     function buildSequentialWordQueue(words) {

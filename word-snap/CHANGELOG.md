@@ -26,7 +26,7 @@
 
 - Synonyms count as correct: when two entries share the same meaning (or the same English word), matching either one is accepted. Previously `大的` ↔ `large` was marked wrong if the card belonged to `big`.
 - **Review logic replaced with a box system (Leitner).** The old scheduler stacked six layers (weakness score, weighted random, draw balancing, recent-history down-weighting, time-based intervals, a separate mastered flag) and could not explain why a word appeared. Now each word is in box 0–5: wrong → box 0 and back next round; right *when due* → one box up, with the gap doubling (1, 2, 4, 8, 16, 32 rounds). Gaps count rounds because a web page cannot send reminders; equivalent day gaps (10 min, 1, 3, 7, 14, 30 days) make words due for someone returning after a break.
-- Each round is built as: missed words → other due words → a small batch of new words (only while the “learning” pile is small) → fill with not-yet-due words. Imports of hundreds of words now enter gradually.
+- Each round's words are chosen by priority: missed words → other due words → a small batch of new words (only while the “learning” pile is small) → fill with not-yet-due words. Imports of hundreds of words now enter gradually. The chosen words are then shuffled, so position never hints which words you missed; unplayed words stay due if time runs out.
 - On a wrong pair, the word being answered goes to box 0; the wrongly picked word only drops one box.
 - Removed the “Adaptive recent history” and “Adaptive anti-repeat strength” options. Library rows show each word's stage (New / Box n/5 / Mastered) instead of draw statistics.
 - Existing progress is migrated (old review level → box; old “mastered” → box 5).

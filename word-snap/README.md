@@ -70,12 +70,14 @@ Each word sits in box 0–5:
 - Right pair → one box up, **only if the word was due**. Matching it again early does not count.
 - Synonyms (same meaning or same word) are accepted as correct.
 
-Each round (up to “Words per round”) is built in this order:
+Which words go into a round (up to “Words per round”) is decided by priority:
 
 1. words missed last time;
 2. other due words, lowest box first;
 3. a small batch of new words (about a third of a round) — only while fewer than a round's worth of words are still in boxes 0–1, so a 200-word import never floods you;
 4. fill with words not yet due, lowest box and least recently seen first.
+
+The chosen words are then **shuffled**. If missed words always came first, their position would give the answer away and hard words would bunch up. Nothing is lost if time runs out: words you didn't get to keep their schedule and are still due next round. (“All in order” mode keeps library order.)
 
 The library is meant to keep growing; you don't need to clear it. Mastered words simply come up rarely.
 
