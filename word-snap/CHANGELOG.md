@@ -1,5 +1,40 @@
 # Changelog
 
+## 2026-10-04
+
+### Added
+
+- First-visit intro: a short “how to play” card (meanings ↔ words, timed levels, missed words come back, Library / AI import). Shown once for new users; reopen it from Library → How to play. The level timer is paused while it is open.
+- Library **Danger zone**: “Clear all words” moved out of the import section into a red section at the bottom, with its design purpose written next to it (the library is meant to grow; clearing is only for switching to a completely different set). The confirm dialog states the word count and that it cannot be undone. A new “Copy word list backup” button copies the list in Bulk-input format (tab-separated + `@lang`), so pasting it back restores the words.
+
+### Fixed
+
+- The completion / time-up screen could not be scrolled on phones (the page is locked against bounce), so a long review list was cut off. The main column now scrolls, and each new level starts scrolled to the top.
+
+- Word text is now HTML-escaped everywhere (cards, word list, weak list, language-pair names). Imported entries like `x < y` or `<b>` no longer break the board or inject markup.
+- The `×` button in the lesson bar wiped **all** learning progress without asking. It now restarts the current level; Reset / Clear progress ask for confirmation first.
+- “Add one” with empty fields added a blank card. It now asks for both fields and reports duplicates.
+- The level timer kept running while the Library was open or the tab/app was in the background, so editing words or switching apps cost time. It now pauses and resumes; paused time is excluded from pace and reaction-time samples.
+- The library list was rebuilt four times a second by the timer tick, which could swallow clicks on Delete.
+- “All in order” mode sorted by id string (`base-10` before `base-2`); it now follows library order.
+- Practice mode was only switchable from a hidden side panel; it is now in Practice options.
+- Removed the “Refill after N clears” option, which had no effect. “Pause refill while a card is selected” is now actually honored.
+- Long words and meanings wrap to two lines instead of being cut off with “…”.
+- Removed dead duplicate copies of the board functions left over from the old fixed-board version.
+
+### Changed (learning logic)
+
+- Synonyms count as correct: when two entries share the same meaning (or the same English word), matching either one is accepted. Previously `大的` ↔ `large` was marked wrong if the card belonged to `big`.
+- **Review logic replaced with a box system (Leitner).** The old scheduler stacked six layers (weakness score, weighted random, draw balancing, recent-history down-weighting, time-based intervals, a separate mastered flag) and could not explain why a word appeared. Now each word is in box 0–5: wrong → box 0 and back next round; right *when due* → one box up, with the gap doubling (1, 2, 4, 8, 16, 32 rounds). Gaps count rounds because a web page cannot send reminders; equivalent day gaps (10 min, 1, 3, 7, 14, 30 days) make words due for someone returning after a break.
+- Each round is built as: missed words → other due words → a small batch of new words (only while the “learning” pile is small) → fill with not-yet-due words. Imports of hundreds of words now enter gradually.
+- On a wrong pair, the word being answered goes to box 0; the wrongly picked word only drops one box.
+- Removed the “Adaptive recent history” and “Adaptive anti-repeat strength” options. Library rows show each word's stage (New / Box n/5 / Mastered) instead of draw statistics.
+- Existing progress is migrated (old review level → box; old “mastered” → box 5).
+- The completion screen shows pairs matched and mistakes for the level, and lists the words you mixed up with their meanings.
+- Bulk import also accepts tab-separated rows and `word - meaning`, and splits only on the first separator so meanings can contain commas.
+- Enter / Space continues from the completion screen.
+- Service worker cache bumped to `word-snap-v34`.
+
 ## 2026-07-20
 
 ### Added

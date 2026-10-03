@@ -20,11 +20,14 @@ Word Snap is a static single-page vocabulary matching practice app. Match pairs 
 - Instant match feedback (no submit step).
 - Correct pairs flash and clear; new words refill from the queue.
 - Wrong pairs shake and roll back into practice.
-- Adaptive review: mistakes, slow answers, unstable words, and due reviews come first.
-- Per-word draw tracking: `draws`, `lastDrawRound`, `drawProbability`.
-- Single and bulk word import; every word can be deleted or cleared.
+- Box-based review: missed words come back next round, correct ones after longer and longer gaps; new words arrive in small batches.
+- Single and bulk word import; every word can be deleted.
+- **Danger zone → Clear all words.** The library is designed to keep growing: practice mixes reviewing old words with learning new ones, and mastered words simply come up less often, so you normally never clear it. Clearing is only for switching to a completely different set (new textbook, term, or language). Use **Copy word list backup** first; pasting the backup into Bulk input restores the words (not their progress).
 - Empty-library prompt when there is nothing to practice.
-- Practice options: level timer, refill batch size, refill delay, recent-history window, anti-repeat strength, pause refill while selected, recycle mastered words.
+- Practice options: practice mode (adaptive / weak only / all in order), level timer, refill delay, pause refill while selected, recycle mastered words.
+- Synonyms count: if two entries share a meaning (e.g. `big` / `large` = 大的), either English card matches it.
+- End-of-level review: words you mixed up are listed with their meaning.
+- The level timer pauses while the Library is open or the app is in the background.
 - Configurable **language-pair labels** (display only — see below).
 - UI language: **English / 中文** toggle with browser detection + local preference.
 - PWA basics: manifest, icons, service worker, Add to Home Screen.
@@ -48,24 +51,33 @@ In **Library → Practice options → Language pair** you can rename the two col
 
 **Important (Option 2):** only the **labels** change. Internal fields remain `en` / `zh`, and matching logic is unchanged. The left column always shows the `zh` field content; the right column always shows the `en` field content. Choosing “中文 → English” as labels does **not** flip the board. Built-in starter words are English ↔ Chinese only. Full field rename (`en`/`zh` → `a`/`b`) is on the roadmap (Option 1).
 
-## Adaptive draw logic
+## Review logic (boxes)
 
-Word Snap is not pure random. It reduces immediate repeats while boosting under-practiced, mistaken, slow, or due words.
+Word Snap uses a simple box system (Leitner). It is a web page and cannot send reminders, so gaps are counted in **rounds played**, not on the clock.
 
-Each word stores:
+Each word sits in box 0–5:
 
-- `draws` — times drawn onto the board
-- `lastDrawRound` — last level it appeared
-- `drawProbability` — weight used when building the queue
+| Box | Comes back after | …or after (if you were away) |
+| --- | --- | --- |
+| 0 — just missed | next round | 10 minutes |
+| 1 | 2 rounds | 1 day |
+| 2 | 4 rounds | 3 days |
+| 3 | 8 rounds | 7 days |
+| 4 | 16 rounds | 14 days |
+| 5 — mastered | 32 rounds (spot check) | 30 days |
 
-When building a queue it:
+- Wrong pair → the word you were answering goes to box 0; the card you wrongly picked drops one box.
+- Right pair → one box up, **only if the word was due**. Matching it again early does not count.
+- Synonyms (same meaning or same word) are accepted as correct.
 
-- prioritizes due, weak, slow, and mistaken words;
-- down-weights recent history;
-- boosts words below average draws;
-- reduces words above average draws;
-- can recycle mastered words so the queue never empties;
-- pauses refill while a card is selected so new cards do not interrupt choice.
+Each round (up to “Words per round”) is built in this order:
+
+1. words missed last time;
+2. other due words, lowest box first;
+3. a small batch of new words (about a third of a round) — only while fewer than a round's worth of words are still in boxes 0–1, so a 200-word import never floods you;
+4. fill with words not yet due, lowest box and least recently seen first.
+
+The library is meant to keep growing; you don't need to clear it. Mastered words simply come up rarely.
 
 ## How to use
 
@@ -89,7 +101,7 @@ banana,香蕉
 UNESCO = 联合国教科文组织
 ```
 
-Comma and `=` are both supported. First field maps to the internal `en` side; second maps to `zh`.
+Tab (spreadsheet / Anki paste), `=`, comma (`,` or `，`) and a spaced dash (`word - meaning`) are supported. Only the first separator splits the line, so a meaning may contain commas. First field maps to the internal `en` side; second maps to `zh`.
 
 ## Data
 
@@ -123,8 +135,12 @@ Word Snap 是一个静态单页单词配对练习网页，通过配对（默认�
 ## 功能特点
 
 - 10 格流式配对：左 5、右 5；快捷键 `1`–`0`；即时判定。
-- 自适应复习、抽取统计、单条/批量加词、可清空词库。
-- 练习选项：每关时间、补词批量与延迟、历史窗口、防重复强度、选中暂停补词、掌握后循环。
+- 盒子式复习（答错下一轮再来，答对隔得越来越久）、新词小批量加入、单条/批量加词、单个删除。
+- **危险操作 → 清空全部词。** 词库的设计是越积越多：练习会自动混合复习旧词和学习新词，掌握的词只是出现得更少，所以平时不需要清空。只有彻底换一套词（换教材、换学期、换语言）时才用。清空前先点「复制词表备份」，之后粘贴回「批量录入」即可恢复单词（学习进度不恢复）。
+- 练习选项：练习模式（自适应 / 只练弱项 / 全量顺序）、每关时间、补词延迟、选中暂停补词、掌握后循环。
+- 同义词都算对：两个词条释义相同时（如 `big` / `large` = 大的），任一英文卡都能配上。
+- 每关结束列出本关混淆过的词及释义，方便回顾。
+- 打开词库或切到后台时，本关计时自动暂停。
 - **界面中英切换**；**语言对标签**可配置（见下）。
 - PWA：manifest、图标、service worker、添加到主屏幕。
 
@@ -153,7 +169,7 @@ apple,苹果
 UNESCO = 联合国教科文组织
 ```
 
-第一段写入内部 `en` 侧，第二段写入 `zh` 侧。
+也支持 Tab（从表格 / Anki 复制）和带空格的短横线（`word - 释义`）。只按第一个分隔符拆分，释义里可以有逗号。第一段写入内部 `en` 侧，第二段写入 `zh` 侧。
 
 ## 数据说明
 

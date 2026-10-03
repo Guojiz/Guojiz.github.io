@@ -147,7 +147,7 @@
     }
 
     .app {
-      min-height: 100vh;
+      height: 100%;
       display: grid;
       grid-template-columns: 96px 1fr;
     }
@@ -209,9 +209,16 @@
 
     .main {
       min-width: 0;
+      min-height: 0;
       display: flex;
       justify-content: center;
       padding: 36px 36px 28px;
+      /* The page itself is locked (no bounce / pinch); this column scrolls instead,
+         so a long end-of-level review list stays reachable on small screens. */
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
     }
 
     .mobile-nav {
@@ -419,6 +426,61 @@
       white-space: nowrap;
     }
 
+    .word.long {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      line-height: 1.15;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+      text-align: left;
+    }
+
+    .review-list:empty {
+      display: none;
+    }
+
+    .review-list li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      background: var(--panel-soft);
+      overflow-wrap: anywhere;
+    }
+
+    .review-list b {
+      color: var(--text);
+    }
+
+    .review-list span {
+      color: var(--muted);
+    }
+
+    .review-heading {
+      margin: 0 0 10px;
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .review-heading:empty {
+      display: none;
+    }
+
     .duo-button {
       min-width: 150px;
       height: 50px;
@@ -453,6 +515,26 @@
       background: transparent;
       border: 2px solid var(--line);
       box-shadow: 0 4px 0 var(--card-shadow);
+    }
+
+    .duo-button.danger {
+      color: #fff;
+      background: var(--red-deep);
+      box-shadow: 0 4px 0 var(--wrong-shadow);
+    }
+
+    .danger-zone {
+      margin: 16px;
+      border: 2px solid var(--red);
+      border-radius: 14px;
+    }
+
+    .danger-zone h2 {
+      color: var(--red);
+    }
+
+    .danger-zone p b {
+      color: var(--text);
     }
 
     .duo-button.warning {
@@ -736,6 +818,11 @@
       white-space: nowrap;
     }
 
+    .intro-link {
+      margin: 6px 0 0 -8px;
+      color: var(--blue);
+    }
+
     .link-button {
       display: inline-grid;
       min-height: 32px;
@@ -933,7 +1020,7 @@
 
       .main {
         display: block;
-        padding: 28px 18px;
+        padding: 28px 18px calc(28px + env(safe-area-inset-bottom));
       }
 
       .mobile-nav {
@@ -986,6 +1073,10 @@
         font-size: 15px;
       }
 
+      .word.long {
+        font-size: 13px;
+      }
+
       .duo-button {
         width: 100%;
       }
@@ -1034,6 +1125,70 @@
     .lang-toggle .sep {
       opacity: .35;
     }
+    .intro-card {
+      width: min(460px, 100%);
+    }
+
+    .intro-steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0 20px;
+      list-style: none;
+      counter-reset: intro;
+    }
+
+    .intro-steps li {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      counter-increment: intro;
+    }
+
+    .intro-steps li::before {
+      content: counter(intro);
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--on-accent);
+      background: var(--green);
+      font-weight: 1000;
+    }
+
+    .intro-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px;
+    }
+
+    .intro-demo {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin: 0 20px 18px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .intro-demo span {
+      border: 2px solid var(--blue);
+      border-radius: var(--radius);
+      padding: 10px;
+      color: var(--selected-ink);
+      background: var(--selected-bg);
+    }
+
+    .intro-demo b {
+      color: var(--green);
+    }
+
     .lang-pair-custom {
       grid-column: 1 / -1;
     }
@@ -1077,6 +1232,8 @@
           <div class="completion-badge">✓</div>
           <h2 id="completionTitle" data-en="Round complete" data-zh="这一轮结束">这一轮结束</h2>
           <p id="completionText" data-en="Next round prioritizes words you don't know well." data-zh="下一轮会优先出现你不熟的词。">下一轮会优先出现你不熟的词。</p>
+          <p class="review-heading" id="reviewHeading"></p>
+          <ul class="review-list" id="reviewList"></ul>
           <button class="duo-button" type="button" id="continueBtn" data-en="Continue" data-zh="继续">继续</button>
         </div>
 
@@ -1085,7 +1242,7 @@
       <aside class="panel" aria-label="练习状态" data-en-aria="Practice status" data-zh-aria="练习状态">
         <div class="panel-head">
           <h2 data-en="Word training" data-zh="单词训练">单词训练</h2>
-          <p data-en="Adaptive: missed, slow, and once-correct words show up first." data-zh="自适应分配：错词、慢词、只答对一次的词会优先出现。">自适应分配：错词、慢词、只答对一次的词会优先出现。</p>
+          <p data-en="Missed words come back next round; correct ones come back after longer and longer gaps." data-zh="答错的词下一轮再来，答对的词隔得越来越久再来。">答错的词下一轮再来，答对的词隔得越来越久再来。</p>
         </div>
         <div class="stats">
           <div class="stat"><strong id="score">0</strong><span data-en="Correct" data-zh="正确配对">正确配对</span></div>
@@ -1118,12 +1275,34 @@
     </div>
   </div>
 
+  <div class="modal" id="introModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="modal-card intro-card">
+      <div class="modal-top">
+        <div>
+          <h2 id="introTitle" data-en="Welcome to Word Snap" data-zh="欢迎使用 Word Snap">欢迎使用 Word Snap</h2>
+          <p data-en="A quick matching game for reviewing vocabulary." data-zh="用配对小游戏快速复习单词。">用配对小游戏快速复习单词。</p>
+        </div>
+      </div>
+      <div class="intro-demo" aria-hidden="true"><span>文学</span><b>↔</b><span>literature</span></div>
+      <ol class="intro-steps">
+        <li data-en="Left: meanings. Right: words. Tap one card, then its match on the other side. On a keyboard, use 1–0." data-zh="左边是释义，右边是单词。先点一张，再点另一侧对应的那张。电脑上也可以按数字键 1–0。">左边是释义，右边是单词。先点一张，再点另一侧对应的那张。电脑上也可以按数字键 1–0。</li>
+        <li data-en="Each level is timed. Matched pairs disappear and new words slide in." data-zh="每关有时间限制。配对成功的卡片会消失，新词随即补上。">每关有时间限制。配对成功的卡片会消失，新词随即补上。</li>
+        <li data-en="Words you miss come back next round; words you get right come back after longer and longer gaps. New words arrive in small batches." data-zh="答错的词下一轮再来，答对的词隔得越来越久再来；新词每轮放一小批。每关结束还会列出你混淆的词。">答错的词下一轮再来，答对的词隔得越来越久再来；新词每轮放一小批。每关结束还会列出你混淆的词。</li>
+        <li data-en="Open Library to add your own words, or copy the AI prompt to generate a list. Everything stays in this browser." data-zh="在「词库」里可以添加自己的单词，或复制 AI 提示词让 AI 生成词表。数据只保存在这个浏览器里。">在「词库」里可以添加自己的单词，或复制 AI 提示词让 AI 生成词表。数据只保存在这个浏览器里。</li>
+      </ol>
+      <div class="intro-actions">
+        <button class="duo-button" type="button" id="introStartBtn" data-en="Start practicing" data-zh="开始练习">开始练习</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="libraryModal" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
     <div class="modal-card">
       <div class="modal-top">
         <div>
           <h2 id="libraryTitle" data-en="Library" data-zh="词库">词库</h2>
           <p id="librarySummary">在这里添加、删除或清空单词。修改只保存在当前浏览器里。</p>
+          <button class="link-button intro-link" type="button" id="showIntroBtn" data-en="How to play" data-zh="玩法说明">玩法说明</button>
         </div>
         <button class="icon-button" type="button" id="closeLibrary" aria-label="关闭" data-en-aria="Close" data-zh-aria="关闭">×</button>
       </div>
@@ -1136,9 +1315,10 @@
           </label>
           <label>
             <span id="sideLabelB">中文</span>
-            <input id="newChinese" autocomplete="off" placeholder="例子" data-en-ph="example" data-zh-ph="例子" />
+            <input id="newChinese" autocomplete="off" placeholder="释义" data-en-ph="meaning" data-zh-ph="释义" />
           </label>
         </div>
+        <p class="import-status" id="addOneStatus" role="status" aria-live="polite"></p>
         <div class="form-actions">
           <button class="duo-button secondary" type="button" id="addOneBtn" data-en="Add one" data-zh="添加一个">添加一个</button>
         </div>
@@ -1154,7 +1334,6 @@
         <div class="form-actions">
           <button class="duo-button secondary" type="button" id="copyAiPromptBtn" data-en="Copy AI prompt" data-zh="复制 AI 提示词">复制 AI 提示词</button>
           <button class="duo-button secondary" type="button" id="addBulkBtn" data-en="Bulk add" data-zh="批量添加">批量添加</button>
-          <button class="duo-button warning" type="button" id="clearCustomBtn" data-en="Clear all words" data-zh="清空全部词">清空全部词</button>
         </div>
       </section>
 
@@ -1174,6 +1353,10 @@
             <input id="langPairB" type="text" autocomplete="off" />
           </label>
           <label>
+            <span data-en="Practice mode" data-zh="练习模式">练习模式</span>
+            <select id="modeSelect"></select>
+          </label>
+          <label>
             <span data-en="Appearance" data-zh="外观">外观</span>
             <select id="colorModeSelect"></select>
           </label>
@@ -1190,24 +1373,12 @@
             <input id="levelTimeTolerance" type="number" min="0" max="2" step="0.05" />
           </label>
           <label>
-            <span data-en="Refill after N clears" data-zh="消掉几组后补词">消掉几组后补词</span>
-            <input id="refillTrigger" type="number" min="1" max="5" step="1" />
-          </label>
-          <label>
             <span data-en="Refill min delay (sec)" data-zh="补词最短延迟（秒）">补词最短延迟（秒）</span>
             <input id="refillMinSeconds" type="number" min="0.1" max="10" step="0.1" />
           </label>
           <label>
             <span data-en="Refill max delay (sec)" data-zh="补词最长延迟（秒）">补词最长延迟（秒）</span>
             <input id="refillMaxSeconds" type="number" min="0.1" max="15" step="0.1" />
-          </label>
-          <label>
-            <span data-en="Adaptive recent history" data-zh="自适应最近历史">自适应最近历史</span>
-            <input id="mlRecentHistory" type="number" min="0" max="100" step="1" />
-          </label>
-          <label>
-            <span data-en="Adaptive anti-repeat strength" data-zh="自适应防重复强度">自适应防重复强度</span>
-            <input id="mlAvoidanceWeight" type="number" min="0" max="1" step="0.1" />
           </label>
         </div>
         <label class="check-row">
@@ -1226,6 +1397,7 @@
           <input id="streakTones" type="checkbox" />
           <span data-en="Streak piano tones on correct matches" data-zh="连对时播放钢琴音阶">连对时播放钢琴音阶</span>
         </label>
+        <p class="import-status" id="optionsStatus" role="status" aria-live="polite"></p>
         <div class="form-actions">
           <button class="duo-button secondary" type="button" id="saveOptionsBtn" data-en="Save options" data-zh="保存选项">保存选项</button>
         </div>
@@ -1233,8 +1405,20 @@
 
       <section class="modal-section">
         <h2 data-en="Word list" data-zh="词库列表">词库列表</h2>
-        <p data-en="All words in your library. You can re-add after clearing." data-zh="这里显示当前词库里的全部单词。清空后可以重新录入。">这里显示当前词库里的全部单词。清空后可以重新录入。</p>
+        <p data-en="All words in your library. Delete single words here; mastered words simply come up less often." data-zh="这里显示当前词库里的全部单词。可以单独删除某个词；已经掌握的词只是出现得更少，不需要删。">这里显示当前词库里的全部单词。可以单独删除某个词；已经掌握的词只是出现得更少，不需要删。</p>
         <div class="custom-list" id="customList"></div>
+      </section>
+
+      <section class="modal-section danger-zone" aria-labelledby="dangerTitle">
+        <h2 id="dangerTitle" data-en="Danger zone" data-zh="危险操作">危险操作</h2>
+        <p data-en="&lt;b&gt;Clear all words&lt;/b&gt; deletes every word in your library together with its learning progress. This cannot be undone." data-zh="&lt;b&gt;清空全部词&lt;/b&gt;会删除词库里的所有单词，以及它们的学习进度，无法撤销。"><b>清空全部词</b>会删除词库里的所有单词，以及它们的学习进度，无法撤销。</p>
+        <p data-en="&lt;b&gt;Why it exists:&lt;/b&gt; the library is meant to keep growing. Practice mixes reviewing old words with learning new ones, so you normally never need to clear it. Use this only to switch to a completely different set, such as a new textbook, a new term, or another language." data-zh="&lt;b&gt;设计目的：&lt;/b&gt;词库是用来越积越多的。练习时会自动把复习旧词和学习新词混在一起安排，所以平时不需要清空。这个选项只用于彻底换一套词，比如换教材、换学期或换一种语言。"><b>设计目的：</b>词库是用来越积越多的。练习时会自动把复习旧词和学习新词混在一起安排，所以平时不需要清空。这个选项只用于彻底换一套词，比如换教材、换学期或换一种语言。</p>
+        <p data-en="Copy a backup first: pasting it back into Bulk input restores the words (but not their progress)." data-zh="清空前建议先复制备份：之后粘贴回「批量录入」即可恢复单词（学习进度不会恢复）。">清空前建议先复制备份：之后粘贴回「批量录入」即可恢复单词（学习进度不会恢复）。</p>
+        <p class="import-status" id="dangerStatus" role="status" aria-live="polite"></p>
+        <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="copyBackupBtn" data-en="Copy word list backup" data-zh="复制词表备份">复制词表备份</button>
+          <button class="duo-button danger" type="button" id="clearCustomBtn" data-en="Clear all words" data-zh="清空全部词">清空全部词</button>
+        </div>
       </section>
     </div>
   </div>
@@ -1330,7 +1514,7 @@
         },
         stats: {
           trainingTitle: "Word training",
-          trainingBlurb: "Adaptive: missed, slow, and once-correct words show up first.",
+          trainingBlurb: "Missed words come back next round; correct ones come back after longer and longer gaps.",
           correct: "Correct", mistakes: "Mistakes", streak: "Streak", unmastered: "Unmastered",
           modeBtn: "Mode: {label}", modeAdaptive: "Adaptive", modeWeak: "Weak only", modeAll: "All in order",
           clearProgress: "Clear progress"
@@ -1346,7 +1530,6 @@
           optLevelSeconds: "Base level time (sec)", optLevelTimeTolerance: "Time tolerance (e.g. 0.2)",
           optRefillTrigger: "Refill after N clears",
           optRefillMin: "Refill min delay (sec)", optRefillMax: "Refill max delay (sec)",
-          optMlRecent: "Adaptive recent history", optMlAvoidance: "Adaptive anti-repeat strength",
           optAdaptiveLevelTime: "Adaptive level time from last real clear pace (+ tolerance)",
           optPauseRefill: "Pause refill while a card is selected",
           optRecycleMastered: "Keep cycling after all mastered",
@@ -1354,7 +1537,7 @@
           saveOptions: "Save options",
           listTitle: "Word list",
           listBlurb: "All words in your library. You can re-add after clearing.",
-          deleteBtn: "Delete", drawCount: "Drawn {n}", drawProb: "Draw chance {p}",
+          deleteBtn: "Delete", stageNew: "New", stageBox: "Box {n}/{max}", stageMastered: "Mastered",
           emptyListA: "No words yet", emptyListB: "Add some above",
           langPairLabel: "Language pair", custom: "Custom", sideA: "Side A", sideB: "Side B"
         },
@@ -1371,9 +1554,14 @@
           optionsSaved: "Options saved. Takes effect next level.",
           addedOne: "New word added to next round.", addedN: "Added {n} new words.",
           emptyLib: "Library is empty. Add some words first.",
+          needBoth: "Fill in both the word and its meaning.",
+          alreadyInLibrary: "That word is already in the library.",
           continueNext: "Continue to the next set."
         },
-        confirm: { clearAllConfirm: "This will clear all words in your library. You can re-add them later. Continue?" },
+        confirm: {
+          clearAllConfirm: "Delete all {n} words and their learning progress? This cannot be undone.\n\nOnly do this to switch to a completely different word set. Copy a backup first if you might want these words back.",
+          resetProgress: "Clear all learning progress (mastery, review schedule, score)? Your word list is kept."
+        },
         timeouts: {
           allPass: "All passed!", timeUp: "Time's up!", levelComplete: "Level complete!", roundOver: "Round complete!",
           allDoneText: "Every word has been answered correctly in a row. Clear progress to start over, or add new words.",
@@ -1381,7 +1569,11 @@
           queueCleared: "Queue cleared. Wrong words rolled back for practice; {n} still shaky.",
           allStable: "Level done. All words are stable; you'll cycle through review next.",
           levelMatched: "Matched {n} pairs this level. Next reshuffles and prioritizes unfamiliar words.",
-          nextRoundPriority: "Next round prioritizes words you don't know well."
+          nextRoundPriority: "Next round prioritizes words you don't know well.",
+          levelSummary: "{done} pairs matched, {m} mistakes.",
+          stillLearning: "{n} words still need practice; they come back first.",
+          timeUpText: "Unfinished words stay in your practice queue.",
+          reviewHeading: "Review the words you mixed up"
         },
         install: {
           titleInstall: "Install Word Snap",
@@ -1400,7 +1592,10 @@
           nothing: "Nothing recognised. Paste the AI's answer (one “word,meaning” per line).",
           imported: "Added {n} words.", dupOnly: "No new words (already in the library).",
           config: "Settings applied: {list}.", skipped: "{n} unreadable lines skipped.",
-          cfgLang: "language {a} ↔ {b}", cfgRound: "{n} words per round", cfgTime: "{n}s per level"
+          cfgLang: "language {a} ↔ {b}", cfgRound: "{n} words per round", cfgTime: "{n}s per level",
+          backupCopied: "Backup of {n} words copied. Keep it somewhere safe (e.g. a note).",
+          backupFailed: "Couldn't copy automatically. The backup is in the Bulk input box above: copy it manually.",
+          backupEmpty: "The library is empty; nothing to back up."
         },
         langToggle: { en: "EN", zh: "中" }
       },
@@ -1421,7 +1616,7 @@
         },
         stats: {
           trainingTitle: "单词训练",
-          trainingBlurb: "自适应分配：错词、慢词、只答对一次的词会优先出现。",
+          trainingBlurb: "答错的词下一轮再来，答对的词隔得越来越久再来。",
           correct: "正确配对", mistakes: "错选", streak: "连对", unmastered: "未掌握",
           modeBtn: "模式：{label}", modeAdaptive: "自适应", modeWeak: "只练弱项", modeAll: "全量顺序",
           clearProgress: "清空进度"
@@ -1437,7 +1632,6 @@
           optLevelSeconds: "基础每关时间（秒）", optLevelTimeTolerance: "时间容错（如 0.2）",
           optRefillTrigger: "消掉几组后补词",
           optRefillMin: "补词最短延迟（秒）", optRefillMax: "补词最长延迟（秒）",
-          optMlRecent: "自适应最近历史", optMlAvoidance: "自适应防重复强度",
           optAdaptiveLevelTime: "按上次实际通关配速自适应本关时间（加容错）",
           optPauseRefill: "选中卡片时暂停补词，不打断当前选择",
           optRecycleMastered: "全部掌握后继续循环练习，不让队列空掉",
@@ -1445,7 +1639,7 @@
           saveOptions: "保存选项",
           listTitle: "词库列表",
           listBlurb: "这里显示当前词库里的全部单词。清空后可以重新录入。",
-          deleteBtn: "删除", drawCount: "抽 {n}", drawProb: "抽取概率 {p}",
+          deleteBtn: "删除", stageNew: "新词", stageBox: "熟练 {n}/{max}", stageMastered: "已掌握",
           emptyListA: "还没有单词", emptyListB: "请从上方录入",
           langPairLabel: "语言对", custom: "自定义", sideA: "左侧", sideB: "右侧"
         },
@@ -1462,9 +1656,14 @@
           optionsSaved: "练习选项已保存，下一关生效。",
           addedOne: "新词已加入下一轮。", addedN: "已加入 {n} 个新词。",
           emptyLib: "词库为空，请先补充单词。",
+          needBoth: "请同时填写单词和释义。",
+          alreadyInLibrary: "这个词已经在词库里了。",
           continueNext: "继续就会进入下一组。"
         },
-        confirm: { clearAllConfirm: "将清空当前词库里的全部单词。清空后可以重新添加，确定吗？" },
+        confirm: {
+          clearAllConfirm: "将删除全部 {n} 个单词及学习进度，无法撤销。\n\n只有在彻底换一套词时才需要这样做。如果以后可能还要用这些词，请先复制备份。确定清空吗？",
+          resetProgress: "清空全部学习进度（掌握情况、复习计划、得分）？词库里的单词会保留。"
+        },
         timeouts: {
           allPass: "全部过关", timeUp: "时间到", levelComplete: "这一关完成", roundOver: "这一轮结束",
           allDoneText: "所有词都连续答对过。可以清空进度再来一次，或者录入新词。",
@@ -1472,7 +1671,11 @@
           queueCleared: "本关队列已清空。错词已经回滚练过，还有 {n} 个词没有稳定。",
           allStable: "本关完成。所有词都稳定了，继续后会进入循环复习。",
           levelMatched: "这一关配对 {n} 组。继续后会重新洗牌，并优先出现不熟的词。",
-          nextRoundPriority: "下一轮会优先出现你不熟的词。"
+          nextRoundPriority: "下一轮会优先出现你不熟的词。",
+          levelSummary: "本关配对 {done} 组，错 {m} 次。",
+          stillLearning: "还有 {n} 个词需要巩固，接下来会优先出现。",
+          timeUpText: "没配完的词仍在练习队列里。",
+          reviewHeading: "回顾本关混淆的词"
         },
         install: {
           titleInstall: "安装 Word Snap",
@@ -1491,7 +1694,10 @@
           nothing: "没有识别到内容。请粘贴 AI 的回答（每行一个“单词,释义”）。",
           imported: "已添加 {n} 个单词。", dupOnly: "没有新增单词（都已在词库里）。",
           config: "已应用设置：{list}。", skipped: "跳过 {n} 行无法识别的内容。",
-          cfgLang: "语言 {a} ↔ {b}", cfgRound: "每局 {n} 词", cfgTime: "每关 {n} 秒"
+          cfgLang: "语言 {a} ↔ {b}", cfgRound: "每局 {n} 词", cfgTime: "每关 {n} 秒",
+          backupCopied: "已复制 {n} 个词的备份，请存到安全的地方（比如备忘录）。",
+          backupFailed: "无法自动复制，备份已放进上方「批量录入」框，请手动复制。",
+          backupEmpty: "词库是空的，没有可备份的内容。"
         },
         langToggle: { en: "EN", zh: "中" }
       }
@@ -1557,6 +1763,7 @@
           els.continueBtn.textContent = t("lesson.emptyAddBtn");
         } else {
           els.continueBtn.textContent = t("lesson.continueBtn");
+          if (state.lastCompletion) renderCompletionCopy();
         }
       }
     }
@@ -1579,8 +1786,6 @@
       pauseRefillWhileSelected: false,
       recycleMastered: true,
       streakTones: true,
-      mlRecentHistory: 20,
-      mlAvoidanceWeight: 0.8,
       langPair: { a: "English", b: "中文" }
     };
     const LANG_PAIR_PRESETS = [
@@ -1623,7 +1828,6 @@
       completionTitle: document.getElementById("completionTitle"),
       completionText: document.getElementById("completionText"),
       feedback: document.getElementById("feedback") || { set className(_) {}, set textContent(_) {} },
-      checkBtn: document.getElementById("checkBtn"),
       continueBtn: document.getElementById("continueBtn"),
       score: document.getElementById("score"),
       mistakes: document.getElementById("mistakes"),
@@ -1633,6 +1837,8 @@
       modeBtn: document.getElementById("modeBtn"),
       completionBadge: document.querySelector(".completion-badge"),
       libraryModal: document.getElementById("libraryModal"),
+      introModal: document.getElementById("introModal"),
+      main: document.querySelector(".main"),
       librarySummary: document.getElementById("librarySummary"),
       newEnglish: document.getElementById("newEnglish"),
       newChinese: document.getElementById("newChinese"),
@@ -1642,11 +1848,13 @@
       roundSize: document.getElementById("roundSize"),
       levelTimeTolerance: document.getElementById("levelTimeTolerance"),
       adaptiveLevelTime: document.getElementById("adaptiveLevelTime"),
-      refillTrigger: document.getElementById("refillTrigger"),
+      modeSelect: document.getElementById("modeSelect"),
+      optionsStatus: document.getElementById("optionsStatus"),
+      addOneStatus: document.getElementById("addOneStatus"),
+      reviewHeading: document.getElementById("reviewHeading"),
+      reviewList: document.getElementById("reviewList"),
       refillMinSeconds: document.getElementById("refillMinSeconds"),
       refillMaxSeconds: document.getElementById("refillMaxSeconds"),
-      mlRecentHistory: document.getElementById("mlRecentHistory"),
-      mlAvoidanceWeight: document.getElementById("mlAvoidanceWeight"),
       pauseRefillWhileSelected: document.getElementById("pauseRefillWhileSelected"),
       recycleMastered: document.getElementById("recycleMastered"),
       streakTones: document.getElementById("streakTones"),
@@ -1698,6 +1906,12 @@
       completedThisRun: 0,
       roundComplete: false,
       lastPairAt: 0,
+      pausedAt: 0,
+      // wordId -> when both halves of the pair were on the board (reaction-time baseline).
+      visibleAt: new Map(),
+      // Words confused during the current level, shown for review on the completion screen.
+      levelMisses: new Map(),
+      levelMistakes: 0,
       drawHistory: []
     };
 
@@ -1713,12 +1927,12 @@
         streak: 0,
         mastered: false,
         lastMs: 0,
-        reviewLevel: 0,
-        nextReviewAt: 0,
-        lastReviewedAt: 0,
+        // Review box 0–5 (see BOX_ROUND_GAPS). A word is "new" until first drawn (draws === 0).
+        box: 0,
+        dueRound: 0,
+        dueAt: 0,
         draws: 0,
-        lastDrawRound: 0,
-        drawProbability: 1
+        lastDrawRound: 0
       };
     }
 
@@ -1764,8 +1978,6 @@
         pauseRefillWhileSelected: raw.pauseRefillWhileSelected === true,
         recycleMastered: raw.recycleMastered !== false,
         streakTones: raw.streakTones !== false,
-        mlRecentHistory: Math.round(clampNumber(raw.mlRecentHistory, 0, 100, DEFAULT_SETTINGS.mlRecentHistory)),
-        mlAvoidanceWeight: clampNumber(raw.mlAvoidanceWeight, 0, 1, DEFAULT_SETTINGS.mlAvoidanceWeight),
         langPair: normalizeLangPair(raw.langPair)
       };
     }
@@ -1784,6 +1996,23 @@
       return normalized;
     }
 
+    /** Old saves stored reviewLevel / nextReviewAt (time-based). Map them onto the box model. */
+    function migrateBox(savedWord, savedRound) {
+      if (Number.isFinite(savedWord.box)) {
+        return {
+          box: Math.max(0, Math.min(MAX_BOX, Math.round(savedWord.box))),
+          dueRound: Number(savedWord.dueRound) || 0,
+          dueAt: Number(savedWord.dueAt) || 0
+        };
+      }
+      const box = savedWord.mastered ? MAX_BOX : Math.max(0, Math.min(MAX_BOX - 1, Math.round(savedWord.reviewLevel || 0)));
+      return {
+        box,
+        dueRound: box <= 1 ? savedRound : savedRound + BOX_ROUND_GAPS[box],
+        dueAt: Number(savedWord.nextReviewAt) || 0
+      };
+    }
+
     function loadWords(saved) {
       const base = starterWords.map((item, index) => createWord(item[0], item[1], false, `base-${index}`));
       if (!saved || !Array.isArray(saved.words)) return base;
@@ -1796,15 +2025,12 @@
           correct: savedWord.correct || 0,
           mistakes: savedWord.mistakes || 0,
           streak: savedWord.streak || 0,
-          mastered: Boolean(savedWord.mastered),
           lastMs: savedWord.lastMs || 0,
-          reviewLevel: savedWord.reviewLevel || 0,
-          nextReviewAt: savedWord.nextReviewAt || 0,
-          lastReviewedAt: savedWord.lastReviewedAt || 0,
+          ...migrateBox(savedWord, Math.max(1, Math.round(Number(saved.round) || 1))),
           draws: savedWord.draws || 0,
-          lastDrawRound: savedWord.lastDrawRound || 0,
-          drawProbability: savedWord.drawProbability || 1
-        }));
+          lastDrawRound: savedWord.lastDrawRound || 0
+        }))
+        .map(word => ({ ...word, mastered: word.box >= MAX_BOX }));
     }
 
     function saveWords() {
@@ -2009,259 +2235,77 @@
       return copy;
     }
 
+    // ---- Review boxes (Leitner) ----
+    // Wrong → box 0, comes back next round. Right when due → one box up, and the
+    // gap before it returns doubles. Gaps count rounds played, because a web page
+    // cannot send reminders; the day gaps only make words due for someone who
+    // comes back after a break.
+    const MAX_BOX = 5;
+    const BOX_ROUND_GAPS = [1, 2, 4, 8, 16, 32];
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const BOX_TIME_GAPS = [10 * 60 * 1000, DAY_MS, 3 * DAY_MS, 7 * DAY_MS, 14 * DAY_MS, 30 * DAY_MS];
+
+    function isNewWord(word) {
+      return !(word.draws > 0);
+    }
+
     function isDueForReview(word, now = Date.now()) {
-      return word.nextReviewAt > 0 && word.nextReviewAt <= now;
+      if (isNewWord(word)) return false;
+      return state.round >= (word.dueRound || 0) || (word.dueAt > 0 && now >= word.dueAt);
     }
 
-    function reviewUrgency(word, now = Date.now()) {
-      if (!word.nextReviewAt) return 0;
-      return Math.max(0, now - word.nextReviewAt) / 60000;
+    /** Introduced but not yet steady (box 0–1): the "currently learning" pile. */
+    function isLearning(word) {
+      return !isNewWord(word) && word.box <= 1;
     }
 
-    function weakness(word) {
-      const drawPressure = Math.max(0, 4 - (word.draws || 0)) * 2;
-      const spacingPressure = word.lastDrawRound ? Math.min(6, Math.max(0, state.round - word.lastDrawRound)) : 4;
-      return word.mistakes * 6
-        + Math.max(0, 2 - word.streak) * 3
-        + (word.seen ? 0 : 3)
-        + (word.lastMs > 4200 ? 2 : 0)
-        + (isDueForReview(word) ? 8 : 0)
-        + Math.min(6, reviewUrgency(word))
-        + drawPressure
-        + spacingPressure;
+    function scheduleBox(word, box) {
+      word.box = Math.max(0, Math.min(MAX_BOX, box));
+      word.dueRound = state.round + BOX_ROUND_GAPS[word.box];
+      word.dueAt = Date.now() + BOX_TIME_GAPS[word.box];
+      word.mastered = word.box >= MAX_BOX;
     }
 
-    function applyReviewSuccess(word) {
-      const now = Date.now();
-      const nextLevel = Math.min(word.reviewLevel + 1, REVIEW_INTERVALS.length);
-      const interval = REVIEW_INTERVALS[Math.max(0, nextLevel - 1)] || REVIEW_INTERVALS[REVIEW_INTERVALS.length - 1];
-      word.reviewLevel = nextLevel;
-      word.lastReviewedAt = now;
-      word.nextReviewAt = now + interval;
-      word.mastered = word.streak >= 2 && word.reviewLevel >= 2;
-    }
-
-    function applyReviewFailure(word) {
-      const now = Date.now();
-      word.reviewLevel = 0;
-      word.lastReviewedAt = now;
-      word.nextReviewAt = now + REVIEW_INTERVALS[0];
-      word.mastered = false;
-    }
-
-    function chooseRound() {
-      const unmastered = state.words.filter(word => !word.mastered);
-      if (!unmastered.length) return [];
-
-      if (state.mode === "all") {
-        return unmastered.sort((a, b) => a.id.localeCompare(b.id)).slice(0, 5);
+    /** Right answer. Only a due word moves up — matching it again early proves nothing about memory. */
+    function recordCorrect(word) {
+      if (isDueForReview(word)) {
+        scheduleBox(word, word.box + 1);
       }
-
-      const weak = unmastered
-        .filter(word => word.mistakes > 0 || word.streak < 2)
-        .sort((a, b) => weakness(b) - weakness(a));
-
-      if (state.mode === "weak") {
-        return (weak.length ? weak : unmastered).slice(0, 5);
-      }
-
-      const unseen = unmastered.filter(word => word.seen === 0);
-      let pool = [...weak.slice(0, 4), ...unseen.slice(0, 2)];
-      pool = Array.from(new Map(pool.map(word => [word.id, word])).values());
-      if (pool.length < 5) {
-        pool = [...pool, ...unmastered.filter(word => !pool.includes(word))];
-      }
-      return pool.slice(0, 5);
     }
 
-    function renderRound() {
-      state.selected = null;
-      state.solvedIds = new Set();
-      state.activePairs = chooseRound();
-      state.roundStartedAt = performance.now();
-
-      if (!state.activePairs.length) {
-        showCompletion(true);
-        return;
-      }
-
-      els.practiceView.classList.remove("hidden");
-      els.completionView.classList.remove("show");
-      els.roundLabel.textContent = t("lesson.roundN", { n: state.round });
-      els.feedback.className = "feedback";
-      els.feedback.textContent = t("feedback.pickPair");
-      if (els.checkBtn) els.checkBtn.disabled = true;
-      els.matchGrid.innerHTML = "";
-
-      const zhTiles = shuffle(state.activePairs).map(word => ({ word, type: "zh" }));
-      const enTiles = shuffle(state.activePairs).map(word => ({ word, type: "en" }));
-      state.activeTiles = [...zhTiles, ...enTiles].map((tile, index) => ({
-        ...tile,
-        key: index === 9 ? "0" : String(index + 1)
-      }));
-
-      state.activeTiles.forEach(tile => els.matchGrid.appendChild(makeCard(tile)));
-      renderStats();
+    /** `full`: the word being answered goes back to box 0. Otherwise it was the wrong guess — one box down. */
+    function recordWrong(word, full = true) {
+      scheduleBox(word, full ? 0 : word.box - 1);
     }
 
-    function makeCard(tile) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "match-card";
-      button.dataset.id = tile.word.id;
-      button.dataset.type = tile.type;
-      button.dataset.key = tile.key;
-      button.innerHTML = `<span class="num">${tile.key}</span><span class="word">${tile.type === "en" ? tile.word.en : tile.word.zh}</span>`;
-      button.addEventListener("click", () => selectCard(button, tile.word, tile.type));
-      return button;
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[ch]);
     }
 
-    function selectCard(card, word, type) {
-      if (card.classList.contains("paired")) return;
-      clearWrong();
-
-      if (!state.selected) {
-        state.selected = { card, word, type };
-        card.classList.add("selected");
-        els.feedback.className = "feedback";
-        els.feedback.textContent = t("feedback.pickMatch");
-        return;
-      }
-
-      if (state.selected.card === card) {
-        card.classList.remove("selected");
-        state.selected = null;
-        els.feedback.className = "feedback";
-        els.feedback.textContent = t("feedback.pickPair");
-        return;
-      }
-
-      const first = state.selected;
-      const matched = first.word.id === word.id && first.type !== type;
-
-      if (matched) {
-        markCorrect(first.card, card, word);
-      } else {
-        markWrong(first, { card, word, type });
-      }
-
-      saveWords();
-      renderStats();
-    }
-
-    function markCorrect(firstCard, secondCard, word) {
-      const elapsed = Math.round(performance.now() - state.roundStartedAt);
-      word.seen += 1;
-      word.correct += 1;
-      word.streak += 1;
-      word.lastMs = elapsed;
-      applyReviewSuccess(word);
-
-      state.score += 1;
-      state.streak += 1;
-      state.solvedIds.add(word.id);
-      state.selected = null;
-      state.roundStartedAt = performance.now();
-
-      firstCard.classList.remove("selected");
-      firstCard.classList.add("paired");
-      secondCard.classList.add("paired");
-
-      const finished = state.solvedIds.size === state.activePairs.length;
-      els.feedback.className = finished ? "feedback good" : "feedback";
-      els.feedback.textContent = finished ? t("feedback.allDoneCheck") : t("feedback.correct");
-      if (els.checkBtn) els.checkBtn.disabled = !finished;
-    }
-
-    function markWrong(first, second) {
-      first.word.mistakes += 1;
-      second.word.mistakes += 1;
-      first.word.streak = 0;
-      second.word.streak = 0;
-      first.word.mastered = false;
-      second.word.mastered = false;
-
-      state.mistakes += 1;
-      state.streak = 0;
-      state.selected = null;
-
-      first.card.classList.remove("selected");
-      first.card.classList.add("wrong");
-      second.card.classList.add("wrong");
-
-      els.feedback.className = "feedback bad";
-      els.feedback.textContent = t("feedback.wrong", { a: first.word.en, b: first.word.zh });
-    }
-
-    function clearWrong() {
-      document.querySelectorAll(".match-card.wrong").forEach(card => card.classList.remove("wrong"));
-    }
-
-    function showCompletion(allDone) {
-      els.practiceView.classList.add("hidden");
-      els.completionView.classList.add("show");
-      if (els.checkBtn) els.checkBtn.disabled = true;
-      const remaining = state.words.filter(word => !word.mastered).length;
-      els.completionTitle.textContent = allDone ? t("timeouts.allPass") : t("timeouts.roundOver");
-      els.completionText.textContent = allDone
-        ? t("timeouts.allDoneText")
-        : t("timeouts.remainingUnstable", { n: remaining });
-      els.feedback.className = "feedback good";
-      els.feedback.textContent = allDone ? t("feedback.libraryComplete") : t("feedback.continueNext");
-      saveWords();
-      renderStats();
-    }
-
-    function renderStats() {
-      const mastered = state.words.filter(word => word.mastered).length;
-      const remaining = state.words.length - mastered;
-      const pct = state.words.length ? Math.round(mastered / state.words.length * 100) : 0;
-      els.progressFill.style.width = `${pct}%`;
-      els.topCount.textContent = `${state.solvedIds.size * 2}/${state.activePairs.length * 2 || 10}`;
-      els.score.textContent = state.score;
-      els.mistakes.textContent = state.mistakes;
-      els.streak.textContent = state.streak;
-      els.remaining.textContent = remaining;
-      els.librarySummary.textContent = t("library.summary", { n: state.words.length, m: state.words.filter(word => word.custom).length });
-
-      const weak = state.words
-        .filter(word => !word.mastered)
-        .sort((a, b) => weakness(b) - weakness(a))
-        .slice(0, 6);
-
-      els.weakList.innerHTML = weak.length
-        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? t("weak.wrongN", { n: word.mistakes }) : t("weak.toConsolidate")}</span></div>`).join("")
-        : `<div class="weak-row"><b>${t("weak.noWeak")}</b><span>${t("weak.done")}</span></div>`;
-
-      renderCustomList();
+    function wordStageLabel(word) {
+      if (isNewWord(word)) return t("library.stageNew");
+      if (word.mastered) return t("library.stageMastered");
+      return t("library.stageBox", { n: word.box, max: MAX_BOX });
     }
 
     function renderCustomList() {
       els.customList.innerHTML = state.words.length
         ? state.words.map(word => `
           <div class="custom-row">
-            <b title="${word.en}">${word.en}</b>
-            <span title="${word.zh}">${word.zh}</span>
-            <span title="${t("library.drawProb", { p: Number(word.drawProbability || 1).toFixed(2) })}">${t("library.drawCount", { n: word.draws || 0 })}</span>
-            <button class="link-button" type="button" data-delete="${word.id}">${t("library.deleteBtn")}</button>
+            <b title="${escapeHtml(word.en)}">${escapeHtml(word.en)}</b>
+            <span title="${escapeHtml(word.zh)}">${escapeHtml(word.zh)}</span>
+            <span>${wordStageLabel(word)}</span>
+            <button class="link-button" type="button" data-delete="${escapeHtml(word.id)}">${t("library.deleteBtn")}</button>
           </div>
         `).join("")
         : `<div class="custom-row"><b>${t("library.emptyListA")}</b><span>${t("library.emptyListB")}</span><span></span><span></span></div>`;
-
-      els.customList.querySelectorAll("[data-delete]").forEach(button => {
-        button.addEventListener("click", () => {
-          state.words = state.words.filter(word => word.id !== button.dataset.delete);
-          saveWords();
-          renderRound();
-        });
-      });
     }
 
     const SLOT_COUNT = 5;
     const CORRECT_ANIM_MS = 400;
     const WRONG_ANIM_MS = 520;
-    const LEVEL_BASE_MS = 120000;
-    const LEVEL_VARIANCE_MS = 15000;
     const TIMER_TICK_MS = 250;
     const STREAK_SCALE_SEMITONES = [0, 2, 4, 5, 7, 9, 11];
     const STREAK_BASE_FREQ = 261.63;
@@ -2367,16 +2411,6 @@
       playPianoNote(146.83, 0.42, 0.12);
       setTimeout(() => playPianoNote(110, 0.35, 0.08), 55);
     }
-    const REVIEW_INTERVALS = [
-      5 * 60 * 1000,
-      30 * 60 * 1000,
-      12 * 60 * 60 * 1000,
-      24 * 60 * 60 * 1000,
-      3 * 24 * 60 * 60 * 1000,
-      7 * 24 * 60 * 60 * 1000,
-      15 * 24 * 60 * 60 * 1000
-    ];
-
     function randomBetween(min, max) {
       return Math.floor(min + Math.random() * (max - min + 1));
     }
@@ -2418,6 +2452,7 @@
     }
 
     function isLevelOver() {
+      if (state.pausedAt) return false;
       return state.levelEndsAt > 0 && performance.now() >= state.levelEndsAt;
     }
 
@@ -2429,11 +2464,42 @@
           stopLevelCountdown();
           return;
         }
-        renderStats();
+        renderTimer();
         if (isLevelOver()) {
           handleLevelTimeout();
         }
       }, TIMER_TICK_MS);
+    }
+
+    function shouldPauseLevel() {
+      return document.hidden
+        || els.libraryModal.classList.contains("open")
+        || els.introModal.classList.contains("open");
+    }
+
+    /** Freeze the countdown while the library is open or the tab/app is in the background. */
+    function pauseLevel() {
+      if (state.pausedAt || !(state.levelEndsAt > 0)) return;
+      state.pausedAt = performance.now();
+      if (state.timerId) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+    }
+
+    function resumeLevel() {
+      if (!state.pausedAt || shouldPauseLevel()) return;
+      const delta = performance.now() - state.pausedAt;
+      state.pausedAt = 0;
+      // Shift every level clock so paused time counts neither against the
+      // countdown nor toward pace / per-word reaction samples.
+      state.levelEndsAt += delta;
+      state.levelStartedAt += delta;
+      state.roundStartedAt += delta;
+      if (state.lastPairAt > 0) state.lastPairAt += delta;
+      state.visibleAt.forEach((at, id) => state.visibleAt.set(id, at + delta));
+      startLevelTimer();
+      renderTimer();
     }
 
     function handleLevelTimeout() {
@@ -2443,111 +2509,65 @@
       showCompletion(false, "timeout");
     }
 
+    /**
+     * One round = up to `roundSize` words, in this order:
+     *   1. words missed last time (box 0, due)
+     *   2. other words due for review, shakiest box first
+     *   3. a small batch of new words — only while the "learning" pile is small,
+     *      so importing 200 words never floods a round
+     *   4. fill with words not yet due: lowest box, least recently seen first
+     */
     function buildWordQueue() {
-      const now = Date.now();
-      let eligible = state.words.filter(word => !word.mastered || isDueForReview(word, now));
-      if (!eligible.length && state.settings.recycleMastered) {
-        eligible = [...state.words];
-      }
-      if (!eligible.length) return [];
-
-      // Each round is a fixed-size set, not the whole library.
       const limit = state.settings.roundSize;
+      const now = Date.now();
+      const byOldest = (a, b) => (a.lastDrawRound || 0) - (b.lastDrawRound || 0);
 
       if (state.mode === "all") {
-        return buildSequentialWordQueue(eligible).slice(0, limit);
+        const pool = state.settings.recycleMastered ? state.words : state.words.filter(word => !word.mastered);
+        return buildSequentialWordQueue(pool).slice(0, limit);
       }
 
-      const due = [...eligible]
-        .filter(word => isDueForReview(word, now))
-        .sort((a, b) => weakness(b) - weakness(a));
-
-      const weak = [...eligible]
-        .filter(word => word.mistakes > 0 || word.streak < 2)
-        .sort((a, b) => weakness(b) - weakness(a));
+      const introduced = state.words.filter(word => !isNewWord(word));
+      const due = introduced.filter(word => isDueForReview(word, now));
+      const missed = shuffle(due.filter(word => word.box === 0)).sort((a, b) => b.mistakes - a.mistakes);
+      const review = shuffle(due.filter(word => word.box > 0)).sort((a, b) => a.box - b.box);
 
       if (state.mode === "weak") {
-        const weakPool = Array.from(new Map([...due, ...weak].map(word => [word.id, word])).values());
-        return buildAdaptiveWordQueue(weakPool.length ? weakPool : eligible, now, limit);
+        const shaky = introduced.filter(word => isLearning(word) && !due.includes(word)).sort(byOldest);
+        const weakQueue = [...missed, ...review.filter(isLearning), ...shaky].slice(0, limit);
+        if (weakQueue.length) return weakQueue;
       }
 
-      const unseen = eligible.filter(word => word.seen === 0);
-      const pool = Array.from(new Map([...due, ...weak, ...unseen, ...eligible].map(word => [word.id, word])).values());
-      return buildAdaptiveWordQueue(pool, now, limit);
+      const queue = [...missed, ...review].slice(0, limit);
+      const newWords = state.words.filter(isNewWord);
+      const learningCount = introduced.filter(isLearning).length;
+      const newBatch = Math.max(5, Math.round(limit / 3));
+      let newAllowance = Math.max(0, Math.min(newBatch, limit - learningCount));
+      // Keep a round worth playing: at least two boards' worth when words exist.
+      const minRound = Math.min(limit, 2 * SLOT_COUNT);
+      const notDue = introduced.filter(word => !due.includes(word) && (state.settings.recycleMastered || !word.mastered));
+      if (queue.length + newAllowance + notDue.length < minRound) {
+        newAllowance = minRound - queue.length - notDue.length;
+      }
+      const fresh = newWords.slice(0, Math.max(0, Math.min(newAllowance, limit - queue.length)));
+      // Mix the new words in among the reviews instead of one block at the end.
+      const mixed = [...queue.slice(0, missed.length), ...shuffle([...queue.slice(missed.length), ...fresh])];
+
+      const fill = notDue
+        .sort((a, b) => a.box - b.box || byOldest(a, b))
+        .slice(0, Math.max(0, limit - mixed.length));
+      return [...mixed, ...fill];
     }
 
     function buildSequentialWordQueue(words) {
-      const ordered = [...words].sort((a, b) => a.id.localeCompare(b.id));
+      // Library order (the order words were added), not id strings — "base-10" sorted before "base-2".
+      const position = new Map(state.words.map((word, index) => [word.id, index]));
+      const ordered = [...words].sort((a, b) => position.get(a.id) - position.get(b.id));
       if (!state.drawHistory.length) return ordered;
       const lastId = state.drawHistory[state.drawHistory.length - 1];
       const lastIndex = ordered.findIndex(word => word.id === lastId);
       if (lastIndex < 0) return ordered;
       return [...ordered.slice(lastIndex + 1), ...ordered.slice(0, lastIndex + 1)];
-    }
-
-    function buildAdaptiveWordQueue(words, now = Date.now(), limit = Infinity) {
-      let candidatePool = [...words];
-      const selected = [];
-      while (candidatePool.length && selected.length < limit) {
-        const next = selectAdaptiveWord(candidatePool, selected, now);
-        if (!next) break;
-        selected.push(next);
-        candidatePool = candidatePool.filter(word => word.id !== next.id);
-      }
-      return selected;
-    }
-
-    function selectAdaptiveWord(candidatePool, alreadySelected, now) {
-      const valid = candidatePool.filter(word => !alreadySelected.some(selected => selected.id === word.id));
-      if (!valid.length) return null;
-      if (valid.length === 1) return valid[0];
-
-      const drawCounts = valid.map(word => word.draws || 0);
-      const minDraws = Math.min(...drawCounts);
-      const maxDraws = Math.max(...drawCounts);
-      if (maxDraws - minDraws >= 3) {
-        return shuffle(valid.filter(word => (word.draws || 0) === minDraws))[0];
-      }
-
-      const averageDraws = drawCounts.reduce((sum, count) => sum + count, 0) / drawCounts.length;
-      const balancedPool = valid.filter(word => (word.draws || 0) <= averageDraws);
-      const pool = balancedPool.length >= 2 ? balancedPool : valid;
-      return weightedRandomWord(pool, now);
-    }
-
-    function weightedRandomWord(words, now) {
-      const weights = words.map(word => {
-        const weight = adaptiveWordWeight(word, now);
-        word.drawProbability = weight;
-        return weight;
-      });
-      const total = weights.reduce((sum, weight) => sum + weight, 0);
-      if (total <= 0) return words[0];
-      let cursor = Math.random() * total;
-      for (let index = 0; index < words.length; index += 1) {
-        cursor -= weights[index];
-        if (cursor <= 0) return words[index];
-      }
-      return words[words.length - 1];
-    }
-
-    function adaptiveWordWeight(word, now) {
-      const totalDraws = state.words.reduce((sum, item) => sum + (item.draws || 0), 0);
-      const averageDraws = state.words.length ? totalDraws / state.words.length : 0;
-      const drawCount = word.draws || 0;
-      const recentHistory = state.settings.mlRecentHistory
-        ? state.drawHistory.slice(-state.settings.mlRecentHistory)
-        : [];
-      const recentCount = recentHistory.filter(id => id === word.id).length;
-      const recentFrequency = recentHistory.length ? recentCount / recentHistory.length : 0;
-      const recentReduction = Math.max(0.05, 1 - recentFrequency * state.settings.mlAvoidanceWeight);
-      const lastDrawn = recentHistory[recentHistory.length - 1] === word.id ? 0.2 : 1;
-      const lowFrequencyBoost = drawCount < averageDraws ? 1 + Math.min(2, averageDraws - drawCount) : 1;
-      const highFrequencyReduction = drawCount > averageDraws + 1 ? 0.72 : 1;
-      const reviewBoost = isDueForReview(word, now) ? 2 : 1;
-      const weakBoost = 1 + Math.min(3, weakness(word) / 10);
-      const masteredReduction = word.mastered && !isDueForReview(word, now) ? 0.55 : 1;
-      return Math.max(0.01, recentReduction * lastDrawn * lowFrequencyBoost * highFrequencyReduction * reviewBoost * weakBoost * masteredReduction);
     }
 
     function slotKey(side, index) {
@@ -2572,6 +2592,11 @@
       state.completedThisRun = 0;
       state.roundComplete = false;
       state.refillPipelineActive = false;
+      state.pausedAt = 0;
+      state.visibleAt = new Map();
+      state.levelMisses = new Map();
+      state.levelMistakes = 0;
+      state.lastCompletion = null;
 
       if (!state.words.length) {
         showEmptyLibraryPrompt();
@@ -2601,7 +2626,10 @@
       state.halfDeck = levelWords.slice(initialWords.length);
       state.unmatchedLeft = [];
       state.unmatchedRight = [];
-      initialWords.forEach(word => markWordDrawn(word));
+      initialWords.forEach(word => {
+        markWordDrawn(word);
+        state.visibleAt.set(word.id, now);
+      });
 
       const leftWords = shuffle([...initialWords]);
       state.leftSlots = Array.from({ length: SLOT_COUNT }, (_, index) => makeSlot("left", index, leftWords[index] || null));
@@ -2619,7 +2647,11 @@
       } else {
         els.feedback.textContent = t("feedback.timeChallenge", { t: timeLabel });
       }
+      // The completion screen may have been scrolled; start the board at the top.
+      els.main.scrollTop = 0;
       startLevelTimer();
+      // A level rebuilt while the library is open (add/delete word) waits for it to close.
+      if (shouldPauseLevel()) pauseLevel();
       renderSlots();
       renderStats();
     }
@@ -2693,9 +2725,17 @@
       const label = slot.word
         ? (slot.side === "left" ? slot.word.zh : slot.word.en)
         : "";
-      button.innerHTML = `<span class="num">${slot.key}</span><span class="word">${label}</span>`;
+      if (label) button.title = label;
+      button.innerHTML = `<span class="num">${slot.key}</span><span class="word${isLongLabel(label) ? " long" : ""}">${escapeHtml(label)}</span>`;
       button.addEventListener("click", () => selectCard(button, slot.side, slot.index));
       return button;
+    }
+
+    /** CJK glyphs are ~2× as wide as Latin letters; anything past ~one card width wraps to two lines. */
+    function isLongLabel(label) {
+      let width = 0;
+      for (const ch of String(label)) width += /[\u2E80-\uFFEF]/.test(ch) ? 2 : 1;
+      return width > 14;
     }
 
     function getSlot(side, index) {
@@ -2832,17 +2872,35 @@
 
       const first = state.selected;
       const second = { card, side, index, slot, wordId: slot.word.id };
-      const firstId = selectedWordId(first);
-      if (firstId && firstId === second.wordId) {
+      if (isEquivalentPair(first, second)) {
         markCorrect(first, second);
       } else {
         markWrong(first, second);
       }
     }
 
-    function isSelectionStillValid() {
-      if (!state.selected) return true;
-      return rebindSelection();
+    function slotWord(sel) {
+      return (sel.slot && sel.slot.word) || getSlot(sel.side, sel.index)?.word || null;
+    }
+
+    function sameText(a, b) {
+      return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+    }
+
+    /**
+     * A pair is correct when the visible texts belong together, not only when the
+     * ids match: with synonyms ("big"/"large" both = 大的) or a word listed twice,
+     * the learner's pick is right even though it is a different library entry.
+     * Swapping partners keeps the board solvable — the two leftover halves still match.
+     */
+    function isEquivalentPair(first, second) {
+      const firstWord = slotWord(first);
+      const secondWord = slotWord(second);
+      if (!firstWord || !secondWord) return false;
+      if (firstWord.id === secondWord.id) return true;
+      const leftWord = first.side === "left" ? firstWord : secondWord;
+      const rightWord = first.side === "left" ? secondWord : firstWord;
+      return sameText(leftWord.zh, rightWord.zh) || sameText(leftWord.en, rightWord.en);
     }
 
     function clearSelection(message = "") {
@@ -2862,16 +2920,19 @@
 
     function markCorrect(first, second) {
       if (isLevelOver()) return;
-      const word = (first.slot && first.slot.word)
-        || getSlot(first.side, first.index)?.word
-        || (second.slot && second.slot.word);
+      // Credit the word whose answer-side (right column) card was picked.
+      const rightSel = first.side === "right" ? first : second;
+      const word = slotWord(rightSel) || slotWord(first);
       if (!word) return;
-      const elapsed = Math.round(performance.now() - state.roundStartedAt);
+      // Reaction time counts from when this pair was fully on the board, not from
+      // the previous match (a word that just slid in should not look "slow").
+      const startedAt = Math.max(state.roundStartedAt, state.visibleAt.get(word.id) || 0);
+      const elapsed = Math.round(performance.now() - startedAt);
       word.seen += 1;
       word.correct += 1;
       word.streak += 1;
       word.lastMs = elapsed;
-      applyReviewSuccess(word);
+      recordCorrect(word);
 
       state.score += 1;
       state.streak += 1;
@@ -2931,16 +2992,26 @@
       return word;
     }
 
-    function scheduleHoleRefill(leftIndex, rightIndex) {
-      const delayMs = randomBetween(state.settings.refillMinMs, state.settings.refillMaxMs);
+    function scheduleHoleRefill(leftIndex, rightIndex, delayOverrideMs) {
+      const delayMs = delayOverrideMs != null
+        ? delayOverrideMs
+        : randomBetween(state.settings.refillMinMs, state.settings.refillMaxMs);
       const timerId = setTimeout(() => {
         state.refillTimers = state.refillTimers.filter(id => id !== timerId);
         if (els.completionView.classList.contains("show") || isLevelOver()) return;
+        // Paused level, or the "pause refill while selected" option: try again shortly.
+        if (state.pausedAt || (state.settings.pauseRefillWhileSelected && hasActiveSelection())) {
+          scheduleHoleRefill(leftIndex, rightIndex, 300);
+          return;
+        }
 
         const leftPartner = state.unmatchedRight.length ? state.unmatchedRight.shift() : null;
         const rightPartner = state.unmatchedLeft.length ? state.unmatchedLeft.shift() : null;
         const leftWord = leftPartner || takeFreshHalf("left");
         const rightWord = rightPartner || takeFreshHalf("right");
+        const pairedAt = performance.now();
+        if (leftPartner) state.visibleAt.set(leftPartner.id, pairedAt);
+        if (rightPartner) state.visibleAt.set(rightPartner.id, pairedAt);
 
         if (leftWord) {
           state.leftSlots[leftIndex] = makeSlot("left", leftIndex, leftWord, true);
@@ -2963,7 +3034,7 @@
       word.draws = (word.draws || 0) + 1;
       word.lastDrawRound = state.round;
       state.drawHistory.push(word.id);
-      const maxHistory = Math.max(100, state.settings.mlRecentHistory * 3);
+      const maxHistory = 200;
       if (state.drawHistory.length > maxHistory) {
         state.drawHistory = state.drawHistory.slice(-maxHistory);
       }
@@ -2972,15 +3043,20 @@
 
     function markWrong(first, second) {
       if (isLevelOver()) return;
-      const firstWord = (first.slot && first.slot.word) || getSlot(first.side, first.index)?.word;
-      const secondWord = (second.slot && second.slot.word) || getSlot(second.side, second.index)?.word;
+      const firstWord = slotWord(first);
+      const secondWord = slotWord(second);
       if (!firstWord || !secondWord) return;
       firstWord.mistakes += 1;
       secondWord.mistakes += 1;
       firstWord.streak = 0;
       secondWord.streak = 0;
-      applyReviewFailure(firstWord);
-      applyReviewFailure(secondWord);
+      // The first pick is the word being answered; the second was the wrong guess,
+      // so it only steps back one review level instead of losing all progress.
+      recordWrong(firstWord, true);
+      recordWrong(secondWord, false);
+      state.levelMisses.set(firstWord.id, firstWord);
+      state.levelMisses.set(secondWord.id, secondWord);
+      state.levelMistakes += 1;
 
       state.mistakes += 1;
       state.streak = 0;
@@ -3022,10 +3098,6 @@
       return !hasWordsWaiting() && activeSlotPairs() === 0;
     }
 
-    function isStreamComplete() {
-      return isLevelWorkDone() && !state.refillTimers.length;
-    }
-
     /**
      * If the level's work is finished (early clear), cancel pending refills,
      * stop the countdown, and open the completion screen.
@@ -3054,19 +3126,35 @@
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "✓";
       els.continueBtn.textContent = t("lesson.continueBtn");
-      const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
-      els.completionTitle.textContent = allDone ? t("timeouts.allPass") : reason === "timeout" ? t("timeouts.timeUp") : t("timeouts.levelComplete");
-      els.completionText.textContent = allDone
-        ? t("timeouts.allDoneText")
-        : reason === "timeout"
-          ? t("timeouts.levelMatched", { n: state.completedThisRun || 0 })
-          : remaining
-            ? t("timeouts.queueCleared", { n: remaining })
-            : t("timeouts.allStable");
+      els.main.scrollTop = 0;
+      state.lastCompletion = { allDone, reason };
+      renderCompletionCopy();
       els.feedback.className = "feedback good";
       els.feedback.textContent = allDone ? t("feedback.libraryComplete") : t("feedback.nextLevel");
       saveWords();
       renderStats();
+    }
+
+    function renderCompletionCopy() {
+      const { allDone, reason } = state.lastCompletion || { allDone: false, reason: "queue" };
+      const remaining = state.words.filter(isLearning).length;
+      const summary = t("timeouts.levelSummary", { done: state.completedThisRun || 0, m: state.levelMistakes || 0 });
+      els.completionTitle.textContent = allDone ? t("timeouts.allPass") : reason === "timeout" ? t("timeouts.timeUp") : t("timeouts.levelComplete");
+      els.completionText.textContent = allDone
+        ? t("timeouts.allDoneText")
+        : reason === "timeout"
+          ? `${summary} ${t("timeouts.timeUpText")}`
+          : `${summary} ${remaining ? t("timeouts.stillLearning", { n: remaining }) : t("timeouts.allStable")}`;
+      renderReviewList();
+    }
+
+    /** The words mixed up this level, with their correct meaning — the part a learner actually needs to see. */
+    function renderReviewList() {
+      const missed = [...state.levelMisses.values()].filter(word => state.words.includes(word));
+      els.reviewHeading.textContent = missed.length ? t("timeouts.reviewHeading") : "";
+      els.reviewList.innerHTML = missed
+        .map(word => `<li><b>${escapeHtml(word.en)}</b><span>${escapeHtml(word.zh)}</span></li>`)
+        .join("");
     }
 
     function showEmptyLibraryPrompt() {
@@ -3079,6 +3167,9 @@
       state.sessionTotal = 0;
       state.completedThisRun = 0;
       state.roundComplete = false;
+      state.levelMisses = new Map();
+      state.lastCompletion = null;
+      renderReviewList();
       els.practiceView.classList.add("hidden");
       els.completionView.classList.add("show");
       els.completionBadge.textContent = "+";
@@ -3090,8 +3181,24 @@
       renderStats();
     }
 
+    /** Countdown only — runs every timer tick, so it must stay cheap. */
+    function renderTimer() {
+      // Frozen after clear/timeout; otherwise live countdown from levelEndsAt.
+      let timeLeft;
+      if (state.levelTimeLeftMs != null && (state.roundComplete || els.completionView.classList.contains("show") || !state.levelEndsAt)) {
+        timeLeft = state.levelTimeLeftMs;
+      } else if (state.levelEndsAt) {
+        timeLeft = (state.pausedAt || performance.now()) > state.levelEndsAt
+          ? 0
+          : state.levelEndsAt - (state.pausedAt || performance.now());
+      } else {
+        timeLeft = state.levelDurationMs;
+      }
+      els.topCount.textContent = formatTime(timeLeft);
+      els.topCount.classList.toggle("time-low", timeLeft <= 15000 && !state.roundComplete && !els.completionView.classList.contains("show"));
+    }
+
     function renderStats() {
-      const mastered = state.words.filter(word => word.mastered && !isDueForReview(word)).length;
       const remaining = state.words.filter(word => !word.mastered || isDueForReview(word)).length;
       const targetTotal = currentRoundTotal();
       const pct = state.roundComplete
@@ -3100,17 +3207,7 @@
           ? Math.min(100, Math.round((state.completedThisRun || 0) / targetTotal * 100))
           : 0;
       els.progressFill.style.width = `${pct}%`;
-      // Frozen after clear/timeout; otherwise live countdown from levelEndsAt.
-      let timeLeft;
-      if (state.levelTimeLeftMs != null && (state.roundComplete || els.completionView.classList.contains("show") || !state.levelEndsAt)) {
-        timeLeft = state.levelTimeLeftMs;
-      } else if (state.levelEndsAt) {
-        timeLeft = state.levelEndsAt - performance.now();
-      } else {
-        timeLeft = state.levelDurationMs;
-      }
-      els.topCount.textContent = formatTime(timeLeft);
-      els.topCount.classList.toggle("time-low", timeLeft <= 15000 && !state.roundComplete && !els.completionView.classList.contains("show"));
+      renderTimer();
       els.roundLabel.textContent = t("lesson.roundLevel", { n: state.round, done: state.completedThisRun || 0, total: targetTotal });
       els.score.textContent = state.score;
       els.mistakes.textContent = state.mistakes;
@@ -3119,15 +3216,16 @@
       els.librarySummary.textContent = t("library.summary", { n: state.words.length, m: state.words.filter(word => word.custom).length });
 
       const weak = state.words
-        .filter(word => !word.mastered)
-        .sort((a, b) => weakness(b) - weakness(a))
+        .filter(word => !word.mastered && !isNewWord(word))
+        .sort((a, b) => a.box - b.box || b.mistakes - a.mistakes)
         .slice(0, 6);
 
       els.weakList.innerHTML = weak.length
-        ? weak.map(word => `<div class="weak-row"><b>${word.en}</b><span>${word.mistakes ? t("weak.wrongN", { n: word.mistakes }) : t("weak.toConsolidate")}</span></div>`).join("")
+        ? weak.map(word => `<div class="weak-row"><b>${escapeHtml(word.en)}</b><span>${word.mistakes ? t("weak.wrongN", { n: word.mistakes }) : t("weak.toConsolidate")}</span></div>`).join("")
         : `<div class="weak-row"><b>${t("weak.noWeak")}</b><span>${t("weak.done")}</span></div>`;
 
-      renderCustomList();
+      // The full word list is only visible inside the library; skip rebuilding it otherwise.
+      if (els.libraryModal.classList.contains("open")) renderCustomList();
     }
 
     function currentRoundTotal() {
@@ -3137,16 +3235,23 @@
     function normalizePair(line) {
       const trimmed = line.trim();
       if (!trimmed) return null;
-      const parts = trimmed.includes("=")
-        ? trimmed.split("=")
-        : trimmed.includes("，")
-          ? trimmed.split("，")
-          : trimmed.includes(",")
-            ? trimmed.split(",")
-            : trimmed.split("\t");
-      if (parts.length < 2) return null;
-      const en = parts.shift().trim();
-      const zh = parts.join(",").trim();
+      // Split on the first separator only, so a meaning may itself contain commas.
+      // Tab first: rows pasted from a spreadsheet or Anki export.
+      const separator = ["\t", "=", "，", ","].find(sep => trimmed.includes(sep));
+      let en;
+      let zh;
+      if (separator) {
+        const at = trimmed.indexOf(separator);
+        en = trimmed.slice(0, at);
+        zh = trimmed.slice(at + separator.length);
+      } else {
+        // "word - meaning" (spaced dash) — common in AI answers; "well-known" stays intact.
+        const dash = trimmed.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+        if (!dash) return null;
+        [, en, zh] = dash;
+      }
+      en = en.trim();
+      zh = zh.trim();
       return en && zh ? [en, zh] : null;
     }
 
@@ -3324,12 +3429,11 @@
         word.streak = 0;
         word.mastered = false;
         word.lastMs = 0;
-        word.reviewLevel = 0;
-        word.nextReviewAt = 0;
-        word.lastReviewedAt = 0;
+        word.box = 0;
+        word.dueRound = 0;
+        word.dueAt = 0;
         word.draws = 0;
         word.lastDrawRound = 0;
-        word.drawProbability = 1;
       });
       state.drawHistory = [];
       state.round = 1;
@@ -3356,14 +3460,45 @@
 
     function openLibrary() {
       els.libraryModal.classList.add("open");
-      els.newEnglish.focus();
+      pauseLevel();
+      // Don't pop the on-screen keyboard over the library on phones.
+      if (!window.matchMedia || !matchMedia("(pointer: coarse)").matches) els.newEnglish.focus();
+      setAddOneStatus("");
+      setImportStatus("");
+      setDangerStatus("");
+      if (els.optionsStatus) els.optionsStatus.textContent = "";
       syncOptionsUI();
       renderStats();
     }
 
+    const INTRO_SEEN_KEY = "word_snap_intro_seen_v1";
+
+    function openIntro() {
+      els.introModal.classList.add("open");
+      pauseLevel();
+      document.getElementById("introStartBtn").focus();
+    }
+
+    function closeIntro() {
+      els.introModal.classList.remove("open");
+      try { localStorage.setItem(INTRO_SEEN_KEY, "1"); } catch (e) {}
+      resumeLevel();
+      if (!els.libraryModal.classList.contains("open") && (isIOSDevice() || isSafariBrowser())) showInstallNudge();
+    }
+
+    function hasSeenIntro() {
+      try { return localStorage.getItem(INTRO_SEEN_KEY) === "1"; } catch (e) { return true; }
+    }
+
     function closeLibrary() {
       els.libraryModal.classList.remove("open");
+      resumeLevel();
     }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) pauseLevel();
+      else resumeLevel();
+    });
 
     function applyLangPairLabels(pair) {
       const p = pair || state.settings.langPair;
@@ -3380,7 +3515,7 @@
       const pair = state.settings.langPair;
       const isCustom = !LANG_PAIR_PRESETS.some(p => p.a === pair.a && p.b === pair.b);
       select.innerHTML = LANG_PAIR_PRESETS.map((p, i) =>
-        `<option value="${i}">${p.a} ↔ ${p.b}</option>`
+        `<option value="${i}">${escapeHtml(p.a)} ↔ ${escapeHtml(p.b)}</option>`
       ).join("") + `<option value="custom">${t("library.custom")}</option>`;
       select.value = isCustom ? "custom" : String(LANG_PAIR_PRESETS.findIndex(p => p.a === pair.a && p.b === pair.b));
       const showCustom = select.value === "custom";
@@ -3400,11 +3535,14 @@
       if (els.adaptiveLevelTime) {
         els.adaptiveLevelTime.checked = state.settings.adaptiveLevelTime !== false;
       }
-      els.refillTrigger.value = state.settings.refillTriggerCount;
+      if (els.modeSelect) {
+        els.modeSelect.innerHTML = ["adaptive", "weak", "all"]
+          .map(mode => `<option value="${mode}">${modeLabel(mode)}</option>`)
+          .join("");
+        els.modeSelect.value = state.mode;
+      }
       els.refillMinSeconds.value = (state.settings.refillMinMs / 1000).toFixed(1);
       els.refillMaxSeconds.value = (state.settings.refillMaxMs / 1000).toFixed(1);
-      els.mlRecentHistory.value = state.settings.mlRecentHistory;
-      els.mlAvoidanceWeight.value = state.settings.mlAvoidanceWeight.toFixed(1);
       els.pauseRefillWhileSelected.checked = state.settings.pauseRefillWhileSelected;
       els.recycleMastered.checked = state.settings.recycleMastered;
       if (els.streakTones) els.streakTones.checked = state.settings.streakTones !== false;
@@ -3432,21 +3570,25 @@
         lastLevelPairs: state.settings.lastLevelPairs,
         lastLevelComplete: state.settings.lastLevelComplete,
         themeIndex: state.settings.themeIndex,
-        refillTriggerCount: Number(els.refillTrigger.value),
+        refillTriggerCount: state.settings.refillTriggerCount,
         refillMinMs: Number(els.refillMinSeconds.value) * 1000,
         refillMaxMs: Number(els.refillMaxSeconds.value) * 1000,
         pauseRefillWhileSelected: els.pauseRefillWhileSelected.checked,
         recycleMastered: els.recycleMastered.checked,
         streakTones: els.streakTones ? els.streakTones.checked : true,
-        mlRecentHistory: Number(els.mlRecentHistory.value),
-        mlAvoidanceWeight: Number(els.mlAvoidanceWeight.value),
         langPair
       });
       state.settings = nextSettings;
+      if (els.modeSelect && ["adaptive", "weak", "all"].includes(els.modeSelect.value)) {
+        state.mode = els.modeSelect.value;
+        els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
+      }
       syncOptionsUI();
       saveWords();
-      els.feedback.className = "feedback good";
-      els.feedback.textContent = t("feedback.optionsSaved");
+      if (els.optionsStatus) {
+        els.optionsStatus.textContent = t("feedback.optionsSaved");
+        els.optionsStatus.className = "import-status good";
+      }
       renderStats();
     }
 
@@ -3502,6 +3644,8 @@
 
     function showInstallNudge() {
       if (!els.installNudge || isStandaloneApp() || hasHiddenInstallNudge()) return;
+      // One overlay at a time: the intro re-offers this when it closes.
+      if (els.introModal.classList.contains("open")) return;
       setInstallNudgeCopy();
       els.installNudge.classList.add("show");
     }
@@ -3554,10 +3698,16 @@
     document.getElementById("openLibraryMobile").addEventListener("click", openLibrary);
     document.getElementById("closeLibrary").addEventListener("click", closeLibrary);
     document.getElementById("modeBtn").addEventListener("click", toggleMode);
-    document.getElementById("resetProgress").addEventListener("click", resetProgress);
-    document.getElementById("resetRail").addEventListener("click", resetProgress);
-    document.getElementById("resetMobile").addEventListener("click", resetProgress);
-    document.getElementById("quitBtn").addEventListener("click", resetProgress);
+    function confirmResetProgress() {
+      if (confirm(t("confirm.resetProgress"))) resetProgress();
+    }
+    document.getElementById("resetProgress").addEventListener("click", confirmResetProgress);
+    document.getElementById("resetRail").addEventListener("click", confirmResetProgress);
+    document.getElementById("resetMobile").addEventListener("click", confirmResetProgress);
+    document.getElementById("quitBtn").addEventListener("click", () => {
+      if (!state.words.length) return;
+      renderRound();
+    });
     els.saveOptionsBtn.addEventListener("click", saveOptionsFromUI);
     if (els.langPairSelect) {
       els.langPairSelect.addEventListener("change", () => {
@@ -3575,14 +3725,37 @@
       });
     }
 
-    document.getElementById("addOneBtn").addEventListener("click", () => {
-      const added = addWords([[els.newEnglish.value.trim(), els.newChinese.value.trim()]]);
-      if (added) {
-        els.newEnglish.value = "";
-        els.newChinese.value = "";
-        els.feedback.className = "feedback good";
-        els.feedback.textContent = t("feedback.addedOne");
+    function setAddOneStatus(text, kind = "") {
+      els.addOneStatus.textContent = text;
+      els.addOneStatus.className = `import-status${kind ? " " + kind : ""}`;
+    }
+
+    function addOneFromForm() {
+      const en = els.newEnglish.value.trim();
+      const zh = els.newChinese.value.trim();
+      if (!en || !zh) {
+        setAddOneStatus(t("feedback.needBoth"), "bad");
+        (en ? els.newChinese : els.newEnglish).focus();
+        return;
       }
+      if (!addWords([[en, zh]])) {
+        setAddOneStatus(t("feedback.alreadyInLibrary"), "bad");
+        return;
+      }
+      els.newEnglish.value = "";
+      els.newChinese.value = "";
+      setAddOneStatus(t("feedback.addedOne"), "good");
+      els.newEnglish.focus();
+    }
+
+    document.getElementById("addOneBtn").addEventListener("click", addOneFromForm);
+    [els.newEnglish, els.newChinese].forEach(input => {
+      input.addEventListener("keydown", event => {
+        if (event.key !== "Enter" || event.isComposing) return;
+        event.preventDefault();
+        if (input === els.newEnglish && !els.newChinese.value.trim()) els.newChinese.focus();
+        else addOneFromForm();
+      });
     });
 
     document.getElementById("addBulkBtn").addEventListener("click", () => {
@@ -3637,19 +3810,50 @@
       else if (systemLightQuery.addListener) systemLightQuery.addListener(onSchemeChange);
     }
 
+    els.customList.addEventListener("click", event => {
+      const button = event.target.closest("[data-delete]");
+      if (!button) return;
+      state.words = state.words.filter(word => word.id !== button.dataset.delete);
+      saveWords();
+      renderRound();
+    });
+
+    function setDangerStatus(text, kind = "") {
+      const el = document.getElementById("dangerStatus");
+      el.textContent = text;
+      el.className = `import-status${kind ? " " + kind : ""}`;
+    }
+
+    /** Same format as Bulk input (tab-separated, plus @lang), so pasting it back restores the list. */
+    function buildBackupText() {
+      const { a, b } = state.settings.langPair;
+      return [`@lang: ${a} | ${b}`, ...state.words.map(word => `${word.en}\t${word.zh}`)].join("\n");
+    }
+
+    document.getElementById("copyBackupBtn").addEventListener("click", async () => {
+      if (!state.words.length) {
+        setDangerStatus(t("ai.backupEmpty"), "bad");
+        return;
+      }
+      const text = buildBackupText();
+      if (await copyText(text)) {
+        setDangerStatus(t("ai.backupCopied", { n: state.words.length }), "good");
+      } else {
+        els.bulkInput.value = text;
+        els.bulkInput.focus();
+        els.bulkInput.select();
+        setDangerStatus(t("ai.backupFailed"), "bad");
+      }
+    });
+
     document.getElementById("clearCustomBtn").addEventListener("click", () => {
-      if (!confirm(t("confirm.clearAllConfirm"))) return;
+      if (!state.words.length) return;
+      if (!confirm(t("confirm.clearAllConfirm", { n: state.words.length }))) return;
       state.words = [];
       state.drawHistory = [];
       saveWords();
       renderRound();
     });
-
-    if (els.checkBtn) {
-      els.checkBtn.addEventListener("click", () => {
-        showCompletion(false);
-      });
-    }
 
     els.continueBtn.addEventListener("click", () => {
       if (!state.words.length) {
@@ -3662,6 +3866,13 @@
     });
 
     document.addEventListener("keydown", event => {
+      if (els.introModal.classList.contains("open")) {
+        if (event.key === "Escape" || event.key === "Enter") {
+          event.preventDefault();
+          closeIntro();
+        }
+        return;
+      }
       if (event.key === "Escape" && els.installNudge.classList.contains("show")) {
         closeInstallNudge(false);
         return;
@@ -3670,11 +3881,24 @@
         if (event.key === "Escape") closeLibrary();
         return;
       }
-      if (!/^[0-9]$/.test(event.key)) return;
+      if (els.completionView.classList.contains("show") && (event.key === "Enter" || event.key === " ")) {
+        if (event.target !== els.continueBtn) {
+          event.preventDefault();
+          els.continueBtn.click();
+        }
+        return;
+      }
+      if (!/^[0-9]$/.test(event.key) || event.metaKey || event.ctrlKey || event.altKey) return;
       const card = document.querySelector(`.match-card[data-key="${event.key}"]`);
       if (!card) return;
       event.preventDefault();
       card.click();
+    });
+
+    document.getElementById("introStartBtn").addEventListener("click", closeIntro);
+    document.getElementById("showIntroBtn").addEventListener("click", () => {
+      closeLibrary();
+      openIntro();
     });
 
     els.libraryModal.addEventListener("click", event => {
@@ -3729,6 +3953,7 @@
     updateColorModeUI();
     syncOptionsUI();
     renderRound();
+    if (!hasSeenIntro() && !savedState) openIntro();
   </script>
 </body>
 </html>
