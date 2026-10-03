@@ -6,6 +6,16 @@
   <title>Word Snap</title>
   <meta name="description" content="A fast bilingual vocabulary matching practice app with adaptive review, custom word lists, and PWA install." />
   <meta name="theme-color" content="#131f24" />
+  <meta name="color-scheme" content="dark light" />
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem("word_snap_color_mode") || "system";
+        var light = m === "light" || (m === "system" && window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches);
+        document.documentElement.setAttribute("data-color-mode", light ? "light" : "dark");
+      } catch (e) {}
+    })();
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Word Snap" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -52,6 +62,40 @@
       --theme-shift: 420ms;
     }
 
+    :root[data-color-mode="light"] {
+      color-scheme: light;
+      --bg: #f4f7f9;
+      --panel: #ffffff;
+      --panel-2: #eef3f6;
+      --line: #d5dee4;
+      --line-strong: #b3c1ca;
+      --text: #1b2a31;
+      --muted: #5d727d;
+      --dim: #9fb0b9;
+      --panel-soft: #f7fafb;
+      --track: #e3eaee;
+      --card-shadow: #d5dee4;
+      --scrim: rgba(10, 18, 21, .45);
+      --hover-soft: #f0f5f7;
+    }
+    :root[data-color-mode="dark"] { color-scheme: dark; }
+
+    .import-hint {
+      margin: 10px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .import-status {
+      min-height: 1.4em;
+      margin: 8px 0 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .import-status.good { color: var(--green); }
+    .import-status.bad { color: var(--red); }
+
     body,
     .rail,
     .panel,
@@ -93,6 +137,7 @@
 
     button,
     input,
+    select,
     textarea {
       font: inherit;
     }
@@ -173,7 +218,7 @@
       display: none;
       width: min(760px, 100%);
       margin: 0 auto 18px;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -635,6 +680,7 @@
     }
 
     input,
+    select,
     textarea {
       width: 100%;
       border: 2px solid var(--line);
@@ -646,6 +692,7 @@
     }
 
     input:focus,
+    select:focus,
     textarea:focus {
       border-color: var(--blue);
     }
@@ -1000,6 +1047,7 @@
       <button class="rail-btn" type="button" id="openLibraryRail" data-en="Library" data-zh="词库">词库</button>
       <button class="rail-btn" type="button" id="resetRail" data-en="Reset" data-zh="重置">重置</button>
       <a class="rail-btn" href="https://github.com/Guojiz/word-snap" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <button class="rail-btn color-mode-btn" type="button" data-color-mode-btn aria-label="切换外观" data-en-aria="Switch appearance" data-zh-aria="切换外观"></button>
       <button class="rail-btn lang-toggle" type="button" id="langToggleRail" aria-label="切换语言" data-en-aria="Switch language" data-zh-aria="切换语言"><span class="lang-opt" data-lang="en">EN</span><span class="sep">/</span><span class="lang-opt" data-lang="zh">中</span></button>
     </aside>
 
@@ -1008,6 +1056,7 @@
         <button class="rail-btn active" type="button" data-en="Practice" data-zh="练习">练习</button>
         <button class="rail-btn" type="button" id="openLibraryMobile" data-en="Library" data-zh="词库">词库</button>
         <button class="rail-btn" type="button" id="resetMobile" data-en="Reset" data-zh="重置">重置</button>
+        <button class="rail-btn color-mode-btn" type="button" data-color-mode-btn aria-label="切换外观" data-en-aria="Switch appearance" data-zh-aria="切换外观"></button>
         <button class="rail-btn lang-toggle" type="button" id="langToggleMobile" aria-label="切换语言" data-en-aria="Switch language" data-zh-aria="切换语言"><span class="lang-opt" data-lang="en">EN</span><span class="sep">/</span><span class="lang-opt" data-lang="zh">中</span></button>
       </nav>
 
@@ -1100,7 +1149,10 @@
           <span data-en="Bulk input" data-zh="批量录入">批量录入</span>
           <textarea id="bulkInput" placeholder="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织" data-en-ph="One per line: literature,文学&#10;Or: UNESCO = 联合国教科文组织" data-zh-ph="每行一个：literature,文学&#10;也可以：UNESCO = 联合国教科文组织"></textarea>
         </label>
+        <p class="import-hint" data-en="No word list? Copy the AI prompt, send it to any AI, then paste its whole answer here. Words and settings (language pair, words per round, level time) import in one go." data-zh="没有词表？点“复制 AI 提示词”发给任意 AI，再把它的回答整段粘贴到这里，单词和设置（语言对、每局词数、每关时间）一次导入。">没有词表？点“复制 AI 提示词”发给任意 AI，再把它的回答整段粘贴到这里，单词和设置（语言对、每局词数、每关时间）一次导入。</p>
+        <p class="import-status" id="importStatus" role="status" aria-live="polite"></p>
         <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="copyAiPromptBtn" data-en="Copy AI prompt" data-zh="复制 AI 提示词">复制 AI 提示词</button>
           <button class="duo-button secondary" type="button" id="addBulkBtn" data-en="Bulk add" data-zh="批量添加">批量添加</button>
           <button class="duo-button warning" type="button" id="clearCustomBtn" data-en="Clear all words" data-zh="清空全部词">清空全部词</button>
         </div>
@@ -1120,6 +1172,10 @@
           <label class="lang-pair-custom" id="langPairCustomRow2" hidden>
             <span data-en="Side B" data-zh="右侧">右侧</span>
             <input id="langPairB" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span data-en="Appearance" data-zh="外观">外观</span>
+            <select id="colorModeSelect"></select>
           </label>
           <label>
             <span data-en="Words per round" data-zh="每局单词数">每局单词数</span>
@@ -1187,6 +1243,12 @@
     const STORAGE_KEY = "duo_like_word_match_v1";
     const INSTALL_NUDGE_KEY = "word_snap_install_nudge_hidden_v1";
     const THEME_KEY = "word_snap_theme_index";
+    const COLOR_MODE_KEY = "word_snap_color_mode";
+    // Light base for bg/panels/text. Accent colors still come from COLOR_THEMES.
+    const LIGHT_BASE = {
+      bg: "#f4f7f9", panel: "#ffffff", panel2: "#eef3f6",
+      line: "#d5dee4", lineStrong: "#b3c1ca", text: "#1b2a31", muted: "#5d727d", dim: "#9fb0b9"
+    };
 
     // Soft accent themes — full skin (bg + accent) rotates after each finished level.
     const COLOR_THEMES = [
@@ -1331,6 +1393,15 @@
           textSaveDesktop: "This works as a web app. When your browser shows an install prompt, add it to your desktop or home screen.",
           actionGotIt: "Got it", noRemind: "Don't remind me", closeInstall: "Close install prompt"
         },
+        appearance: { auto: "Auto", light: "Light", dark: "Dark" },
+        ai: {
+          copied: "AI prompt copied. Send it to any AI, then paste its answer here.",
+          copyFailed: "Couldn't copy automatically. The prompt is in the box above: copy it manually, then clear the box.",
+          nothing: "Nothing recognised. Paste the AI's answer (one “word,meaning” per line).",
+          imported: "Added {n} words.", dupOnly: "No new words (already in the library).",
+          config: "Settings applied: {list}.", skipped: "{n} unreadable lines skipped.",
+          cfgLang: "language {a} ↔ {b}", cfgRound: "{n} words per round", cfgTime: "{n}s per level"
+        },
         langToggle: { en: "EN", zh: "中" }
       },
       zh: {
@@ -1413,6 +1484,15 @@
           textSaveDesktop: "这个练习可以作为网页 App 使用。浏览器出现安装入口时，可以把它放到桌面或主屏幕。",
           actionGotIt: "知道了", noRemind: "不再提示", closeInstall: "关闭安装提醒"
         },
+        appearance: { auto: "自动", light: "浅色", dark: "深色" },
+        ai: {
+          copied: "AI 提示词已复制。发给任意 AI，再把它的回答粘贴到这里。",
+          copyFailed: "无法自动复制，提示词已放进上面的输入框，请手动复制后再清空输入框。",
+          nothing: "没有识别到内容。请粘贴 AI 的回答（每行一个“单词,释义”）。",
+          imported: "已添加 {n} 个单词。", dupOnly: "没有新增单词（都已在词库里）。",
+          config: "已应用设置：{list}。", skipped: "跳过 {n} 行无法识别的内容。",
+          cfgLang: "语言 {a} ↔ {b}", cfgRound: "每局 {n} 词", cfgTime: "每关 {n} 秒"
+        },
         langToggle: { en: "EN", zh: "中" }
       }
     };
@@ -1465,6 +1545,7 @@
       applyStaticI18n();
       // Re-render dynamic UI only — do not call renderRound() (would reset the active level).
       if (typeof syncOptionsUI === "function") syncOptionsUI();
+      if (typeof updateColorModeUI === "function") updateColorModeUI();
       if (typeof setInstallNudgeCopy === "function") setInstallNudgeCopy();
       if (typeof renderStats === "function") renderStats();
       els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
@@ -1783,12 +1864,51 @@
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
+    let colorMode = "system";
+    try {
+      const storedMode = localStorage.getItem(COLOR_MODE_KEY);
+      if (storedMode === "light" || storedMode === "dark" || storedMode === "system") colorMode = storedMode;
+    } catch (e) {}
+    const systemLightQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
+
+    function resolveColorScheme() {
+      if (colorMode === "light" || colorMode === "dark") return colorMode;
+      return systemLightQuery && systemLightQuery.matches ? "light" : "dark";
+    }
+
+    function colorModeLabel(mode) {
+      return t("appearance." + (mode === "system" ? "auto" : mode));
+    }
+
+    function updateColorModeUI() {
+      document.querySelectorAll("[data-color-mode-btn]").forEach(btn => {
+        btn.textContent = colorModeLabel(colorMode);
+      });
+      const select = document.getElementById("colorModeSelect");
+      if (select) {
+        select.innerHTML = ["system", "light", "dark"]
+          .map(mode => `<option value="${mode}">${colorModeLabel(mode)}</option>`)
+          .join("");
+        select.value = colorMode;
+      }
+    }
+
+    function setColorMode(mode) {
+      colorMode = mode === "light" || mode === "dark" ? mode : "system";
+      try { localStorage.setItem(COLOR_MODE_KEY, colorMode); } catch (e) {}
+      applyTheme(state.settings.themeIndex);
+      updateColorModeUI();
+    }
+
     function applyTheme(index) {
       const i = ((Number(index) % COLOR_THEMES.length) + COLOR_THEMES.length) % COLOR_THEMES.length;
       const theme = COLOR_THEMES[i] || COLOR_THEMES[0];
-      const base = COLOR_THEMES[0] || theme;
+      const darkBase = COLOR_THEMES[0] || theme;
+      const light = resolveColorScheme() === "light";
+      const base = light ? LIGHT_BASE : darkBase;
       const fixedBg = base.bg;
       const root = document.documentElement;
+      root.setAttribute("data-color-mode", light ? "light" : "dark");
       root.style.setProperty("--bg", fixedBg);
       root.style.setProperty("--panel", base.panel);
       root.style.setProperty("--panel-2", base.panel2);
@@ -1805,7 +1925,7 @@
       root.style.setProperty("--red-deep", theme.redDeep);
       root.style.setProperty("--yellow", theme.yellow);
       root.style.setProperty("--panel-soft", mixHex(base.panel, fixedBg, 0.62));
-      root.style.setProperty("--track", mixHex(base.panel, base.text, 0.1));
+      root.style.setProperty("--track", mixHex(base.text, base.panel, 0.1));
       root.style.setProperty("--card-shadow", mixHex(base.line, fixedBg, 0.55));
       root.style.setProperty("--selected-bg", mixHex(theme.blue, fixedBg, 0.2));
       root.style.setProperty("--selected-ink", mixHex(base.text, theme.blue, 0.84));
@@ -1816,12 +1936,12 @@
       root.style.setProperty("--wrong-bg", mixHex(theme.red, fixedBg, 0.2));
       root.style.setProperty("--wrong-ink", mixHex(base.text, theme.red, 0.88));
       root.style.setProperty("--wrong-shadow", mixHex(theme.redDeep, fixedBg, 0.72));
-      root.style.setProperty("--on-accent", mixHex(fixedBg, "#000000", 0.42));
-      root.style.setProperty("--warn-ink", mixHex(fixedBg, "#000000", 0.28));
+      root.style.setProperty("--on-accent", mixHex(darkBase.bg, "#000000", 0.42));
+      root.style.setProperty("--warn-ink", mixHex(darkBase.bg, "#000000", 0.28));
       root.style.setProperty("--warn-shadow", mixHex(theme.yellow, fixedBg, 0.62));
       root.style.setProperty("--weak-wrong", mixHex(theme.red, base.text, 0.72));
-      root.style.setProperty("--scrim", rgbaFromHex(mixHex(fixedBg, "#000000", 0.35), 0.72));
-      root.style.setProperty("--hover-soft", mixHex(base.panel, base.text, 0.06));
+      root.style.setProperty("--scrim", rgbaFromHex(mixHex(darkBase.bg, "#000000", 0.35), light ? 0.45 : 0.72));
+      root.style.setProperty("--hover-soft", mixHex(base.text, base.panel, 0.06));
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute("content", fixedBg);
       try { localStorage.setItem(THEME_KEY, String(i)); } catch (e) {}
@@ -3021,11 +3141,159 @@
         ? trimmed.split("=")
         : trimmed.includes("，")
           ? trimmed.split("，")
-          : trimmed.split(",");
+          : trimmed.includes(",")
+            ? trimmed.split(",")
+            : trimmed.split("\t");
       if (parts.length < 2) return null;
       const en = parts.shift().trim();
       const zh = parts.join(",").trim();
       return en && zh ? [en, zh] : null;
+    }
+
+    // Standard import text (what the AI prompt asks for): optional "@key: value"
+    // config lines, then one "word,meaning" per line. Fences/bullets/numbering are tolerated.
+    const IMPORT_CONFIG_KEYS = { lang: "lang", language: "lang", round: "round", time: "time" };
+
+    function parseImportText(text) {
+      const config = {};
+      const pairs = [];
+      let skipped = 0;
+      String(text).split(/\r?\n/).forEach(raw => {
+        let line = raw.replace(/^﻿/, "").trim();
+        if (!line || line.startsWith("```") || line.startsWith("#") || line.startsWith("//")) return;
+        line = line.replace(/^(?:[-*•]|\d+[.)、])\s+/, "").trim();
+        const cfg = line.match(/^@\s*([A-Za-z]+)\s*[:：=]?\s*(.*)$/);
+        if (cfg) {
+          const key = IMPORT_CONFIG_KEYS[cfg[1].toLowerCase()];
+          const value = cfg[2].trim();
+          if (key === "lang") {
+            const sides = value.split(/\s*(?:\||↔|<->|->|→|\/|,|，)\s*/).map(x => x.trim()).filter(Boolean);
+            if (sides.length >= 2 && sides[0].length <= 24 && sides[1].length <= 24) {
+              config.lang = { a: sides[0], b: sides[1] };
+              return;
+            }
+          } else if (key) {
+            const n = parseInt(value, 10);
+            if (Number.isFinite(n) && n > 0) {
+              config[key] = n;
+              return;
+            }
+          }
+          skipped += 1;
+          return;
+        }
+        const pair = normalizePair(line);
+        if (pair) pairs.push(pair);
+        else skipped += 1;
+      });
+      return { config, pairs, skipped };
+    }
+
+    /** Apply @lang / @round / @time. Returns human-readable parts of what changed. */
+    function applyImportConfig(config) {
+      const overrides = {};
+      if (config.lang) overrides.langPair = config.lang;
+      if (config.round) overrides.roundSize = config.round;
+      if (config.time) overrides.levelDurationMs = config.time * 1000;
+      if (!Object.keys(overrides).length) return [];
+      state.settings = normalizeSettings({ ...state.settings, ...overrides });
+      saveWords();
+      syncOptionsUI();
+      const parts = [];
+      if (config.lang) parts.push(t("ai.cfgLang", state.settings.langPair));
+      if (config.round) parts.push(t("ai.cfgRound", { n: state.settings.roundSize }));
+      if (config.time) parts.push(t("ai.cfgTime", { n: Math.round(state.settings.levelDurationMs / 1000) }));
+      return parts;
+    }
+
+    function aiExampleLines(a, b) {
+      const examples = {
+        "English|中文": ["literature,文学", "take part in,参加"],
+        "English|日本語": ["literature,文学", "take part in,参加する"],
+        "English|Español": ["literature,literatura", "take part in,participar en"],
+        "中文|English": ["文学,literature", "参加,take part in"]
+      };
+      return examples[`${a}|${b}`] || ["word_1,meaning_1", "word_2,meaning_2"];
+    }
+
+    function buildAiPrompt() {
+      const { a, b } = state.settings.langPair;
+      const round = state.settings.roundSize;
+      const secs = Math.round(state.settings.levelDurationMs / 1000);
+      const [ex1, ex2] = aiExampleLines(a, b);
+      const fence = "```";
+      const example = [fence, `@lang: ${a} | ${b}`, `@round: ${round}`, `@time: ${secs}`, ex1, ex2, fence].join("\n");
+      if (currentLang === "en") {
+        return [
+          "You are the word-list assistant for “Word Snap”, a vocabulary matching practice app. Based on “My request” at the end, generate a word list I can paste straight into the app.",
+          "",
+          "OUTPUT FORMAT (follow strictly)",
+          "1. Output exactly ONE code block and nothing outside it: no intro, no explanation.",
+          "2. The block may start with config lines, each beginning with @ (omit the ones you don't need):",
+          `   @lang: ${a} | ${b}    the two languages; entries are written in this order`,
+          `   @round: ${round}    words per round (5-200)`,
+          `   @time: ${secs}    base seconds per level (20-900)`,
+          `3. After the config lines, one entry per line: ${a} word,${b} meaning`,
+          "   - separate with a single ASCII comma; no numbering, bullets, tables or blank lines;",
+          "   - keep meanings short; separate several meanings with “;” and never put a comma inside a meaning;",
+          "   - no duplicate entries.",
+          "",
+          "EXAMPLE",
+          example,
+          "",
+          "MY REQUEST",
+          "(Write your topic / textbook / level / count here, e.g. “Grade 8 Unit 1-3 key vocabulary, 60 words”)"
+        ].join("\n");
+      }
+      return [
+        "你是「Word Snap」单词配对练习 App 的词库助手。请根据文末“我的需求”，生成一份可以直接粘贴进 App 的词表。",
+        "",
+        "【输出格式（必须严格遵守）】",
+        "1. 只输出一个代码块，代码块之外不要有任何开场白或解释。",
+        "2. 代码块开头可以写配置行，每行以 @ 开头，不需要的可以省略：",
+        `   @lang: ${a} | ${b}    两侧语言，词条按这个顺序书写`,
+        `   @round: ${round}    每局单词数（5–200）`,
+        `   @time: ${secs}    每关基础时间，单位秒（20–900）`,
+        `3. 配置行之后，每行一个词条：${a}词,${b}释义`,
+        "   - 只用一个英文逗号分隔；不要序号、项目符号、表格、空行；",
+        "   - 释义尽量简短，多个释义用“；”隔开，释义里不要出现英文逗号；",
+        "   - 不要出现重复词条。",
+        "",
+        "【示例】",
+        example,
+        "",
+        "【我的需求】",
+        "（在这里写主题 / 教材 / 难度 / 数量，例如：“初二英语上册 Unit 1–3 重点词汇，共 60 个”）"
+      ].join("\n");
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (e) {}
+      try {
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+        document.body.appendChild(area);
+        area.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(area);
+        return ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setImportStatus(text, kind = "") {
+      const el = document.getElementById("importStatus");
+      if (!el) return;
+      el.textContent = text;
+      el.className = `import-status${kind ? " " + kind : ""}`;
     }
 
     function addWords(pairs) {
@@ -3318,14 +3586,56 @@
     });
 
     document.getElementById("addBulkBtn").addEventListener("click", () => {
-      const pairs = els.bulkInput.value.split(/\r?\n/).map(normalizePair).filter(Boolean);
+      const { config, pairs, skipped } = parseImportText(els.bulkInput.value);
+      if (!pairs.length && !Object.keys(config).length) {
+        setImportStatus(t("ai.nothing"), "bad");
+        return;
+      }
+      // Settings first, so the freshly built round already uses them.
+      const configParts = applyImportConfig(config);
       const added = addWords(pairs);
+      const messages = [];
+      if (added) messages.push(t("ai.imported", { n: added }));
+      else if (pairs.length) messages.push(t("ai.dupOnly"));
+      if (configParts.length) messages.push(t("ai.config", { list: configParts.join(currentLang === "zh" ? "、" : ", ") }));
+      if (skipped) messages.push(t("ai.skipped", { n: skipped }));
+      if (added || configParts.length) els.bulkInput.value = "";
       if (added) {
-        els.bulkInput.value = "";
         els.feedback.className = "feedback good";
         els.feedback.textContent = t("feedback.addedN", { n: added });
       }
+      setImportStatus(messages.join(" "), added || configParts.length ? "good" : "");
     });
+
+    document.getElementById("copyAiPromptBtn").addEventListener("click", async () => {
+      const prompt = buildAiPrompt();
+      if (await copyText(prompt)) {
+        setImportStatus(t("ai.copied"), "good");
+      } else {
+        els.bulkInput.value = prompt;
+        els.bulkInput.focus();
+        els.bulkInput.select();
+        setImportStatus(t("ai.copyFailed"), "bad");
+      }
+    });
+
+    document.querySelectorAll("[data-color-mode-btn]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const order = ["system", "light", "dark"];
+        setColorMode(order[(order.indexOf(colorMode) + 1) % order.length]);
+      });
+    });
+    const colorModeSelect = document.getElementById("colorModeSelect");
+    if (colorModeSelect) {
+      colorModeSelect.addEventListener("change", () => setColorMode(colorModeSelect.value));
+    }
+    if (systemLightQuery) {
+      const onSchemeChange = () => {
+        if (colorMode === "system") applyTheme(state.settings.themeIndex);
+      };
+      if (systemLightQuery.addEventListener) systemLightQuery.addEventListener("change", onSchemeChange);
+      else if (systemLightQuery.addListener) systemLightQuery.addListener(onSchemeChange);
+    }
 
     document.getElementById("clearCustomBtn").addEventListener("click", () => {
       if (!confirm(t("confirm.clearAllConfirm"))) return;
@@ -3416,6 +3726,7 @@
       }
     } catch (e) {}
     applyTheme(themeIdx);
+    updateColorModeUI();
     syncOptionsUI();
     renderRound();
   </script>
