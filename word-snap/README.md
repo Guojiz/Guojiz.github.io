@@ -53,31 +53,30 @@ In **Library → Practice options → Language pair** you can rename the two col
 
 ## Review logic (boxes)
 
-Word Snap uses a simple box system (Leitner). It is a web page and cannot send reminders, so gaps are counted in **rounds played**, not on the clock.
+Word Snap uses a simple box system (Leitner). It is a web page and cannot send reminders, so short-term gaps are counted in **rounds played**; long-term gaps are counted in **calendar days** (a “day” starts at 4 am, so a late-night session still counts as today).
 
-Each word sits in box 0–5:
-
-| Box | Comes back after | …or after (if you were away) |
+| Box | Comes back | Fallback if you were away |
 | --- | --- | --- |
-| 0 — just missed | next round | 10 minutes |
-| 1 | 2 rounds | 1 day |
-| 2 | 4 rounds | 3 days |
-| 3 | 8 rounds | 7 days |
-| 4 | 16 rounds | 14 days |
-| 5 — mastered | 32 rounds (spot check) | 30 days |
+| 0 — just missed | next round | 30 minutes |
+| 1 | 2 rounds later | 4 hours |
+| 2 | 4 rounds later | next day |
+| 3 | next day | — |
+| 4 | 3 days later | — |
+| 5 — mastered | spot check after 14 days | — |
 
-- Wrong pair → the word you were answering goes to box 0; the card you wrongly picked drops one box.
+- Wrong pair → the word you were answering goes to box 0; the card you wrongly picked drops one box (at most once per level).
 - Right pair → one box up, **only if the word was due**. Matching it again early does not count.
+- Boxes 3–5 only open on a later day, so a word can never be “mastered” in a single sitting (it takes at least three separate days).
 - Synonyms (same meaning or same word) are accepted as correct.
 
-Which words go into a round (up to “Words per round”) is decided by priority:
+Which words go into a round is decided by priority (“Max words per round” is the cap):
 
 1. words missed last time;
 2. other due words, lowest box first;
-3. a small batch of new words (about a third of a round) — only while fewer than a round's worth of words are still in boxes 0–1, so a 200-word import never floods you;
-4. fill with words not yet due, lowest box and least recently seen first.
+3. new words — at most about a third of a round (5–15), and only while fewer than a round's worth of words are still in boxes 0–1, so a 200-word import never floods you. A light review day means more new words;
+4. only if that adds up to less than two boards (10 words), top up with words not yet due. Rounds are not padded to the maximum, because showing not-due words every round would undo the spacing.
 
-The chosen words are then **shuffled**. If missed words always came first, their position would give the answer away and hard words would bunch up. Nothing is lost if time runs out: words you didn't get to keep their schedule and are still due next round. (“All in order” mode keeps library order.)
+The chosen words are then **shuffled**. If missed words always came first, their position would give the answer away and hard words would bunch up. Nothing is lost if time runs out: words you didn't get to keep their schedule and are still due next round. Only finishing a level counts as a round; adding words or switching modes does not. (“All in order” mode keeps library order.)
 
 The library is meant to keep growing; you don't need to clear it. Mastered words simply come up rarely.
 

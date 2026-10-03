@@ -1361,7 +1361,7 @@
             <select id="colorModeSelect"></select>
           </label>
           <label>
-            <span data-en="Words per round" data-zh="每局单词数">每局单词数</span>
+            <span data-en="Max words per round" data-zh="每局最多单词数">每局最多单词数</span>
             <input id="roundSize" type="number" min="5" max="200" step="1" />
           </label>
           <label>
@@ -1911,6 +1911,8 @@
       visibleAt: new Map(),
       // Words confused during the current level, shown for review on the completion screen.
       levelMisses: new Map(),
+      // Wrong-guess words already stepped back once this level.
+      levelDemoted: new Set(),
       levelMistakes: 0,
       drawHistory: []
     };
@@ -2002,14 +2004,14 @@
         return {
           box: Math.max(0, Math.min(MAX_BOX, Math.round(savedWord.box))),
           dueRound: Number(savedWord.dueRound) || 0,
-          dueAt: Number(savedWord.dueAt) || 0
+          dueAt: Number(savedWord.dueAt) || Date.now()
         };
       }
       const box = savedWord.mastered ? MAX_BOX : Math.max(0, Math.min(MAX_BOX - 1, Math.round(savedWord.reviewLevel || 0)));
       return {
         box,
-        dueRound: box <= 1 ? savedRound : savedRound + BOX_ROUND_GAPS[box],
-        dueAt: Number(savedWord.nextReviewAt) || 0
+        dueRound: savedRound,
+        dueAt: Number(savedWord.nextReviewAt) || Date.now()
       };
     }
 
@@ -2236,14 +2238,43 @@
     }
 
     // ---- Review boxes (Leitner) ----
-    // Wrong → box 0, comes back next round. Right when due → one box up, and the
-    // gap before it returns doubles. Gaps count rounds played, because a web page
-    // cannot send reminders; the day gaps only make words due for someone who
-    // comes back after a break.
+    // Wrong → box 0, back next round. Right *when due* → one box up.
+    // Boxes 0–2 are short-term learning and count rounds played (a web page
+    // cannot send reminders, so "soon" has to mean "a few rounds from now").
+    // Boxes 3–5 are long-term memory and only come due after real days — so
+    // a word can never be "mastered" within a single sitting.
+    // The time gaps on boxes 0–2 are a fallback for someone who comes back
+    // later without having played the rounds in between.
     const MAX_BOX = 5;
-    const BOX_ROUND_GAPS = [1, 2, 4, 8, 16, 32];
-    const DAY_MS = 24 * 60 * 60 * 1000;
-    const BOX_TIME_GAPS = [10 * 60 * 1000, DAY_MS, 3 * DAY_MS, 7 * DAY_MS, 14 * DAY_MS, 30 * DAY_MS];
+    const ROUND_BOXES = 3;
+    const BOX_ROUND_GAPS = [1, 2, 4];
+    const HOUR_MS = 60 * 60 * 1000;
+    const DAY_MS = 24 * HOUR_MS;
+    // Box 0 waits longer than the longest level (15 min), so a word missed
+    // early in a level cannot be promoted by matching it later in that level.
+    // Box 0–1: minutes/hours. Box 2+: calendar days (see dueAtFor).
+    const BOX_TIME_GAPS = [30 * 60 * 1000, 4 * HOUR_MS];
+    const BOX_DAY_GAPS = [0, 0, 1, 1, 3, 14];
+    const DAY_CUTOFF_HOUR = 4;
+
+    /** Start of the learner's "day" (4 am cutoff, so a late-night session counts as the same day). */
+    function dayStart(ts) {
+      const d = new Date(ts);
+      d.setHours(DAY_CUTOFF_HOUR, 0, 0, 0);
+      if (d.getTime() > ts) d.setDate(d.getDate() - 1);
+      return d;
+    }
+
+    /**
+     * "Come back in N days" means any time on day N, not exactly N×24h later —
+     * otherwise playing at 8 pm and again at 7 pm tomorrow would find nothing due.
+     */
+    function dueAtFor(box, now) {
+      if (box < BOX_TIME_GAPS.length) return now + BOX_TIME_GAPS[box];
+      const d = dayStart(now);
+      d.setDate(d.getDate() + BOX_DAY_GAPS[box]);
+      return d.getTime();
+    }
 
     function isNewWord(word) {
       return !(word.draws > 0);
@@ -2251,7 +2282,8 @@
 
     function isDueForReview(word, now = Date.now()) {
       if (isNewWord(word)) return false;
-      return state.round >= (word.dueRound || 0) || (word.dueAt > 0 && now >= word.dueAt);
+      const byRounds = word.box < ROUND_BOXES && state.round >= (word.dueRound || 0);
+      return byRounds || (word.dueAt > 0 && now >= word.dueAt);
     }
 
     /** Introduced but not yet steady (box 0–1): the "currently learning" pile. */
@@ -2261,8 +2293,8 @@
 
     function scheduleBox(word, box) {
       word.box = Math.max(0, Math.min(MAX_BOX, box));
-      word.dueRound = state.round + BOX_ROUND_GAPS[word.box];
-      word.dueAt = Date.now() + BOX_TIME_GAPS[word.box];
+      word.dueRound = word.box < ROUND_BOXES ? state.round + BOX_ROUND_GAPS[word.box] : 0;
+      word.dueAt = dueAtFor(word.box, Date.now());
       word.mastered = word.box >= MAX_BOX;
     }
 
@@ -2513,9 +2545,12 @@
      * One round = up to `roundSize` words, *chosen* by priority:
      *   1. words missed last time (box 0, due)
      *   2. other words due for review, shakiest box first
-     *   3. a small batch of new words — only while the "learning" pile is small,
-     *      so importing 200 words never floods a round
-     *   4. fill with words not yet due: lowest box, least recently seen first
+     *   3. new words — at most a small batch, and only while the "learning"
+     *      pile (boxes 0–1) is below a round's worth, so a 200-word import
+     *      never floods you. A light review day means more new words.
+     *   4. only if that is less than two boards, top up with words not yet due
+     *      (lowest box, least recently seen). Topping up to the full size would
+     *      show not-due words every round and undo the spacing.
      * The chosen set is then *played* in random order: if missed words always
      * came first, their position would give the answer away, and hard words
      * would bunch up. Nothing is lost on a timeout — unplayed words keep their
@@ -2535,29 +2570,33 @@
       const due = introduced.filter(word => isDueForReview(word, now));
       const missed = shuffle(due.filter(word => word.box === 0)).sort((a, b) => b.mistakes - a.mistakes);
       const review = shuffle(due.filter(word => word.box > 0)).sort((a, b) => a.box - b.box);
+      const notDue = introduced
+        .filter(word => !due.includes(word) && (state.settings.recycleMastered || !word.mastered))
+        .sort((a, b) => a.box - b.box || byOldest(a, b));
+      const minRound = Math.min(limit, 2 * SLOT_COUNT);
 
       if (state.mode === "weak") {
-        const shaky = introduced.filter(word => isLearning(word) && !due.includes(word)).sort(byOldest);
-        const weakQueue = [...missed, ...review.filter(isLearning), ...shaky].slice(0, limit);
+        const weakDue = [...missed, ...review.filter(isLearning)].slice(0, limit);
+        const shaky = notDue.filter(isLearning).slice(0, Math.max(0, minRound - weakDue.length));
+        const weakQueue = [...weakDue, ...shaky];
         if (weakQueue.length) return shuffle(weakQueue);
       }
 
       const queue = [...missed, ...review].slice(0, limit);
-      const newWords = state.words.filter(isNewWord);
       const learningCount = introduced.filter(isLearning).length;
-      const newBatch = Math.max(5, Math.round(limit / 3));
-      let newAllowance = Math.max(0, Math.min(newBatch, limit - learningCount));
-      // Keep a round worth playing: at least two boards' worth when words exist.
-      const minRound = Math.min(limit, 2 * SLOT_COUNT);
-      const notDue = introduced.filter(word => !due.includes(word) && (state.settings.recycleMastered || !word.mastered));
-      if (queue.length + newAllowance + notDue.length < minRound) {
-        newAllowance = minRound - queue.length - notDue.length;
+      const newBatch = Math.max(5, Math.min(15, Math.round(limit / 3)));
+      const newAllowance = Math.min(newBatch, Math.max(0, limit - learningCount), limit - queue.length);
+      const fresh = state.words.filter(isNewWord).slice(0, newAllowance);
+      let chosen = [...queue, ...fresh];
+      if (chosen.length < minRound) {
+        chosen = [...chosen, ...notDue.slice(0, minRound - chosen.length)];
       }
-      const fresh = newWords.slice(0, Math.max(0, Math.min(newAllowance, limit - queue.length)));
-      const fill = notDue
-        .sort((a, b) => a.box - b.box || byOldest(a, b))
-        .slice(0, Math.max(0, limit - queue.length - fresh.length));
-      return shuffle([...queue, ...fresh, ...fill]);
+      // Still short (small library, little introduced yet): allow more new words.
+      if (chosen.length < minRound) {
+        const moreNew = state.words.filter(word => isNewWord(word) && !chosen.includes(word));
+        chosen = [...chosen, ...moreNew.slice(0, minRound - chosen.length)];
+      }
+      return shuffle(chosen);
     }
 
     function buildSequentialWordQueue(words) {
@@ -2596,6 +2635,7 @@
       state.pausedAt = 0;
       state.visibleAt = new Map();
       state.levelMisses = new Map();
+      state.levelDemoted = new Set();
       state.levelMistakes = 0;
       state.lastCompletion = null;
 
@@ -3054,7 +3094,10 @@
       // The first pick is the word being answered; the second was the wrong guess,
       // so it only steps back one review level instead of losing all progress.
       recordWrong(firstWord, true);
-      recordWrong(secondWord, false);
+      if (!state.levelDemoted.has(secondWord.id)) {
+        state.levelDemoted.add(secondWord.id);
+        recordWrong(secondWord, false);
+      }
       state.levelMisses.set(firstWord.id, firstWord);
       state.levelMisses.set(secondWord.id, secondWord);
       state.levelMistakes += 1;
@@ -3337,7 +3380,7 @@
           "1. Output exactly ONE code block and nothing outside it: no intro, no explanation.",
           "2. The block may start with config lines, each beginning with @ (omit the ones you don't need):",
           `   @lang: ${a} | ${b}    the two languages; entries are written in this order`,
-          `   @round: ${round}    words per round (5-200)`,
+          `   @round: ${round}    max words per round (5-200)`,
           `   @time: ${secs}    base seconds per level (20-900)`,
           `3. After the config lines, one entry per line: ${a} word,${b} meaning`,
           "   - separate with a single ASCII comma; no numbering, bullets, tables or blank lines;",
@@ -3358,7 +3401,7 @@
         "1. 只输出一个代码块，代码块之外不要有任何开场白或解释。",
         "2. 代码块开头可以写配置行，每行以 @ 开头，不需要的可以省略：",
         `   @lang: ${a} | ${b}    两侧语言，词条按这个顺序书写`,
-        `   @round: ${round}    每局单词数（5–200）`,
+        `   @round: ${round}    每局最多单词数（5–200）`,
         `   @time: ${secs}    每关基础时间，单位秒（20–900）`,
         `3. 配置行之后，每行一个词条：${a}词,${b}释义`,
         "   - 只用一个英文逗号分隔；不要序号、项目符号、表格、空行；",
@@ -3416,7 +3459,8 @@
 
       if (added > 0) {
         saveWords();
-        state.round += 1;
+        // Restart the level with the new words, but don't count it as a round
+        // played — rounds drive the review schedule.
         renderRound();
       }
       return added;
@@ -3454,7 +3498,6 @@
       const next = modes[(modes.indexOf(state.mode) + 1) % modes.length];
       state.mode = next;
       els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(next) });
-      state.round += 1;
       saveWords();
       renderRound();
     }
