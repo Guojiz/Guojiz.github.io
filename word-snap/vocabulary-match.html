@@ -1122,6 +1122,10 @@
             <input id="langPairB" type="text" autocomplete="off" />
           </label>
           <label>
+            <span data-en="Words per round" data-zh="每局单词数">每局单词数</span>
+            <input id="roundSize" type="number" min="5" max="200" step="1" />
+          </label>
+          <label>
             <span data-en="Base level time (sec)" data-zh="基础每关时间（秒）">基础每关时间（秒）</span>
             <input id="levelSeconds" type="number" min="20" max="900" step="5" />
           </label>
@@ -1478,6 +1482,7 @@
 
     const DEFAULT_SETTINGS = {
       levelDurationMs: 120000,
+      roundSize: 30,
       adaptiveLevelTime: true,
       levelTimeTolerance: 0.2,
       // Pace sample from real clears only (ms per pair). Never the countdown allotment.
@@ -1553,6 +1558,7 @@
       bulkInput: document.getElementById("bulkInput"),
       customList: document.getElementById("customList"),
       levelSeconds: document.getElementById("levelSeconds"),
+      roundSize: document.getElementById("roundSize"),
       levelTimeTolerance: document.getElementById("levelTimeTolerance"),
       adaptiveLevelTime: document.getElementById("adaptiveLevelTime"),
       refillTrigger: document.getElementById("refillTrigger"),
@@ -1663,6 +1669,7 @@
       if (refillMaxMs < refillMinMs) refillMaxMs = refillMinMs;
       return {
         levelDurationMs: clampNumber(raw.levelDurationMs, 20000, 900000, DEFAULT_SETTINGS.levelDurationMs),
+        roundSize: Math.round(clampNumber(raw.roundSize, 5, 200, DEFAULT_SETTINGS.roundSize)),
         adaptiveLevelTime: raw.adaptiveLevelTime !== false,
         levelTimeTolerance: clampNumber(raw.levelTimeTolerance, 0, 2, DEFAULT_SETTINGS.levelTimeTolerance),
         lastMsPerPair: clampNumber(raw.lastMsPerPair, 0, 600000, 0),
@@ -2324,8 +2331,11 @@
       }
       if (!eligible.length) return [];
 
+      // Each round is a fixed-size set, not the whole library.
+      const limit = state.settings.roundSize;
+
       if (state.mode === "all") {
-        return buildSequentialWordQueue(eligible);
+        return buildSequentialWordQueue(eligible).slice(0, limit);
       }
 
       const due = [...eligible]
@@ -2338,12 +2348,12 @@
 
       if (state.mode === "weak") {
         const weakPool = Array.from(new Map([...due, ...weak].map(word => [word.id, word])).values());
-        return buildAdaptiveWordQueue(weakPool.length ? weakPool : eligible, now);
+        return buildAdaptiveWordQueue(weakPool.length ? weakPool : eligible, now, limit);
       }
 
       const unseen = eligible.filter(word => word.seen === 0);
       const pool = Array.from(new Map([...due, ...weak, ...unseen, ...eligible].map(word => [word.id, word])).values());
-      return buildAdaptiveWordQueue(pool, now);
+      return buildAdaptiveWordQueue(pool, now, limit);
     }
 
     function buildSequentialWordQueue(words) {
@@ -2355,10 +2365,10 @@
       return [...ordered.slice(lastIndex + 1), ...ordered.slice(0, lastIndex + 1)];
     }
 
-    function buildAdaptiveWordQueue(words, now = Date.now()) {
+    function buildAdaptiveWordQueue(words, now = Date.now(), limit = Infinity) {
       let candidatePool = [...words];
       const selected = [];
-      while (candidatePool.length) {
+      while (candidatePool.length && selected.length < limit) {
         const next = selectAdaptiveWord(candidatePool, selected, now);
         if (!next) break;
         selected.push(next);
@@ -2664,7 +2674,9 @@
     }
 
     function selectCard(card, side, index) {
-      if (state.locked || card.disabled || isLevelOver()) return;
+      // Only the pair that is mid-clear is inert; every other card stays clickable
+      // so a tap during the vanish animation is not lost.
+      if (state.locked || card.disabled || card.classList.contains("correct") || isLevelOver()) return;
       clearWrong();
       // DOM may have been recreated by refill — rebind instead of dropping selection.
       if (state.selected && !rebindSelection()) {
@@ -2747,7 +2759,6 @@
       state.completedThisRun += 1;
       state.lastPairAt = performance.now();
       state.selected = null;
-      state.locked = true;
       // Reaction timer for the next pair only — does not move levelStartedAt.
       state.roundStartedAt = performance.now();
 
@@ -2767,7 +2778,6 @@
         // Paint only the two emptied cells — keep all other cards (and any
         // selection the user already made after unlock) intact.
         paintSlotPair(cleared.leftIndex, cleared.rightIndex);
-        state.locked = false;
         renderStats();
         // Board empty + no more words: stop clock immediately even if a refill timer is mid-flight.
         if (finishLevelIfDone()) return;
@@ -2856,7 +2866,6 @@
       state.streak = 0;
       playMistakeTone();
       state.selected = null;
-      state.locked = true;
 
       if (first.card) {
         first.card.classList.remove("selected");
@@ -2870,7 +2879,7 @@
 
       setTimeout(() => {
         document.querySelectorAll(".match-card.wrong").forEach(card => card.classList.remove("wrong"));
-        state.locked = false;
+        if (state.selected) return;
         els.feedback.className = "feedback";
         els.feedback.textContent = t("feedback.pickPair");
       }, WRONG_ANIM_MS);
@@ -3116,6 +3125,7 @@
 
     function syncOptionsUI() {
       els.levelSeconds.value = Math.round(state.settings.levelDurationMs / 1000);
+      els.roundSize.value = state.settings.roundSize;
       if (els.levelTimeTolerance) {
         els.levelTimeTolerance.value = Number(state.settings.levelTimeTolerance).toFixed(2);
       }
@@ -3146,6 +3156,7 @@
       }
       const nextSettings = normalizeSettings({
         levelDurationMs: Number(els.levelSeconds.value) * 1000,
+        roundSize: Number(els.roundSize.value),
         adaptiveLevelTime: els.adaptiveLevelTime ? els.adaptiveLevelTime.checked : true,
         levelTimeTolerance: els.levelTimeTolerance ? Number(els.levelTimeTolerance.value) : 0.2,
         lastMsPerPair: state.settings.lastMsPerPair,
