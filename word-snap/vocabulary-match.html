@@ -82,14 +82,14 @@
 
     .import-hint {
       margin: 10px 0 0;
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.5;
       color: var(--muted);
     }
     .import-status {
       min-height: 1.4em;
       margin: 8px 0 0;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       color: var(--muted);
     }
@@ -175,7 +175,7 @@
     }
 
     .rail-btn {
-      width: 52px;
+      width: 60px;
       min-height: 52px;
       height: auto;
       display: grid;
@@ -186,8 +186,8 @@
       color: var(--muted);
       background: transparent;
       cursor: pointer;
-      padding: 6px 3px;
-      font-size: 10px;
+      padding: 6px 2px;
+      font-size: 12px;
       font-weight: 800;
       text-transform: uppercase;
       text-align: center;
@@ -236,7 +236,7 @@
       padding: 6px 4px;
       border-color: var(--line);
       background: var(--panel-soft);
-      font-size: 11px;
+      font-size: 13px;
     }
 
     .lesson {
@@ -290,6 +290,7 @@
     .top-count {
       min-width: 68px;
       color: var(--muted);
+      font-size: 20px;
       font-weight: 900;
       text-align: right;
     }
@@ -305,7 +306,7 @@
 
     .prompt-kicker {
       color: var(--green);
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 900;
       margin-bottom: 8px;
       text-transform: uppercase;
@@ -313,7 +314,7 @@
 
     h1 {
       margin: 0 0 24px;
-      font-size: 32px;
+      font-size: 36px;
       line-height: 1.18;
       text-wrap: pretty;
     }
@@ -321,14 +322,14 @@
     .match-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 255px));
-      grid-template-rows: repeat(5, 52px);
+      grid-template-rows: repeat(5, 60px);
       grid-auto-flow: column;
       justify-content: center;
       gap: 10px 30px;
     }
 
     .match-card {
-      height: 52px;
+      height: 60px;
       border: 2px solid var(--line);
       border-radius: var(--radius);
       color: var(--text);
@@ -410,7 +411,7 @@
       display: grid;
       place-items: center;
       color: var(--dim);
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 900;
       line-height: 1;
     }
@@ -419,7 +420,7 @@
       min-width: 0;
       overflow: hidden;
       color: inherit;
-      font-size: 18px;
+      font-size: 21px;
       font-weight: 800;
       text-align: center;
       text-overflow: ellipsis;
@@ -432,7 +433,7 @@
       -webkit-line-clamp: 2;
       white-space: normal;
       overflow-wrap: anywhere;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.15;
     }
 
@@ -458,6 +459,8 @@
       padding: 10px 14px;
       background: var(--panel-soft);
       overflow-wrap: anywhere;
+      align-items: center;
+      font-size: 17px;
     }
 
     .review-list b {
@@ -471,7 +474,7 @@
     .review-heading {
       margin: 0 0 10px;
       color: var(--red);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 900;
       text-align: left;
       text-transform: uppercase;
@@ -483,7 +486,7 @@
 
     .duo-button {
       min-width: 150px;
-      height: 50px;
+      height: 54px;
       display: inline-grid;
       place-items: center;
       border: 0;
@@ -493,7 +496,7 @@
       box-shadow: 0 4px 0 var(--green-dark);
       cursor: pointer;
       padding: 0 18px;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 1000;
       text-transform: uppercase;
       text-align: center;
@@ -569,7 +572,7 @@
     .panel-head h2,
     .modal-card h2 {
       margin: 0;
-      font-size: 19px;
+      font-size: 22px;
       line-height: 1.2;
     }
 
@@ -577,7 +580,7 @@
     .modal-card p {
       margin: 7px 0 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.45;
       overflow-wrap: anywhere;
     }
@@ -636,7 +639,7 @@
     .weak-row b {
       min-width: 0;
       overflow: hidden;
-      font-size: 14px;
+      font-size: 16px;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -646,7 +649,7 @@
       min-height: 24px;
       place-items: center;
       color: var(--weak-wrong);
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 900;
       text-align: center;
     }
@@ -668,7 +671,7 @@
       background: var(--bg);
       cursor: pointer;
       padding: 8px 10px;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 900;
       text-transform: uppercase;
       text-align: center;
@@ -740,7 +743,7 @@
       gap: 10px;
       margin-top: 14px;
       color: var(--text);
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.35;
       text-transform: none;
     }
@@ -756,7 +759,7 @@
       display: grid;
       gap: 7px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 900;
       text-transform: uppercase;
     }
@@ -801,12 +804,13 @@
 
     .custom-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+      grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto auto;
       gap: 10px;
       align-items: center;
       border: 2px solid var(--line);
       border-radius: var(--radius);
       padding: 10px;
+      font-size: 16px;
       background: var(--bg);
     }
 
@@ -816,6 +820,43 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    /* listen (browser text-to-speech) */
+    .speak-btn {
+      width: 36px;
+      height: 36px;
+      display: inline-grid;
+      place-items: center;
+      border: 2px solid var(--line);
+      border-radius: 50%;
+      color: var(--blue);
+      background: var(--panel);
+      box-shadow: 0 2px 0 var(--card-shadow);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .speak-btn:hover {
+      border-color: var(--blue);
+    }
+
+    .speak-btn:active,
+    .speak-btn.is-speaking {
+      transform: translateY(2px);
+      box-shadow: none;
+      color: var(--on-accent);
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .speak-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .review-list li.has-speak {
+      grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
     }
 
     .intro-link {
@@ -928,7 +969,7 @@
     .install-copy p {
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       line-height: 1.5;
       text-wrap: pretty;
@@ -1049,32 +1090,33 @@
       }
 
       h1 {
-        font-size: 26px;
+        font-size: 30px;
       }
 
       .match-grid {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        grid-template-rows: repeat(5, 52px);
+        grid-template-rows: repeat(5, 58px);
         grid-auto-flow: column;
         gap: 10px;
       }
 
       .match-card {
+        height: 58px;
         grid-template-columns: 28px minmax(0, 1fr);
         padding: 0 10px 0 8px;
       }
 
       .num {
         width: 18px;
-        font-size: 13px;
+        font-size: 14px;
       }
 
       .word {
-        font-size: 15px;
+        font-size: 18px;
       }
 
       .word.long {
-        font-size: 13px;
+        font-size: 15px;
       }
 
       .duo-button {
@@ -1082,9 +1124,17 @@
       }
 
       .form-grid,
-      .option-grid,
-      .custom-row {
+      .option-grid {
         grid-template-columns: 1fr;
+      }
+
+      .custom-row {
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+      }
+
+      .custom-row .cr-mean {
+        grid-column: 2 / -1;
+        grid-row: 2;
       }
 
       .install-nudge {
@@ -1144,7 +1194,7 @@
       gap: 12px;
       align-items: start;
       color: var(--text);
-      font-size: 15px;
+      font-size: 17px;
       line-height: 1.5;
       counter-increment: intro;
     }
@@ -1537,7 +1587,7 @@
           saveOptions: "Save options",
           listTitle: "Word list",
           listBlurb: "All words in your library. You can re-add after clearing.",
-          deleteBtn: "Delete", stageNew: "New", stageBox: "Box {n}/{max}", stageMastered: "Mastered",
+          deleteBtn: "Delete", speak: "Listen to {w}", stageNew: "New", stageBox: "Box {n}/{max}", stageMastered: "Mastered",
           emptyListA: "No words yet", emptyListB: "Add some above",
           langPairLabel: "Language pair", custom: "Custom", sideA: "Side A", sideB: "Side B"
         },
@@ -1639,7 +1689,7 @@
           saveOptions: "保存选项",
           listTitle: "词库列表",
           listBlurb: "这里显示当前词库里的全部单词。清空后可以重新录入。",
-          deleteBtn: "删除", stageNew: "新词", stageBox: "熟练 {n}/{max}", stageMastered: "已掌握",
+          deleteBtn: "删除", speak: "朗读 {w}", stageNew: "新词", stageBox: "熟练 {n}/{max}", stageMastered: "已掌握",
           emptyListA: "还没有单词", emptyListB: "请从上方录入",
           langPairLabel: "语言对", custom: "自定义", sideA: "左侧", sideB: "右侧"
         },
@@ -2322,17 +2372,96 @@
       return t("library.stageBox", { n: word.box, max: MAX_BOX });
     }
 
+    // ---- listen: browser text-to-speech (Web Speech API); hidden where unsupported ----
+    function canSpeak() {
+      return typeof window !== "undefined" && "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+    }
+
+    const SPEAK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+    function speakButton(text) {
+      if (!canSpeak() || !String(text || "").trim()) return "";
+      const label = escapeHtml(t("library.speak", { w: text }));
+      return `<button class="speak-btn" type="button" data-speak="${escapeHtml(text)}" aria-label="${label}" title="${label}">${SPEAK_ICON}</button>`;
+    }
+
+    // language pair labels -> BCP 47 tags; unknown labels fall back to the script of the text itself
+    const SPEECH_LANGS = [
+      [/^(english|英语|英文|eng?)$/i, "en-US"], [/^(中文|汉语|普通话|简体中文|chinese|zh)$/i, "zh-CN"], [/^(繁體中文|繁体中文|粵語|粤语)$/i, "zh-TW"],
+      [/^(日本語|日语|日文|japanese|ja)$/i, "ja-JP"], [/^(español|espanol|spanish|西班牙语|es)$/i, "es-ES"], [/^(français|francais|french|法语|fr)$/i, "fr-FR"],
+      [/^(deutsch|german|德语|de)$/i, "de-DE"], [/^(한국어|korean|韩语|ko)$/i, "ko-KR"], [/^(русский|russian|俄语|ru)$/i, "ru-RU"],
+      [/^(italiano|italian|意大利语|it)$/i, "it-IT"], [/^(português|portugues|portuguese|葡萄牙语|pt)$/i, "pt-BR"]
+    ];
+    function speechLang(label, text) {
+      const name = String(label || "").trim();
+      for (const [re, tag] of SPEECH_LANGS) if (re.test(name)) return tag;
+      const s = String(text || "");
+      if (/[\u3040-\u30ff]/.test(s)) return "ja-JP";
+      if (/[\uac00-\ud7af]/.test(s)) return "ko-KR";
+      if (/[\u4e00-\u9fff]/.test(s)) return "zh-CN";
+      if (/[\u0400-\u04ff]/.test(s)) return "ru-RU";
+      return "en-US";
+    }
+
+    // prefer natural voices for the language; skip the novelty voices some systems ship (Albert, Zarvox, Bells…)
+    const NOVELTY_VOICES = /^(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|deranged|hysterical|pipe organ|fred|junior|ralph|kathy|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley)\b/i;
+    const NICE_VOICES = /(google|natural|neural|premium|enhanced|siri|samantha|alex|daniel|karen|moira|serena|ting-?ting|mei-?jia|sin-?ji|kyoko|otoya|monica|paulina|jorge|thomas|amelie|anna|yuna|milena|alice|luciana|microsoft)/i;
+    function pickVoice(voices, lang) {
+      const want = lang.toLowerCase(), base = want.split("-")[0];
+      let best = null, bestScore = -1;
+      for (const v of voices || []) {
+        const vl = String(v.lang || "").replace("_", "-").toLowerCase();
+        if (!vl.startsWith(base)) continue;
+        let score = vl === want ? 4 : 1;
+        if (v.default) score += 2;
+        if (v.localService) score += 1;
+        if (NICE_VOICES.test(v.name)) score += 3;
+        if (NOVELTY_VOICES.test(v.name)) score -= 20;
+        if (score > bestScore) { best = v; bestScore = score; }
+      }
+      return bestScore > 0 ? best : null;   // otherwise let the browser choose from utter.lang
+    }
+
+    function speak(text, button) {
+      if (!canSpeak()) return;
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      // the word side of every entry is the first language of the pair
+      const lang = speechLang(state.settings.langPair && state.settings.langPair.a, text);
+      const utter = new SpeechSynthesisUtterance(String(text));
+      utter.lang = lang;
+      utter.rate = 0.9;
+      const voice = pickVoice(synth.getVoices(), lang);
+      if (voice) utter.voice = voice;
+      document.querySelectorAll(".speak-btn.is-speaking").forEach(el => el.classList.remove("is-speaking"));
+      if (button) {
+        button.classList.add("is-speaking");
+        const done = () => button.classList.remove("is-speaking");
+        utter.onend = done; utter.onerror = done;
+      }
+      synth.speak(utter);
+    }
+
+    function onSpeakClick(event) {
+      const button = event.target.closest("[data-speak]");
+      if (!button) return false;
+      event.stopPropagation();
+      speak(button.dataset.speak, button);
+      return true;
+    }
+
     function renderCustomList() {
       els.customList.innerHTML = state.words.length
         ? state.words.map(word => `
           <div class="custom-row">
+            ${speakButton(word.en) || "<span></span>"}
             <b title="${escapeHtml(word.en)}">${escapeHtml(word.en)}</b>
-            <span title="${escapeHtml(word.zh)}">${escapeHtml(word.zh)}</span>
+            <span class="cr-mean" title="${escapeHtml(word.zh)}">${escapeHtml(word.zh)}</span>
             <span>${wordStageLabel(word)}</span>
             <button class="link-button" type="button" data-delete="${escapeHtml(word.id)}">${t("library.deleteBtn")}</button>
           </div>
         `).join("")
-        : `<div class="custom-row"><b>${t("library.emptyListA")}</b><span>${t("library.emptyListB")}</span><span></span><span></span></div>`;
+        : `<div class="custom-row"><span></span><b>${t("library.emptyListA")}</b><span>${t("library.emptyListB")}</span><span></span><span></span></div>`;
     }
 
     const SLOT_COUNT = 5;
@@ -2776,7 +2905,9 @@
     function isLongLabel(label) {
       let width = 0;
       for (const ch of String(label)) width += /[\u2E80-\uFFEF]/.test(ch) ? 2 : 1;
-      return width > 14;
+      // phones have narrower cards (and the larger type), so wrap a little earlier there
+      const narrow = typeof window.matchMedia === "function" && window.matchMedia("(max-width: 640px)").matches;
+      return width > (narrow ? 12 : 14);
     }
 
     function getSlot(side, index) {
@@ -3197,7 +3328,7 @@
       const missed = [...state.levelMisses.values()].filter(word => state.words.includes(word));
       els.reviewHeading.textContent = missed.length ? t("timeouts.reviewHeading") : "";
       els.reviewList.innerHTML = missed
-        .map(word => `<li><b>${escapeHtml(word.en)}</b><span>${escapeHtml(word.zh)}</span></li>`)
+        .map(word => `<li${canSpeak() ? ' class="has-speak"' : ""}>${speakButton(word.en)}<b>${escapeHtml(word.en)}</b><span>${escapeHtml(word.zh)}</span></li>`)
         .join("");
     }
 
@@ -3854,7 +3985,11 @@
       else if (systemLightQuery.addListener) systemLightQuery.addListener(onSchemeChange);
     }
 
+    els.reviewList.addEventListener("click", onSpeakClick);
+    if (canSpeak()) window.speechSynthesis.getVoices();   // some browsers load the voice list lazily
+
     els.customList.addEventListener("click", event => {
+      if (onSpeakClick(event)) return;
       const button = event.target.closest("[data-delete]");
       if (!button) return;
       state.words = state.words.filter(word => word.id !== button.dataset.delete);

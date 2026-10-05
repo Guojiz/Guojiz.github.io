@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-05
+
+### Added
+
+- **Listen to words** (browser text-to-speech): a speaker button on every row of the end-of-level review list (“Review the words you mixed up”) and of the Library word list reads the word aloud. The voice language follows the first side of the language pair (English, 中文, 日本語, Español, … or the script of the word itself for custom pairs); natural system voices are preferred over novelty ones. The buttons are hidden when the browser has no speech support.
+
+### Changed
+
+- Larger type throughout: card words 18 → 21 px (phones 15 → 18 px) with taller cards, level label, heading, timer, buttons, review list, word list, modal text, option labels and the side rail all one step bigger. Long labels on phones wrap to two lines a little earlier so they are not cut off.
+
 ## 2026-10-04
 
 ### Added
