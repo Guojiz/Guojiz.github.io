@@ -822,6 +822,162 @@
       white-space: nowrap;
     }
 
+    /* print / export weak words */
+    .print-title-field {
+      grid-column: 1 / -1;
+    }
+
+    .print-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 18px;
+      margin-top: 14px;
+    }
+
+    .print-fields .check-row {
+      margin-top: 0;
+    }
+
+    .print-pick {
+      max-height: 260px;
+      overflow: auto;
+      margin-top: 14px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: 6px 12px 12px;
+    }
+
+    .print-pick .check-row {
+      margin-top: 8px;
+    }
+
+    .print-preview {
+      margin-top: 12px;
+      max-height: 300px;
+      overflow: hidden;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #111;
+      padding: 18px 20px;
+      -webkit-mask-image: linear-gradient(#000 70%, transparent);
+      mask-image: linear-gradient(#000 70%, transparent);
+    }
+
+    .print-preview:empty {
+      display: none;
+    }
+
+    .print-sheet {
+      display: none;
+    }
+
+    .ps-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 2px solid #111;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    .ps-head h1 {
+      margin: 0;
+      font-size: 1.35em;
+      line-height: 1.2;
+    }
+
+    .ps-head span {
+      color: #555;
+      font-size: .85em;
+      white-space: nowrap;
+    }
+
+    .ps-body {
+      font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    .ps-body.cols-2 {
+      column-count: 2;
+      column-gap: 28px;
+    }
+
+    .ps-row {
+      display: grid;
+      gap: 10px;
+      align-items: end;
+      padding: .42em 0;
+      border-bottom: 1px solid #ccc;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .ps-row.ps-labels {
+      color: #666;
+      font-size: .8em;
+      font-weight: 700;
+    }
+
+    .ps-row > * {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+
+    .ps-row b {
+      overflow-wrap: normal;
+      word-break: keep-all;
+    }
+
+    .ps-row b {
+      font-weight: 800;
+    }
+
+    .ps-row .ps-num,
+    .ps-row .ps-meta {
+      color: #666;
+      font-size: .85em;
+    }
+
+    .ps-blank {
+      display: block;
+      min-height: 1.15em;
+      border-bottom: 1.5px solid #888;
+    }
+
+    .ps-size-s { font-size: 12px; }
+    .ps-size-m { font-size: 14px; }
+    .ps-size-l { font-size: 17px; }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 14mm 14mm 16mm;
+      }
+
+      html,
+      body {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+        color: #111 !important;
+      }
+
+      body > *:not(.print-sheet) {
+        display: none !important;
+      }
+
+      .print-sheet {
+        display: block !important;
+      }
+
+      .ps-size-s { font-size: 10.5pt; }
+      .ps-size-m { font-size: 12.5pt; }
+      .ps-size-l { font-size: 15pt; }
+    }
+
     /* listen (browser text-to-speech) */
     .speak-btn {
       width: 36px;
@@ -1459,6 +1615,54 @@
         <div class="custom-list" id="customList"></div>
       </section>
 
+      <section class="modal-section" id="printSection" aria-labelledby="printTitle">
+        <h2 id="printTitle" data-en="Print / export weak words" data-zh="打印 / 导出薄弱词">打印 / 导出薄弱词</h2>
+        <p data-en="Print the words you still need to work on — stick them on your desk, or cover one side and test yourself. Every option below is yours to change." data-zh="把还需要巩固的词打印出来：贴在桌上看，或者遮住一侧自己默写。下面每一项都可以调。">把还需要巩固的词打印出来：贴在桌上看，或者遮住一侧自己默写。下面每一项都可以调。</p>
+        <div class="option-grid">
+          <label>
+            <span data-en="Which words" data-zh="选哪些词">选哪些词</span>
+            <select id="prSource"></select>
+          </label>
+          <label>
+            <span data-en="Order" data-zh="排序">排序</span>
+            <select id="prSort"></select>
+          </label>
+          <label>
+            <span data-en="At most (empty = all)" data-zh="最多几个（留空 = 全部）">最多几个（留空 = 全部）</span>
+            <input id="prLimit" type="number" min="1" max="9999" step="1" inputmode="numeric" />
+          </label>
+          <label>
+            <span data-en="Sheet style" data-zh="打印样式">打印样式</span>
+            <select id="prMode"></select>
+          </label>
+          <label>
+            <span data-en="Columns per page" data-zh="每页栏数">每页栏数</span>
+            <select id="prCols"></select>
+          </label>
+          <label>
+            <span data-en="Text size" data-zh="字号">字号</span>
+            <select id="prSize"></select>
+          </label>
+          <label class="print-title-field">
+            <span data-en="Title" data-zh="标题">标题</span>
+            <input id="prTitle" type="text" autocomplete="off" />
+          </label>
+        </div>
+        <div class="print-fields" id="prFields"></div>
+        <label class="check-row">
+          <input id="prDate" type="checkbox" />
+          <span data-en="Show the date" data-zh="显示日期">显示日期</span>
+        </label>
+        <div class="print-pick" id="prPick" hidden></div>
+        <p class="import-hint" id="prCount"></p>
+        <div class="print-preview" id="prPreview" aria-hidden="true"></div>
+        <p class="import-status" id="prStatus" role="status" aria-live="polite"></p>
+        <div class="form-actions">
+          <button class="duo-button secondary" type="button" id="prCopyBtn" data-en="Copy as table" data-zh="复制为表格">复制为表格</button>
+          <button class="duo-button" type="button" id="prPrintBtn" data-en="Print / save as PDF" data-zh="打印 / 存为 PDF">打印 / 存为 PDF</button>
+        </div>
+      </section>
+
       <section class="modal-section danger-zone" aria-labelledby="dangerTitle">
         <h2 id="dangerTitle" data-en="Danger zone" data-zh="危险操作">危险操作</h2>
         <p data-en="&lt;b&gt;Clear all words&lt;/b&gt; deletes every word in your library together with its learning progress. This cannot be undone." data-zh="&lt;b&gt;清空全部词&lt;/b&gt;会删除词库里的所有单词，以及它们的学习进度，无法撤销。"><b>清空全部词</b>会删除词库里的所有单词，以及它们的学习进度，无法撤销。</p>
@@ -1592,6 +1796,17 @@
           langPairLabel: "Language pair", custom: "Custom", sideA: "Side A", sideB: "Side B"
         },
         weak: { wrongN: "Missed {n}", toConsolidate: "Review", noWeak: "No weak words", done: "Done" },
+        print: {
+          defaultTitle: "Word Snap · Weak words",
+          srcWeak: "Weak words (seen, not mastered)", srcMissed: "Words I got wrong", srcUnmastered: "All not yet mastered (incl. new)", srcAll: "All words", srcPick: "Pick by hand",
+          sortMistakes: "Most mistakes first", sortStage: "By review stage", sortLibrary: "Library order", sortAlpha: "A → Z", sortRandom: "Shuffled",
+          modeBoth: "Word + meaning", modeHideMean: "Hide meanings (write them)", modeHideWord: "Hide words (write them)",
+          cols1: "1 column", cols2: "2 columns", sizeS: "Small", sizeM: "Medium", sizeL: "Large",
+          fieldNum: "No.", fieldWord: "Word", fieldMean: "Meaning", fieldMistakes: "Mistakes", fieldStage: "Review stage", fieldBlank: "Blank column to write in",
+          colWrite: "Write", count: "{n} words on the sheet.", countShort: "{n} words", none: "No words match these settings.",
+          copied: "Copied {n} rows — paste into a spreadsheet or document.", copyFailed: "Could not copy automatically. The table was put into Bulk input — copy it from there.",
+          pickAll: "Select all", pickNone: "Select none", missedN: "×{n}"
+        },
         feedback: {
           pickPair: "Pick one card from each side.", pickMatch: "Now pick its match.",
           correct: "Matched!", allDoneCheck: "All matched. Now check.",
@@ -1694,6 +1909,17 @@
           langPairLabel: "语言对", custom: "自定义", sideA: "左侧", sideB: "右侧"
         },
         weak: { wrongN: "错 {n}", toConsolidate: "待巩固", noWeak: "暂时没有弱项", done: "完成" },
+        print: {
+          defaultTitle: "Word Snap · 薄弱词",
+          srcWeak: "薄弱词（练过、还没掌握）", srcMissed: "答错过的词", srcUnmastered: "还没掌握的全部（含新词）", srcAll: "全部单词", srcPick: "手动勾选",
+          sortMistakes: "答错次数多的在前", sortStage: "按复习阶段", sortLibrary: "词库顺序", sortAlpha: "按字母 A → Z", sortRandom: "随机打乱",
+          modeBoth: "单词 + 释义", modeHideMean: "遮住释义（看单词写意思）", modeHideWord: "遮住单词（看意思写单词）",
+          cols1: "1 栏", cols2: "2 栏", sizeS: "小", sizeM: "中", sizeL: "大",
+          fieldNum: "序号", fieldWord: "单词", fieldMean: "释义", fieldMistakes: "答错次数", fieldStage: "复习阶段", fieldBlank: "空白默写列",
+          colWrite: "默写", count: "共 {n} 个词会被打印。", countShort: "共 {n} 个词", none: "没有符合条件的词。",
+          copied: "已复制 {n} 行，可以粘贴到表格或文档里。", copyFailed: "无法自动复制，表格已放进「批量录入」框，请从那里复制。",
+          pickAll: "全选", pickNone: "全不选", missedN: "错 {n}"
+        },
         feedback: {
           pickPair: "选择一个中文和一个英文。", pickMatch: "再选它的配对。",
           correct: "配对成功。", allDoneCheck: "全部配完了。现在检查。",
@@ -1804,6 +2030,7 @@
       if (typeof updateColorModeUI === "function") updateColorModeUI();
       if (typeof setInstallNudgeCopy === "function") setInstallNudgeCopy();
       if (typeof renderStats === "function") renderStats();
+      if (typeof renderPrintPanel === "function") renderPrintPanel();
       els.modeBtn.textContent = t("stats.modeBtn", { label: modeLabel(state.mode) });
       if (els.completionView && els.completionView.classList.contains("show")) {
         if (!state.words.length) {
@@ -2370,6 +2597,185 @@
       if (isNewWord(word)) return t("library.stageNew");
       if (word.mastered) return t("library.stageMastered");
       return t("library.stageBox", { n: word.box, max: MAX_BOX });
+    }
+
+    // ---- print / export weak words: every option is the learner's; settings persist ----
+    const PRINT_KEY = "word_snap_print_v1";
+    const PRINT_FIELDS = ["num", "word", "mean", "mistakes", "stage", "blank"];
+    const PRINT_DEFAULTS = { source: "weak", sort: "mistakes", limit: "", mode: "both", cols: 1, size: "m", title: "", date: true,
+      fields: { num: true, word: true, mean: true, mistakes: true, stage: false, blank: false }, picked: [] };
+    let printSettings = loadPrintSettings();
+    let printSeed = Math.floor(Math.random() * 1e9);
+
+    function loadPrintSettings() {
+      let raw = null;
+      try { raw = JSON.parse(localStorage.getItem(PRINT_KEY) || "null"); } catch (e) {}
+      const s = { ...PRINT_DEFAULTS, ...(raw && typeof raw === "object" ? raw : {}) };
+      s.fields = { ...PRINT_DEFAULTS.fields, ...(raw && raw.fields && typeof raw.fields === "object" ? raw.fields : {}) };
+      s.picked = Array.isArray(s.picked) ? s.picked.filter(id => typeof id === "string") : [];
+      if (!["weak", "missed", "unmastered", "all", "pick"].includes(s.source)) s.source = "weak";
+      if (!["mistakes", "stage", "library", "alpha", "random"].includes(s.sort)) s.sort = "mistakes";
+      if (!["both", "hideMean", "hideWord"].includes(s.mode)) s.mode = "both";
+      s.cols = Number(s.cols) === 2 ? 2 : 1;
+      if (!["s", "m", "l"].includes(s.size)) s.size = "m";
+      s.title = typeof s.title === "string" ? s.title.slice(0, 80) : "";
+      s.date = s.date !== false;
+      return s;
+    }
+
+    function savePrintSettings() {
+      try { localStorage.setItem(PRINT_KEY, JSON.stringify(printSettings)); } catch (e) {}
+    }
+
+    function seededShuffle(list, seed) {
+      const out = [...list];
+      let a = seed >>> 0;
+      const rnd = () => { a = (a + 0x6D2B79F5) | 0; let t2 = Math.imul(a ^ (a >>> 15), 1 | a); t2 = (t2 + Math.imul(t2 ^ (t2 >>> 7), 61 | t2)) ^ t2; return ((t2 ^ (t2 >>> 14)) >>> 0) / 4294967296; };
+      for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+      return out;
+    }
+
+    function printWords() {
+      const s = printSettings, picked = new Set(s.picked);
+      let list = state.words.filter(word =>
+        s.source === "missed" ? word.mistakes > 0
+          : s.source === "unmastered" ? !word.mastered
+          : s.source === "all" ? true
+          : s.source === "pick" ? picked.has(word.id)
+          : !word.mastered && !isNewWord(word));
+      if (s.sort === "mistakes") list = [...list].sort((a, b) => a.box - b.box || b.mistakes - a.mistakes);
+      else if (s.sort === "stage") list = [...list].sort((a, b) => a.box - b.box || Number(a.mastered) - Number(b.mastered));
+      else if (s.sort === "alpha") list = [...list].sort((a, b) => String(a.en).localeCompare(String(b.en), undefined, { sensitivity: "base" }));
+      else if (s.sort === "random") list = seededShuffle(list, printSeed);
+      const limit = Math.floor(Number(s.limit));
+      if (Number.isFinite(limit) && limit > 0) list = list.slice(0, limit);
+      return list;
+    }
+
+    // visible columns in order; the hidden side of the pair becomes a blank line to write on
+    function printColumns() {
+      const f = printSettings.fields, cols = [];
+      if (f.num) cols.push("num");
+      if (f.word) cols.push("word");
+      if (f.mean) cols.push("mean");
+      if (f.mistakes) cols.push("mistakes");
+      if (f.stage) cols.push("stage");
+      if (f.blank) cols.push("blank");
+      return cols;
+    }
+
+    function printCellText(col, word, i) {
+      const mode = printSettings.mode;
+      if (col === "num") return String(i + 1);
+      if (col === "word") return mode === "hideWord" ? "" : word.en;
+      if (col === "mean") return mode === "hideMean" ? "" : word.zh;
+      if (col === "mistakes") return word.mistakes ? t("print.missedN", { n: word.mistakes }) : "";
+      if (col === "stage") return wordStageLabel(word);
+      return "";
+    }
+
+    function printColLabel(col) {
+      return { num: t("print.fieldNum"), word: t("print.fieldWord"), mean: t("print.fieldMean"), mistakes: t("print.fieldMistakes"), stage: t("print.fieldStage"), blank: t("print.colWrite") }[col];
+    }
+
+    function buildPrintHtml(list, maxRows) {
+      const s = printSettings, cols = printColumns();
+      const widths = cols.map(col => col === "num" ? "2em" : col === "mistakes" ? "3.4em" : col === "stage" ? "5.6em" : col === "word" ? "minmax(min-content, 1.5fr)" : col === "mean" ? "minmax(3em, 1.5fr)" : "minmax(2.5em, 1fr)").join(" ");
+      const title = escapeHtml(s.title.trim() || t("print.defaultTitle"));
+      const date = s.date ? new Date().toLocaleDateString(currentLang === "en" ? "en-US" : "zh-CN") : "";
+      const rows = (maxRows ? list.slice(0, maxRows) : list).map((word, i) => {
+        const cells = cols.map(col => {
+          const text = printCellText(col, word, i);
+          const blank = col === "blank" || (col === "word" && s.mode === "hideWord") || (col === "mean" && s.mode === "hideMean");
+          if (blank) return `<span class="ps-blank"></span>`;
+          if (col === "word") return `<b>${escapeHtml(text)}</b>`;
+          return `<span class="${col === "num" ? "ps-num" : col === "mean" ? "" : "ps-meta"}">${escapeHtml(text)}</span>`;
+        }).join("");
+        return `<div class="ps-row" style="grid-template-columns:${widths}">${cells}</div>`;
+      }).join("");
+      const labels = s.cols === 1 ? `<div class="ps-row ps-labels" style="grid-template-columns:${widths}">${cols.map(col => `<span>${escapeHtml(printColLabel(col))}</span>`).join("")}</div>` : "";
+      return `<div class="ps-size-${s.size}"><div class="ps-head"><h1>${title}</h1><span>${escapeHtml([date, t("print.countShort", { n: list.length })].filter(Boolean).join(" · "))}</span></div>`
+        + `<div class="ps-body${s.cols === 2 ? " cols-2" : ""}">${labels}${rows}</div></div>`;
+    }
+
+    function fillPrintSelect(el, options, value) {
+      el.innerHTML = options.map(([v, key]) => `<option value="${v}">${escapeHtml(t(key))}</option>`).join("");
+      el.value = String(value);
+    }
+
+    function renderPrintPanel() {
+      const s = printSettings;
+      const el = id => document.getElementById(id);
+      if (!el("prSource")) return;
+      fillPrintSelect(el("prSource"), [["weak", "print.srcWeak"], ["missed", "print.srcMissed"], ["unmastered", "print.srcUnmastered"], ["all", "print.srcAll"], ["pick", "print.srcPick"]], s.source);
+      fillPrintSelect(el("prSort"), [["mistakes", "print.sortMistakes"], ["stage", "print.sortStage"], ["library", "print.sortLibrary"], ["alpha", "print.sortAlpha"], ["random", "print.sortRandom"]], s.sort);
+      fillPrintSelect(el("prMode"), [["both", "print.modeBoth"], ["hideMean", "print.modeHideMean"], ["hideWord", "print.modeHideWord"]], s.mode);
+      fillPrintSelect(el("prCols"), [["1", "print.cols1"], ["2", "print.cols2"]], s.cols);
+      fillPrintSelect(el("prSize"), [["s", "print.sizeS"], ["m", "print.sizeM"], ["l", "print.sizeL"]], s.size);
+      if (document.activeElement !== el("prLimit")) el("prLimit").value = s.limit;
+      if (document.activeElement !== el("prTitle")) { el("prTitle").value = s.title; el("prTitle").placeholder = t("print.defaultTitle"); }
+      el("prDate").checked = s.date;
+      el("prFields").innerHTML = PRINT_FIELDS.map(f => {
+        const key = { num: "fieldNum", word: "fieldWord", mean: "fieldMean", mistakes: "fieldMistakes", stage: "fieldStage", blank: "fieldBlank" }[f];
+        return `<label class="check-row"><input type="checkbox" data-pr-field="${f}"${s.fields[f] ? " checked" : ""} /><span>${escapeHtml(t("print." + key))}</span></label>`;
+      }).join("");
+      const pick = el("prPick");
+      pick.hidden = s.source !== "pick";
+      if (s.source === "pick") {
+        const picked = new Set(s.picked);
+        pick.innerHTML = `<div class="form-actions" style="justify-content:flex-start;margin-top:8px"><button class="link-button" type="button" data-pr-pick="all">${escapeHtml(t("print.pickAll"))}</button><button class="link-button" type="button" data-pr-pick="none">${escapeHtml(t("print.pickNone"))}</button></div>`
+          + state.words.map(word => `<label class="check-row"><input type="checkbox" data-pr-word="${escapeHtml(word.id)}"${picked.has(word.id) ? " checked" : ""} /><span><b>${escapeHtml(word.en)}</b> · ${escapeHtml(word.zh)}</span></label>`).join("");
+      } else pick.innerHTML = "";
+      updatePrintPreview();
+    }
+
+    function updatePrintPreview() {
+      const el = id => document.getElementById(id);
+      if (!el("prPreview")) return;
+      const list = printWords(), cols = printColumns();
+      const ok = list.length > 0 && cols.length > 0;
+      el("prCount").textContent = ok ? t("print.count", { n: list.length }) : t("print.none");
+      el("prPreview").innerHTML = ok ? buildPrintHtml(list, 8) : "";
+      el("prPrintBtn").disabled = !ok;
+      el("prCopyBtn").disabled = !ok;
+    }
+
+    function setPrintStatus(text, kind = "") {
+      const el = document.getElementById("prStatus");
+      if (!el) return;
+      el.textContent = text;
+      el.className = "import-status" + (kind ? " " + kind : "");
+    }
+
+    function onPrintChange(event) {
+      const s = printSettings, target = event.target;
+      if (!target) return;
+      if (target.dataset.prField) s.fields[target.dataset.prField] = target.checked;
+      else if (target.dataset.prWord) {
+        const set = new Set(s.picked);
+        if (target.checked) set.add(target.dataset.prWord); else set.delete(target.dataset.prWord);
+        s.picked = [...set];
+      } else switch (target.id) {
+        case "prSource": s.source = target.value; break;
+        case "prSort": s.sort = target.value; if (s.sort === "random") printSeed = Math.floor(Math.random() * 1e9); break;
+        case "prLimit": s.limit = target.value === "" ? "" : String(Math.max(1, Math.floor(Number(target.value)) || 1)); break;
+        case "prMode": s.mode = target.value; break;
+        case "prCols": s.cols = Number(target.value) === 2 ? 2 : 1; break;
+        case "prSize": s.size = target.value; break;
+        case "prTitle": s.title = target.value.slice(0, 80); break;
+        case "prDate": s.date = target.checked; break;
+        default: return;
+      }
+      savePrintSettings();
+      setPrintStatus("");
+      if (target.id === "prSource") renderPrintPanel(); else updatePrintPreview();
+    }
+
+    function printTsv(list) {
+      const cols = printColumns();
+      const lines = [cols.map(printColLabel).join("\t")];
+      list.forEach((word, i) => lines.push(cols.map(col => String(printCellText(col, word, i)).replace(/[\t\n\r]+/g, " ")).join("\t")));
+      return lines.join("\n");
     }
 
     // ---- listen: browser text-to-speech (Web Speech API); hidden where unsupported ----
@@ -3400,7 +3806,7 @@
         : `<div class="weak-row"><b>${t("weak.noWeak")}</b><span>${t("weak.done")}</span></div>`;
 
       // The full word list is only visible inside the library; skip rebuilding it otherwise.
-      if (els.libraryModal.classList.contains("open")) renderCustomList();
+      if (els.libraryModal.classList.contains("open")) { renderCustomList(); updatePrintPreview(); }
     }
 
     function currentRoundTotal() {
@@ -3644,6 +4050,8 @@
       if (els.optionsStatus) els.optionsStatus.textContent = "";
       syncOptionsUI();
       renderStats();
+      setPrintStatus("");
+      renderPrintPanel();
     }
 
     const INTRO_SEEN_KEY = "word_snap_intro_seen_v1";
@@ -3986,6 +4394,33 @@
     }
 
     els.reviewList.addEventListener("click", onSpeakClick);
+
+    (function wirePrintPanel() {
+      const section = document.getElementById("printSection");
+      if (!section) return;
+      section.addEventListener("change", onPrintChange);
+      section.addEventListener("input", event => { if (event.target && (event.target.id === "prTitle" || event.target.id === "prLimit")) onPrintChange(event); });
+      section.addEventListener("click", event => {
+        const b = event.target.closest("[data-pr-pick]");
+        if (!b) return;
+        printSettings.picked = b.dataset.prPick === "all" ? state.words.map(word => word.id) : [];
+        savePrintSettings();
+        renderPrintPanel();
+      });
+      document.getElementById("prPrintBtn").addEventListener("click", () => {
+        const list = printWords();
+        if (!list.length || !printColumns().length) return;
+        document.getElementById("printSheet").innerHTML = buildPrintHtml(list);
+        window.print();
+      });
+      document.getElementById("prCopyBtn").addEventListener("click", async () => {
+        const list = printWords();
+        if (!list.length) return;
+        const text = printTsv(list);
+        if (await copyText(text)) setPrintStatus(t("print.copied", { n: list.length + 1 }), "good");
+        else { els.bulkInput.value = text; setPrintStatus(t("print.copyFailed"), "bad"); }
+      });
+    })();
     if (canSpeak()) window.speechSynthesis.getVoices();   // some browsers load the voice list lazily
 
     els.customList.addEventListener("click", event => {
@@ -4134,5 +4569,6 @@
     renderRound();
     if (!hasSeenIntro() && !savedState) openIntro();
   </script>
+  <div class="print-sheet" id="printSheet" aria-hidden="true"></div>
 </body>
 </html>

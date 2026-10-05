@@ -4,6 +4,14 @@
 
 ### Added
 
+- **Print / export weak words** (Library → “Print / export weak words”), with every option adjustable and remembered on this device:
+  - **Which words**: weak words (seen, not mastered), words you got wrong, everything not yet mastered, all words, or pick by hand.
+  - **Order**: most mistakes first, review stage, library order, A → Z, or shuffled.
+  - **How many**: an optional maximum count.
+  - **Sheet style**: word + meaning, hide meanings, or hide words; the hidden side becomes a blank line to write on.
+  - **Columns**: number, word, meaning, mistakes, review stage, and an extra blank column.
+  - **Layout**: 1 or 2 columns per page, three text sizes, an editable title, and an optional date.
+  - A live preview shows the sheet as you change things. “Print / save as PDF” uses the browser’s own print dialog (works offline, on phones too); “Copy as table” copies tab-separated rows for spreadsheets or documents.
 - **Listen to words** (browser text-to-speech): a speaker button on every row of the end-of-level review list (“Review the words you mixed up”) and of the Library word list reads the word aloud. The voice language follows the first side of the language pair (English, 中文, 日本語, Español, … or the script of the word itself for custom pairs); natural system voices are preferred over novelty ones. The buttons are hidden when the browser has no speech support.
 
 ### Changed
